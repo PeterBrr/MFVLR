@@ -1,0 +1,60 @@
+schema_version: 1
+phase: 2D.2
+profile: debug
+approval:
+  status: APPROVED
+  classification: ASSUMED
+  author_architecture_confirmed: false
+  scope: full_integration_and_G2_no_update_only
+  extended:
+  - P2D04
+  - P2D16
+  - P2D17
+  - P2D18
+  - P2D20
+  P2D15: UNAPPROVED
+  P2D19: UNAPPROVED
+  optimizer_updates: false
+  datasets: false
+  benchmark_evaluation: false
+components:
+  seeds:
+    mve: 0
+    decoder: 0
+    heads: 0
+    flt: 0
+  decoder_skip_policy: bottleneck_only
+  registration_order:
+  - mve
+  - decoder
+  - heads
+  - flt
+  - objectives
+  full_unique_parameters: 154156232
+  image_only_unique_parameters: 41135303
+  accepted_configs:
+    mve: paper_reference.yaml
+    decoder: decoder_reference.yaml
+    flt: flt_reference.yaml
+    objectives: heads_losses_reference.yaml
+runtime:
+  device: cpu
+  dtype: float32
+  threads: 4
+  deterministic: true
+  matmul_precision: highest
+  optimizer_updates: 0
+fixtures:
+- real
+- efs
+- local
+- real_efs
+- real_local
+- local_duplicate
+verification:
+  fp32_atol: 1.0e-06
+  fp32_rtol: 1.0e-05
+  fp64_atol: 1.0e-10
+  fp64_rtol: 1.0e-08
+  N1_applies_to_new_tests: false
+  N2_exempts_new_objectives: false

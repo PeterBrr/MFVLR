@@ -1,0 +1,655 @@
+# Phase 2A: M1-M5 approved for MVE implementation and verification only.
+# "paper_reference" is a proposed reference-formulation configuration, not author code.
+schema_version: 1
+profile: paper_reference_proposed_v1
+contract: ../docs/implementation_contract.md
+
+review:
+  phase_1_documentation_accepted: true
+  decision_status: PROPOSED
+  implementation_authorized: true
+  authorized_implementation_scopes: [mve]
+  training_authorized: false
+  approved_decisions: []
+  numerical_amendments:
+    N1:
+      status: APPROVED
+      source: explicit_user_n1_conditional_approval
+      conditions_verified: true
+      scope: MVE-T12_cross_batch_size_cpu_float32_only
+      evidence: ../artifacts/phase2a/n1_review/numerical_evidence.json
+  # Entire A01-A35 decisions remain unapproved outside the portions below.
+  mve_approval:
+    status: APPROVED
+    bundles: [M1, M2, M3, M4, M5]
+    scope: mve_only
+    source: explicit_user_phase2a_instruction
+    client_date: "2026-10-10"
+    classification: ASSUMED
+    confirms_author_architecture: false
+    production_skip_decoder_approved: false
+    portions:
+      A01: tensor_input_boundary_only
+      A02: local_encoder_and_skip_output_interface_only
+      A03: visual_transformer_only
+      A04: image_tokens_and_positions_only
+      A05: external_reconstruction_no_clipping_boundary_only
+      A06: shared_visual_encoder_only
+      A07: mve_residual_autograd_only
+      A16: visual_projection_and_transformer_biases_only
+      A22: mve_initialization_and_debug_seed_only
+      A23: mve_tensor_boundary_only
+      A30: unique_mve_parameter_accounting_only
+      A31: mve_cpu_fp32_verification_only
+      A35: mve_api_configuration_and_verification_artifacts_only
+  valid_statuses: [PROPOSED, APPROVED, BLOCKED, DEFERRED]
+  decisions:
+    A01: PROPOSED
+    A02: PROPOSED
+    A03: PROPOSED
+    A04: PROPOSED
+    A05: PROPOSED
+    A06: PROPOSED
+    A07: PROPOSED
+    A08: PROPOSED
+    A09: PROPOSED
+    A10: PROPOSED
+    A11: PROPOSED
+    A12: PROPOSED
+    A13: PROPOSED
+    A14: PROPOSED
+    A15: PROPOSED
+    A16: PROPOSED
+    A17: PROPOSED
+    A18: PROPOSED
+    A19: PROPOSED
+    A20: PROPOSED
+    A21: PROPOSED
+    A22: PROPOSED
+    A23: PROPOSED
+    A24: PROPOSED
+    A25: PROPOSED
+    A26: PROPOSED
+    A27: PROPOSED
+    A28: PROPOSED
+    A29: PROPOSED
+    A30: PROPOSED
+    A31: PROPOSED
+    A32: PROPOSED
+    A33: PROPOSED
+    A34: PROPOSED
+    A35: PROPOSED
+  mve_approval_bundles: [M1, M2, M3, M4, M5]
+  scope_status:
+    mve_coding: APPROVED
+    vision_decoder_coding: DEFERRED
+    language_and_losses: DEFERRED
+    benchmark_training: BLOCKED
+    secondary_studies: DEFERRED
+  blockers:
+    mve_coding: []
+    benchmark_training:
+      - separate_full_model_and_training_approval
+      - verified_dataset_source_pair_and_split_manifests
+      - pinned_tokenizer_artifacts_and_special_ids
+      - recorded_runtime_versions
+
+evidence:
+  paper: ../papers/MFVLR.pdf
+  paper_sha256: 2afed0516c32121513463d326720153887586ceaa328f26b96263bd39da45307
+  equation_ledger: ../docs/paper_analysis.md
+  proposal_default_classification: ASSUMED
+  unapproved_choice_status: PROPOSED
+  mve_adoption_status: APPROVED
+  # These exact paths copy paper facts or consequences; other proposal leaves are ASSUMED.
+  explicit_paths:
+    proposal.mve.input.channels: "p. 5, III-B"
+    proposal.mve.input.height: "p. 5, III-B"
+    proposal.mve.input.width: "p. 5, III-B"
+    proposal.mve.encoder.bottleneck_shape: "p. 8, IV-A"
+    proposal.mve.tokenizer.embed_dim: "p. 8, IV-A"
+    proposal.mve.tokenizer.class_token.learnable: "p. 5, III-B"
+    proposal.mve.tokenizer.position.learnable: "p. 5, Eq. (1)"
+    proposal.mve.transformer.depth: "pp. 5/8, Eq. (2), IV-A"
+    proposal.mve.transformer.embed_dim: "p. 8, IV-A"
+    proposal.mve.sharing.share_parameters_between_roles: "pp. 5-6, III-B"
+    proposal.mve.residual.operation: "p. 5, III-B"
+    proposal.mve.fusion.operation: "p. 6, III-B"
+    proposal.vision_decoder.shared_trunk: "p. 6, III-C"
+    proposal.vision_decoder.appearance_head.out_channels: "p. 5, III-B"
+    proposal.vision_decoder.mask_head.out_channels: "pp. 6/8, III-C, IV-A"
+    proposal.heads.detection.out_features: "p. 8, IV-A"
+    proposal.heads.detection.hidden_layers: "p. 8, III-E, single FC"
+    proposal.heads.adapter.hidden_layers: "p. 8, III-E, single FC"
+    proposal.language.vocabulary_size: "p. 8, IV-A"
+    proposal.language.sequence_length: "p. 8, IV-A; GenFace baseline"
+    proposal.language.embed_dim: "p. 8, IV-A"
+    proposal.language.encoder.depth: "p. 8, IV-A"
+    proposal.language.decoder.depth: "p. 8, IV-A"
+    proposal.language.vocabulary_output.weight_tied: "p. 8, Eq. (24)"
+    proposal.language.vim.key_value_length: "p. 7, Eqs. (8)-(9)"
+    proposal.language.vim.scale_denominator: "p. 7, Eq. (10), printed unchanged"
+    proposal.losses.cmc.initial_temperature: "p. 8, Eqs. (20)-(23)"
+    proposal.losses.cmc.trainable_temperature: "p. 8, III-E"
+    proposal.losses.cmc.positive_pairs: "p. 8, III-E"
+    proposal.losses.kl.temperature: "p. 8, Eq. (19)"
+    proposal.losses.lr.reduction: "p. 8, Eq. (25); normalization/pad policy separate"
+    proposal.losses.weights: "p. 8, Eq. (27)"
+    proposal.data.masks.threshold: "pp. 7-8, III-E"
+    proposal.data.masks.real_value: "p. 8, III-E"
+    proposal.data.masks.efs_value: "p. 8, III-E"
+    proposal.training.batch_size: "p. 8, IV-A"
+    proposal.training.optimizer.name: "p. 8, IV-A"
+    proposal.training.optimizer.learning_rate: "p. 8, IV-A"
+    proposal.training.optimizer.weight_decay: "p. 8, IV-A"
+    proposal.training.scheduler.period_epochs: "p. 8, IV-A"
+    proposal.training.scheduler.factor: "p. 8, IV-A"
+    proposal.initialization.pretrained_weights: "p. 4, II-B, trained from scratch"
+  derived_paths:
+    proposal.mve.tokenizer.spatial_token_count: "14 * 14; p. 8 local shape"
+    proposal.mve.tokenizer.sequence_length: "14 * 14 + 1; p. 5, Eq. (1)"
+    proposal.mve.transformer.head_dim: "512 / proposed 8 heads; not a paper head count"
+    proposal.verification.expected_unique_mve_parameters: "From proposed layer topology, not paper total"
+  decision_groups:
+    mve: [A01, A02, A03, A04, A05, A06, A07, A16, A22, A23, A30, A31, A35]
+    language: [A03, A04, A08, A09, A10, A11, A12, A13, A16, A27]
+    losses: [A14, A15, A17, A18, A19, A26]
+    training_data_evaluation: [A01, A20, A21, A22, A23, A24, A25, A26, A28, A29, A30, A31, A32, A33, A34, A35]
+
+# Independent immutable reference facts. No new architecture is inferred from these totals.
+paper_explicit:
+  image_shape: [3, 224, 224]
+  local_shape: [1024, 14, 14]
+  image_blocks: 4
+  language_encoder_blocks: 12
+  language_decoder_blocks: 7
+  embed_dim: 512
+  vocabulary_size: 49408
+  text_length: 308
+  classes: 2
+  batch_size: 8
+  reported_total_parameters_millions: 141.00
+  reported_total_flops_billions: 173.04
+  reported_hardware: Tesla_V100
+  vim_equation_10: 'T_glo[j,i] = softmax(Q[j,i] K[j,i]^T / sqrt(r/d)) V[j,i]'
+  total_equation_27: 'L = L_fd + L_lr + L_cmc + L_fl + L_ar + L_kl'
+
+proposal:
+  execution:
+    scope: full_reference_after_separate_approval
+    components: [mve, vision_decoder, detection_head, adapter, language, objective]
+    # Full reference execution remains unapproved; only the MVE builder is implemented.
+    reject_unapproved_execution: true
+
+  mve:
+    input:
+      channels: 3
+      height: 224
+      width: 224
+      layout: NCHW
+      dtype: float32
+      appearance_range: [0.0, 1.0]
+      appearance_range_is_preprocessing_contract: true
+      implicit_resize: false
+      implicit_dtype_or_device_conversion: false
+      implicit_normalization: false
+      finite_values_required: true
+      nonempty_batch_required: true
+    encoder:
+      family: proposed_padded_unet_contracting_path
+      stage_channels: [64, 128, 256, 512, 1024]
+      convolutions_per_stage: 2
+      convolution:
+        kernel_size: 3
+        stride: 1
+        padding: 1
+        padding_mode: zeros
+        dilation: 1
+        groups: 1
+        bias: true
+      activation: relu
+      activation_inplace: false
+      normalization: none
+      dropout: 0.0
+      pooling:
+        kind: max_pool_2d
+        after_stages: [0, 1, 2, 3]
+        kernel_size: 2
+        stride: 2
+        padding: 0
+        dilation: 1
+        ceil_mode: false
+      bottleneck_shape: [1024, 14, 14]
+      appearance_skip_stages: [0, 1, 2, 3]
+      appearance_skip_shapes:
+        - [64, 224, 224]
+        - [128, 112, 112]
+        - [256, 56, 56]
+        - [512, 28, 28]
+      skip_detach: false
+      return_residual_skips: false
+    tokenizer:
+      flatten_order: row_major_spatial_then_channels
+      projection_in_features: 1024
+      embed_dim: 512
+      projection_bias: true
+      spatial_token_count: 196
+      sequence_length: 197
+      class_token:
+        learnable: true
+        parameter_shape: [1, 1, 512]
+        placement: append
+        index: 196
+      position:
+        learnable: true
+        parameter_shape: [1, 197, 512]
+        interpolate: false
+      embedding_normalization: none
+      embedding_dropout: 0.0
+    transformer:
+      depth: 4
+      embed_dim: 512
+      heads: 8
+      head_dim: 64
+      block_order: [pre_ln_self_attention_residual, pre_ln_ffn_residual]
+      ln:
+        normalized_dim: 512
+        epsilon: 1.0e-5
+        elementwise_affine: true
+        bias: true
+      attention:
+        projections: separate_q_k_v
+        qkv_bias: true
+        output_bias: true
+        scale_denominator: sqrt_head_dim
+        softmax_axis: keys
+        causal: false
+        padding_mask: false
+        dropout: 0.0
+      ffn:
+        in_features: 512
+        hidden_features: 2048
+        out_features: 512
+        activation: gelu
+        gelu_approximation: none
+        bias: true
+        dropout: 0.0
+      residual_dropout: 0.0
+      stochastic_depth: 0.0
+      layer_scale: null
+      final_normalization: none
+      output_projection: none
+      share_blocks_across_depth: false
+    sharing:
+      share_parameters_between_roles: true
+      owner: mve.shared_encoder
+      number_of_registered_encoders: 1
+      roles: [appearance, residual]
+      separate_role_positions: false
+      separate_role_normalization: false
+      initialize_once: true
+      checkpoint_subtrees: 1
+    residual:
+      operation: absolute_difference
+      operands: [reconstruction, input_image]
+      detach_reconstruction: false
+      detach_residual: false
+      subgradient_at_zero: 0.0
+      clip: false
+      renormalize: false
+      upper_bound: null
+    fusion:
+      operation: elementwise_sum
+      operands: [appearance_global, residual_global]
+      normalize: false
+      output_shape_without_batch: [1, 512]
+    api:
+      appearance_method: encode_appearance
+      forward_inputs: [image, reconstruction, optional_appearance_encoding]
+      appearance_fields: [local, skips, tokens, global_token]
+      output_fields: [appearance, residual_image, residual_tokens, residual_global, fused_global]
+      cached_record_policy: explicit_same_input_same_graph_same_parameters
+      persistent_activation_cache: false
+      owns_decoder: false
+      owns_classifier: false
+
+  # A02/A05/A06: concrete later proposal; excluded from MVE-only coding approval.
+  vision_decoder:
+    enabled: true
+    shared_trunk: true
+    trunk_evaluations_per_appearance: 1
+    skip_policy: concatenate_corresponding_appearance_skip
+    upsample:
+      kind: transposed_convolution
+      kernel_size: 2
+      stride: 2
+      padding: 0
+      output_padding: 0
+      dilation: 1
+      groups: 1
+      bias: true
+      channel_pairs: [[1024, 512], [512, 256], [256, 128], [128, 64]]
+    post_concat_convolution_channels:
+      - [1024, 512, 512]
+      - [512, 256, 256]
+      - [256, 128, 128]
+      - [128, 64, 64]
+    convolution_kernel: 3
+    convolution_padding: 1
+    convolution_stride: 1
+    convolution_bias: true
+    activation: relu
+    normalization: none
+    dropout: 0.0
+    appearance_head:
+      in_channels: 64
+      out_channels: 3
+      kernel_size: 1
+      bias: true
+      activation: identity
+    mask_head:
+      in_channels: 64
+      out_channels: 2
+      kernel_size: 1
+      bias: true
+      activation: identity
+
+  heads:
+    enabled: true
+    detection: {in_features: 512, out_features: 2, hidden_layers: 0, bias: true}
+    adapter: {in_features: 512, out_features: 512, hidden_layers: 0, bias: true}
+
+  # These later-language choices remain PROPOSED and cannot block MVE-only coding.
+  language:
+    enabled: true
+    vocabulary_size: 49408
+    embed_dim: 512
+    sequence_length: 308
+    prompt_levels: [L1, L2, L3, L4]
+    packing: concatenate_independent_level_sequences
+    tokens_per_level: 77
+    level_order: [L1, L2, L3, L4]
+    add_bos_eos_per_level: true
+    padding_side: right
+    truncation: reject_overflow
+    tokenizer:
+      family: clip_bpe
+      artifact_path: null
+      artifact_sha256: null
+      version: null
+      bos_id: null
+      eos_id: null
+      pad_fill_id: null
+      readiness: BLOCKED
+    encoder:
+      depth: 12
+      heads: 8
+      ffn_hidden: 2048
+      ffn_activation: gelu_exact
+      order: [pre_ln_mha_residual, vim_delta_residual, ffn_residual]
+      additional_norms: false
+      ln_epsilon: 1.0e-5
+      mha_bias: true
+      ffn_bias: true
+      causal: false
+      key_padding_mask: false
+      pooling: physical_last_position
+      pooling_index: 307
+      final_normalization: none
+      dropout: 0.0
+    decoder:
+      depth: 7
+      heads: 8
+      ffn_hidden: 2048
+      ffn_activation: gelu_exact
+      order: [causal_self_mha_residual, encoder_memory_mha_residual, ffn_residual, vim_delta_residual]
+      shift: prepend_bos_drop_last_once_over_whole_sequence
+      targets: unshifted_ids_including_original_bos_eos_padding
+      causal_self_attention: true
+      key_padding_mask: false
+      memory_mask: none
+      extra_normalizations: false
+      mha_bias: true
+      ffn_bias: true
+      dropout: 0.0
+    positions: learned_separate_encoder_decoder
+    vocabulary_output:
+      weight_tied: true
+      bias: false
+    vim:
+      key_value_length: 1
+      heads: 8
+      scale_denominator: sqrt_r_over_d
+      softmax_axis: keys
+      projection_bias: false
+      attention_dropout: 0.0
+      output_contract: delta_only
+      residual_owner: caller_once
+      independent_instance_per_block: true
+      keep_qk_projections_despite_singleton_degeneracy: true
+    ffpp_separate_model_proposal:
+      prompt_levels: [L1, L2]
+      sequence_length: 154
+      pooling_index: 153
+      classification: ASSUMED
+      approval: PROPOSED
+
+  losses:
+    enabled: true
+    formulation: disclosed_operational_interpretation_of_published_equations
+    weights: {fd: 1.0, lr: 1.0, cmc: 1.0, fl: 1.0, ar: 1.0, kl: 1.0}
+    fd: {kind: categorical_log_softmax_ce, reduction: batch_mean}
+    ar: {kind: squared_error, reduction: all_image_elements_mean}
+    fl: {kind: two_class_log_softmax_ce, reduction: batch_and_pixels_mean}
+    lr:
+      kind: vocabulary_log_softmax_ce
+      reduction: token_sum_then_batch_mean
+      include_padding_positions: true
+      include_bos_eos_positions: true
+    cmc:
+      similarity: raw_dot_product
+      normalize_features: false
+      positive_pairs: batch_diagonal
+      reverse_direction: transpose_raw_scores_then_row_softmax
+      reduction: mean_of_two_batch_mean_cross_entropies
+      initial_temperature: 0.07
+      trainable_temperature: true
+      parameterization: log_denominator_temperature
+      initial_log_temperature: -2.659260036932778
+      effective_temperature: exp_log_temperature
+      weight_decay_on_log_temperature: 0.0
+      clamp_temperature: false
+      reject_nonfinite_or_nonpositive_effective_temperature: true
+    kl:
+      direction: text_to_adapted_vision
+      temperature: 0.5
+      softmax_convention: divide_logits_by_temperature
+      softmax_axis: features
+      reduction: feature_sum_then_batch_mean
+      detach_text_target: false
+      multiply_by_temperature_squared: false
+
+  data:
+    dataset: GenFace
+    training_source_generator: DiffFace
+    first_evaluation_generators: [FSLSD, LatDiff, FaceSwapper]
+    dataset_root: null
+    train_manifest: null
+    validation_manifest: null
+    test_manifests: null
+    source_pair_manifest: null
+    grouping_manifest: null
+    artifacts_verified: false
+    image_preprocessing:
+      supplied_aligned_face_crops_required: true
+      extra_face_detection: false
+      native_pair_shape_must_match: true
+      color_order: RGB
+      target_size: [224, 224]
+      preserve_aspect_ratio: false
+      resize: bilinear
+      antialias: true
+      align_corners: false
+      output_scale: divide_by_255
+      mean_std_normalization: false
+      augmentation: none
+      image_backend_version: null
+    masks:
+      difference_resolution: native_aligned_crop
+      difference_arithmetic: float32_absolute_rgb
+      grayscale_weights_rgb: [0.299, 0.587, 0.114]
+      grayscale_divisor: 255.0
+      threshold: 0.1
+      comparison: strictly_greater
+      resize_after_threshold: nearest
+      real_value: 0
+      efs_value: 1
+      missing_or_unaligned_source_pair: reject
+    splits:
+      prefer_official_splits: true
+      prefer_official_validation: true
+      fallback_validation_fraction_of_source_training_groups: 0.1
+      fallback_split_seed: 0
+      disjoint_groups: [source_pair, identity, video]
+      missing_group_metadata: block_leakage_free_claim_and_resolve_manifest
+      target_test_tuning: false
+
+  training:
+    enabled: true
+    batch_size: 8
+    max_epochs: 45
+    max_steps: null
+    seed: 0
+    final_repeat_seeds: [0, 1, 2]
+    sampling: uniform_shuffled_records
+    class_balancing: false
+    drop_last_train_batch: true
+    gradient_accumulation_steps: 1
+    distributed_negatives: false
+    optimizer:
+      name: Adam
+      learning_rate: 1.0e-4
+      weight_decay: 1.0e-3
+      betas: [0.9, 0.999]
+      epsilon: 1.0e-8
+      amsgrad: false
+      decoupled_weight_decay: false
+      decay_exemptions: [cmc_log_temperature]
+    scheduler:
+      kind: step_decay
+      period_epochs: 15
+      factor: 0.1
+      step_timing: after_completed_epoch
+    warmup_epochs: 0
+    gradient_clipping: null
+    early_stopping: false
+    validation_frequency_epochs: 1
+    checkpoint_selection:
+      domain: source_validation_only
+      primary: max_auc
+      tie_breakers: [min_fd_cross_entropy, earliest_epoch]
+
+  initialization:
+    pretrained_weights: false
+    seed: 0
+    device: cpu_before_device_transfer
+    conv2d_weights: {kind: kaiming_normal, mode: fan_in, nonlinearity: relu}
+    visual_linear_weights: {kind: xavier_uniform, gain: 1.0}
+    visual_qkv_initialization: independent_matrices
+    all_visual_biases: zeros
+    layer_norm_scale: ones
+    layer_norm_bias: zeros
+    visual_class_and_position: {kind: normal_untruncated, mean: 0.0, std: 0.02}
+    visual_initialization_order:
+      - convolution_layers_in_stage_order
+      - local_to_token_projection
+      - class_token
+      - position_embedding
+      - blocks_in_depth_order_ln1_q_k_v_o_ln2_fc1_fc2
+    initialize_shared_encoder_once: true
+    later_module_initialization_requires_separate_contract: true
+
+  evaluation:
+    enabled: true
+    unit: image_or_frame_without_video_aggregation
+    detection_decision: argmax_two_logits
+    auc_score: fake_class_softmax_probability
+    mask_decision: argmax_two_logits
+    miou: dataset_confusion_matrix_then_class_mean
+    miou_population: real_and_fake_images
+    absent_class_union_zero: omit_and_report_support
+    single_class_auc: undefined_and_report
+    target_threshold_optimization: false
+    corruption_recipe: null
+    gt_threshold_sensitivity_evaluation_target: fixed_0_1_separate_from_changing_gt_study
+    numerical_replication_tolerance: null
+
+  runtime:
+    device: cuda_if_available_else_explicitly_selected_cpu
+    devices: 1
+    precision: float32
+    amp: false
+    compile: false
+    gradient_checkpointing: false
+    distributed: false
+    deterministic_algorithms: true
+    cudnn_benchmark: false
+    data_loader_workers: 0
+    versions: {python: null, pytorch: null, image_backend: null, tokenizer: null}
+
+  verification:
+    expected_unique_mve_parameters: 32078912
+    expected_cnn_parameters: 18843200
+    expected_transformer_block_parameters: 3152384
+    parameter_counts_establish_paper_fidelity: false
+    fp32_atol: 1.0e-6
+    fp32_rtol: 1.0e-5
+    fp64_atol: 1.0e-10
+    fp64_rtol: 1.0e-8
+    mve_t12_cross_batch:
+      amendment: N1
+      device: cpu
+      dtype: float32
+      atol: 5.0e-6
+      rtol: 1.0e-5
+    initial_batch_sizes: [1, 2]
+    later_resource_batch_size: 8
+    required_mve_tests:
+      - MVE-T01
+      - MVE-T02
+      - MVE-T03
+      - MVE-T04
+      - MVE-T05
+      - MVE-T06
+      - MVE-T07
+      - MVE-T08
+      - MVE-T09
+      - MVE-T10
+      - MVE-T11
+      - MVE-T12
+      - MVE-T13
+      - MVE-T14
+
+  diagnostics:
+    enabled: false
+    synthetic_input: false
+    input_distribution: uniform_0_1
+    input_rng_seed: 0
+    input_rng_independent_of_initialization: true
+    iterations: 0
+    batch_size: 2
+    input_requires_grad: true
+    reconstruction_fixture: {kind: external_affine_input, scale: 0.75, offset: 0.1}
+    objective: squared_fused_global_mean
+    objective_is_paper_loss: false
+    backward: true
+    optimizer_updates: false
+    clear_gradients_each_iteration: true
+
+  provenance:
+    record_config_and_paper_hash: true
+    record_dataset_and_tokenizer_hashes: true
+    record_software_and_hardware: true
+    preserve_conflicting_paper_targets: true
+    require_explicit_approval_record: true
+    claim_exact_author_architecture: false

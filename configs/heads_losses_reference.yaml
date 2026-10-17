@@ -1,0 +1,91 @@
+schema_version: 1
+phase: 2D.1
+profile: reference
+approval:
+  phase: 2D.1
+  status: APPROVED
+  classification: ASSUMED
+  author_architecture_confirmed: false
+  scope: independent_heads_adapter_six_objectives_and_unit_verification_only
+  decisions:
+    P2D01: APPROVED
+    P2D02: APPROVED
+    P2D03: APPROVED
+    P2D04: APPROVED
+    P2D05: APPROVED
+    P2D06: APPROVED
+    P2D07: APPROVED
+    P2D08: APPROVED
+    P2D09: APPROVED
+    P2D10: APPROVED
+    P2D11: APPROVED
+    P2D12: APPROVED
+    P2D13: APPROVED
+    P2D14: APPROVED
+    P2D15: PROPOSED
+    P2D16: APPROVED
+    P2D17: APPROVED
+    P2D18: APPROVED
+    P2D19: PROPOSED
+    P2D20: APPROVED
+  limited_portions:
+    P2D04: independent_module_ownership_only_full_visual_language_composition_deferred
+    P2D16: independent_scalar_sum_only
+    P2D17: independent_unit_checks_and_accepted_regressions_only
+    P2D18: independent_controlled_fixture_diagnostics_only_not_G2
+    P2D20: standalone_unit_resources_and_preservation_only
+  source: explicit_user_Phase_2D.1_instruction
+  dataset_mask_preprocessing_authorized: false
+  full_synthetic_integration_authorized: false
+  optimizer_authorized: false
+  training_authorized: false
+  datasets_authorized: false
+  evaluation_authorized: false
+architecture:
+  embed_dim: 512
+  visual_tokens: 1
+  detector_out: 2
+  detector_bias: true
+  class_order: [Real, Fake]
+  adapter_out: 512
+  adapter_bias: true
+  activation: identity
+  normalization: none
+  localization_head_owned: false
+  reconstruction_head_owned: false
+initialization:
+  seed: 0
+  linear: xavier_uniform_gain_1
+  bias: zero
+  private_cpu_generator: true
+  draw_order: detector_weight_adapter_weight
+objectives:
+  fd: {classes: 2, input: raw_logits, reduction: batch_mean}
+  lr: {vocabulary: 49408, tokens: 308, reduction: token_sum_batch_mean, padding: include, special_tokens: include, targets: unshifted}
+  cmc: {similarity: raw_dot, targets: diagonal, directions: symmetric_mean, negatives: local_batch, parameterization: log_denominator_temperature, initial_temperature: 0.07, normalization: false, clamp: false}
+  fl: {classes: 2, height: 224, width: 224, target: int64_supplied_binary_mask, background: 0, foreground: 1, reduction: batch_spatial_mean}
+  ar: {channels: 3, height: 224, width: 224, target_range: [0.0, 1.0], reconstruction_range: unrestricted_finite, reduction: all_element_mean, population: all_images}
+  kl: {direction: text_to_adapted_visual, dimension: 512, temperature: 0.5, convention: divide, detach_text: false, detach_visual: false, temperature_squared_factor: false, reduction: feature_sum_batch_mean}
+  order: [fd, lr, cmc, fl, ar, kl]
+  weights: {fd: 1.0, lr: 1.0, cmc: 1.0, fl: 1.0, ar: 1.0, kl: 1.0}
+runtime:
+  dtype: float32
+  device: cpu
+  threads: 4
+  deterministic: true
+  amp: false
+tolerances:
+  fp32_atol: 1.0e-06
+  fp32_rtol: 1.0e-05
+  fp64_atol: 1.0e-10
+  fp64_rtol: 1.0e-08
+  finite_difference_epsilon: 1.0e-06
+  finite_difference_atol: 1.0e-05
+  finite_difference_rtol: 1.0e-03
+  N1_applies: false
+  N2_changes_objective_thresholds: false
+diagnostics:
+  enabled: false
+  batch_size: 1
+  optimizer_updates: false
+  full_model_graph: false

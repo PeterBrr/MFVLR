@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "phase": "2C.1",
+  "profile": "reference",
+  "approval": {
+    "phase": "2C.1",
+    "classification": "ASSUMED",
+    "author_architecture_confirmed": false,
+    "full_flt_approved": false,
+    "training_authorized": false,
+    "decisions": {
+      "L01": "APPROVED",
+      "L02": "APPROVED",
+      "L03": "APPROVED"
+    },
+    "approved_portions": {
+      "L09": "standalone singleton-key VIM only; no depth allocation approval",
+      "L11": "VIM scratch initialization and FP32/FP64 foundation validation only",
+      "L12": "prompt/tokenizer/standalone VIM APIs only; no FLT orchestration",
+      "L13": "foundation configuration, provenance and tests only"
+    },
+    "other_language_decisions": "PROPOSED",
+    "numerical_amendments": []
+  },
+  "prompts": {
+    "registry": "figure6_nine_generators",
+    "real_levels": "repeat_real_four_times",
+    "unknown_fake_metadata": "reject"
+  },
+  "tokenizer": {
+    "asset_manifest_sha256": "179b071a483620d95f4c16e591bd2e64fd334621c13f76508492569a73d06949",
+    "vocabulary_size": 49408,
+    "bos": 49406,
+    "eos": 49407,
+    "padding_value": 0,
+    "segments": 4,
+    "segment_length": 77,
+    "sequence_length": 308,
+    "overflow": "reject",
+    "weights": "none"
+  },
+  "vim": {
+    "embed_dim": 512,
+    "heads": 8,
+    "visual_tokens": 1,
+    "scale_denominator": "sqrt(r/d)",
+    "softmax_axis": "key",
+    "bias": false,
+    "output": "delta_only",
+    "normalization": "none",
+    "gating": false,
+    "preserve_qk_graph": true
+  },
+  "initialization": {
+    "seed": 0,
+    "matrices": "xavier_uniform_gain_1",
+    "order": [
+      "q",
+      "k",
+      "v",
+      "out"
+    ],
+    "private_cpu_generator": true
+  },
+  "runtime": {
+    "device": "cpu",
+    "dtype": "float32",
+    "threads": 4,
+    "deterministic": true
+  },
+  "tolerances": {
+    "fp32_atol": 1e-06,
+    "fp32_rtol": 1e-05,
+    "fp64_atol": 1e-10,
+    "fp64_rtol": 1e-08
+  },
+  "diagnostics": {
+    "enabled": false,
+    "batch_size": 1,
+    "iterations": 0
+  }
+}

@@ -1,0 +1,51 @@
+schema_version: 1
+phase: 2D.1
+profile: debug
+base: heads_losses_reference.yaml
+merge_policy: diagnostics_only
+approval:
+  phase: 2D.1
+  status: APPROVED
+  classification: ASSUMED
+  author_architecture_confirmed: false
+  scope: independent_heads_adapter_six_objectives_and_unit_verification_only
+  decisions:
+    P2D01: APPROVED
+    P2D02: APPROVED
+    P2D03: APPROVED
+    P2D04: APPROVED
+    P2D05: APPROVED
+    P2D06: APPROVED
+    P2D07: APPROVED
+    P2D08: APPROVED
+    P2D09: APPROVED
+    P2D10: APPROVED
+    P2D11: APPROVED
+    P2D12: APPROVED
+    P2D13: APPROVED
+    P2D14: APPROVED
+    P2D15: PROPOSED
+    P2D16: APPROVED
+    P2D17: APPROVED
+    P2D18: APPROVED
+    P2D19: PROPOSED
+    P2D20: APPROVED
+  limited_portions:
+    P2D04: independent_module_ownership_only_full_visual_language_composition_deferred
+    P2D16: independent_scalar_sum_only
+    P2D17: independent_unit_checks_and_accepted_regressions_only
+    P2D18: independent_controlled_fixture_diagnostics_only_not_G2
+    P2D20: standalone_unit_resources_and_preservation_only
+  source: explicit_user_Phase_2D.1_instruction
+  dataset_mask_preprocessing_authorized: false
+  full_synthetic_integration_authorized: false
+  optimizer_authorized: false
+  training_authorized: false
+  datasets_authorized: false
+  evaluation_authorized: false
+overrides:
+  diagnostics:
+    enabled: true
+    batch_size: 2
+    optimizer_updates: false
+    full_model_graph: false

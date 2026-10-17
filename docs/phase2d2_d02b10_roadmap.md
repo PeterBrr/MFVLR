@@ -1,0 +1,16 @@
+# Dependency-ordered roadmap to the first trained A0 checkpoint
+
+All rows below are proposals for separate authorization, not enabled execution. Keep A0 and the six approved objectives fixed. The goal is a usable baseline; P3/Q3 ablations are deferred.
+
+| Order | Deliverable and dependencies | Acceptance gate / decision |
+|---|---|---|
+| 1 | Review D02B10 wrapper and current resource snapshot | Verify source/package and mock tests. Approve one same-forward G01 attempt only when live RAM/disk gates pass. Current resource screen is WAIT, not model capacity evidence. |
+| 2 | One original G01 same-forward attempt, no updates | Full roster, actual seals, all seven gradients, structural checks and original-threshold comparisons. Stop after the attempt. If FAIL persists, retain it and decide whether any further diagnostic is genuinely necessary; do not automatically start a sweep or amend acceptance. |
+| 3, parallel design | Approve one concrete dataset protocol and frozen split manifest | Dataset access/license, alignment/crop status, image/mask mapping, subject/lineage separation and generator metadata must be resolved. Do not block this design work on normalization ablations. No real data processing until approved. |
+| 4 | File-backed dataset + approved prompt/token collator, dependent on 3 | Deterministic bytes and hashes; supplied masks/labels aligned; IDs and original token targets paired; no silent preprocessing; validation/test leakage audit. Test approved sample records without training first. |
+| 5 | Explicit bounded optimizer smoke-test contract, dependent on reviewed 2 and proposed recipe | User chooses optimizer/LR/batch/device/budget and whether the preserved finite additivity FAIL permits this separately scoped next step. B0-D08 does not silently authorize it. Define before/after state, finite-loss/gradient/update gates, per-objective scales and stop conditions. No optimizer implementation or steps occurred here. |
+| 6 | Authorized small bounded update run plus resumable checkpoint format, dependent on 4/5 | Demonstrate finite parameter updates and repeated-step behavior over the explicitly approved budget; log all six losses and relevant class/mask coverage. Check save/load ownership, exact metadata and authorized resume behavior. A tiny run does not establish convergence or accuracy. |
+| 7 | First trained A0 checkpoint | Complete the approved bounded run, mark actual step count/dataset/recipe and unresolved numerical risks. Export a verified visual-only checkpoint with explicit detector key mapping. |
+| 8 | Validation and paper-oriented benchmark plan, then authorized training/evaluation | Freeze metrics/splits/threshold protocol before results, distinguish in-domain and held-out generator performance. Scale training only after resource and stability review. No promise of paper-level performance from interface readiness. |
+
+If the same-forward experiment passes, it supports only that comparison on G01; training still requires its own authorization and stability gate. If it fails finitely with correct structure, that is information for a bounded engineering risk decision—not permission to weaken historical tests, change loss scales or normalize LD. If structure/provenance/finiteness fails, fix that concrete defect before considering updates. No automatic new experiments arise from any branch.

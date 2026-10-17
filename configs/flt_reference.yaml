@@ -1,0 +1,102 @@
+schema_version: 1
+phase: 2C.2
+profile: reference
+approval:
+  phase: 2C.2
+  status: APPROVED
+  classification: ASSUMED
+  author_architecture_confirmed: false
+  decisions:
+    L01: APPROVED
+    L02: APPROVED
+    L03: APPROVED
+    L04: APPROVED
+    L05: APPROVED
+    L06: APPROVED
+    L07: APPROVED
+    L08: APPROVED
+    L09: APPROVED
+    L10: APPROVED
+    L11: APPROVED
+    L12: APPROVED
+    L13: APPROVED
+  scope: full FLT baseline and external visual-language verification only
+  source: explicit user Phase 2C.2 instruction; L01-L03 inherited accepted foundation
+    scope
+  training_authorized: false
+  losses_authorized: false
+  heads_authorized: false
+  datasets_authorized: false
+  evaluation_authorized: false
+  numerical_amendments: []
+architecture:
+  vocabulary_size: 49408
+  embed_dim: 512
+  sequence_length: 308
+  segments: 4
+  segment_length: 77
+  encoder_blocks: 12
+  decoder_blocks: 7
+  heads: 8
+  head_dim: 64
+  ff_hidden: 2048
+  ff_layers: 2
+  ff_activation: gelu_exact
+  ordinary_attention_bias: true
+  ordinary_attention_scale: sqrt(d/r)
+  encoder_norms_per_block: 1
+  decoder_norms_per_block: 0
+  ln_epsilon: 1.0e-05
+  extra_norms: false
+  padding_masks: false
+  encoder_attention: bidirectional
+  global_slot: 307
+  decoder_shift: global_right_one_bos
+  decoder_self_attention: causal
+  memory_attention: full_unmasked_LE
+  vocabulary_output: tied_bias_free_raw_logits
+  embedding_padding_idx: null
+  embedding_scale: 1.0
+  dropout: 0.0
+  vim_instances: 19
+  vim_sharing: independent
+  vim_bias: false
+  vim_scale: sqrt(r/d)
+  vim_softmax_axis: key
+  vim_residual: caller_once
+  vim_visual_tokens: 1
+initialization:
+  seed: 0
+  vocabulary_and_positions: normal_0_0.02
+  linear: xavier_uniform_gain_1
+  bias: zero
+  ln_weight: one
+  ln_bias: zero
+  private_cpu_generator: true
+  draw_order: Wvoc_Pe_Pd_LE1to12_LD1to7
+tokenizer:
+  manifest_sha256: 179b071a483620d95f4c16e591bd2e64fd334621c13f76508492569a73d06949
+  dependencies:
+    ftfy: 6.3.1
+    regex: 2026.6.28
+    wcwidth: 0.2.13
+  overflow: reject
+  pretrained_weights: false
+runtime:
+  dtype: float32
+  device: cpu
+  threads: 4
+  deterministic: true
+  amp: false
+  checkpointing: false
+  fused_attention: false
+tolerances:
+  fp32_atol: 1.0e-06
+  fp32_rtol: 1.0e-05
+  fp64_atol: 1.0e-10
+  fp64_rtol: 1.0e-08
+  N1_applies: false
+diagnostics:
+  batch_size: 1
+  iterations: 0
+  enabled: false

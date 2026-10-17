@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mfvlr-reimplementation"
+version = "0.2.0"
+description = "Documented MFVLR MVE reimplementation under approved engineering assumptions"
+requires-python = ">=3.10"
+dependencies = ["torch>=2.2", "PyYAML>=6.0"]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+diagnostics = ["psutil>=7"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+mfvlr = ["contract_snapshot.json", "decoder_contract_snapshot.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra"
+markers = [
+  "shapes: tensor layout, forward computation and sharing",
+  "backward: differentiation and gradient accumulation",
+  "serialization: initialization, persistence and configuration",
+]

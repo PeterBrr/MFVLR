@@ -1,0 +1,99 @@
+# APPROVED M1-M5 full-topology MVE diagnostics; no benchmark training approval.
+# Relative base path, deep-merge maps under proposal; replace lists/scalars/null.
+# Review approval is explicit in each profile; overlays cannot expand its scope.
+schema_version: 1
+profile: mve_debug_proposed_v1
+base: paper_reference.yaml
+contract: ../docs/implementation_contract.md
+review:
+  decision_status: APPROVED
+  implementation_authorized: true
+  authorized_implementation_scopes: [mve]
+  training_authorized: false
+  approved_decisions: []
+  numerical_amendments:
+    N1:
+      status: APPROVED
+      source: explicit_user_n1_conditional_approval
+      conditions_verified: true
+      scope: MVE-T12_cross_batch_size_cpu_float32_only
+      evidence: ../artifacts/phase2a/n1_review/numerical_evidence.json
+  mve_approval:
+    status: APPROVED
+    bundles: [M1, M2, M3, M4, M5]
+    scope: mve_only
+    source: explicit_user_phase2a_instruction
+    client_date: "2026-10-10"
+    classification: ASSUMED
+    confirms_author_architecture: false
+    production_skip_decoder_approved: false
+  work_status: APPROVED
+  blocker: null
+classification: ASSUMED
+decision_ids: [A07, A22, A30, A31, A35]
+merge_policy:
+  target: proposal
+  mappings: recursive
+  sequences: replace
+  scalars: replace
+  explicit_null: replace
+  unknown_keys: reject
+  propagate_approval: false
+
+# Encoder channels/depth/224 resolution/512 width/heads/FFN/sharing/init are unchanged.
+overrides:
+  execution:
+    scope: mve_forward_backward_diagnostics_only
+    components: [mve]
+  vision_decoder:
+    enabled: false
+  heads:
+    enabled: false
+  language:
+    enabled: false
+  losses:
+    enabled: false
+  data:
+    dataset: synthetic
+    training_source_generator: null
+    first_evaluation_generators: []
+  training:
+    enabled: false
+    batch_size: 2
+    max_epochs: 0
+    max_steps: 3
+    seed: 0
+    final_repeat_seeds: [0]
+    drop_last_train_batch: false
+  evaluation:
+    enabled: false
+  runtime:
+    device: cpu
+    precision: float32
+    deterministic_algorithms: true
+    data_loader_workers: 0
+  diagnostics:
+    enabled: true
+    synthetic_input: true
+    iterations: 3
+    batch_size: 2
+    input_requires_grad: true
+    reconstruction_fixture:
+      kind: external_affine_input
+      scale: 0.75
+      offset: 0.1
+    objective: squared_fused_global_mean
+    objective_is_paper_loss: false
+    backward: true
+    optimizer_updates: false
+    clear_gradients_each_iteration: true
+
+acceptance:
+  unchanged_proposal_subtrees: [mve, initialization, verification]
+  benchmark_results_allowed: false
+  requires_dataset_or_tokenizer: false
+  full_reference_batch_eight_resource_test_replaced: false
+  note: >-
+    Three synthetic checks do not train MFVLR or validate decoder gradient paths.
+    MVE-T08 uses a separate differentiable local-feature reconstruction fixture
+    in future unit tests. Neither fixture is the proposed production decoder.

@@ -1,0 +1,27 @@
+schema_version: 1
+phase: 2C.1
+profile: debug
+base: foundation_reference.yaml
+merge_policy: diagnostics_only
+approval:
+  phase: 2C.1
+  classification: ASSUMED
+  author_architecture_confirmed: false
+  full_flt_approved: false
+  training_authorized: false
+  decisions:
+    L01: APPROVED
+    L02: APPROVED
+    L03: APPROVED
+  approved_portions:
+    L09: standalone singleton-key VIM only; no depth allocation approval
+    L11: VIM scratch initialization and FP32/FP64 foundation validation only
+    L12: prompt/tokenizer/standalone VIM APIs only; no FLT orchestration
+    L13: foundation configuration, provenance and tests only
+  other_language_decisions: PROPOSED
+  numerical_amendments: []
+overrides:
+  diagnostics:
+    enabled: true
+    batch_size: 2
+    iterations: 3

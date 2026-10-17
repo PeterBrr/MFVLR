@@ -1,0 +1,23 @@
+schema_version: 1
+profile: decoder_debug_v1
+base: decoder_reference.yaml
+review:
+  phase: 2B
+  status: APPROVED
+  decisions: {D01: APPROVED, D02: APPROVED, D03: APPROVED, D04: APPROVED, D05: APPROVED, D06: APPROVED, D07: APPROVED, D08: APPROVED}
+  source: explicit_user_phase2b_implementation_instruction
+  client_date: "2026-10-11"
+  classification: ASSUMED
+  scopes: [vision_decoder, mve_vd_verification]
+  selected_option: B
+  option_a_status: PROPOSED
+  author_architecture_confirmed: false
+  training_authorized: false
+  evaluation_authorized: false
+merge_policy: {mappings: recursive, sequences: replace, scalars: replace, explicit_null: replace, unknown_keys: reject, propagate_approval: false}
+overrides:
+  diagnostics:
+    enabled: true
+    iterations: 3
+    batch_size: 2
+    note: null

@@ -1,0 +1,27 @@
+{
+  "schema": "D02B8-proposed-v1",
+  "mode": "inference",
+  "variant": "A0",
+  "execution_enabled": false,
+  "batch": 1,
+  "precision": "float32",
+  "device": "cpu",
+  "loss_order": [
+    "fd",
+    "lr",
+    "cmc",
+    "fl",
+    "ar",
+    "kl"
+  ],
+  "loss_weights": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "optimizer": null,
+  "dataset_manifest_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+}

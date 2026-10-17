@@ -1,0 +1,38 @@
+schema_version: 1
+phase: 2C.2
+profile: debug
+base: flt_reference.yaml
+merge_policy: diagnostics_only
+approval:
+  phase: 2C.2
+  status: APPROVED
+  classification: ASSUMED
+  author_architecture_confirmed: false
+  decisions:
+    L01: APPROVED
+    L02: APPROVED
+    L03: APPROVED
+    L04: APPROVED
+    L05: APPROVED
+    L06: APPROVED
+    L07: APPROVED
+    L08: APPROVED
+    L09: APPROVED
+    L10: APPROVED
+    L11: APPROVED
+    L12: APPROVED
+    L13: APPROVED
+  scope: full FLT baseline and external visual-language verification only
+  source: explicit user Phase 2C.2 instruction; L01-L03 inherited accepted foundation
+    scope
+  training_authorized: false
+  losses_authorized: false
+  heads_authorized: false
+  datasets_authorized: false
+  evaluation_authorized: false
+  numerical_amendments: []
+overrides:
+  diagnostics:
+    batch_size: 2
+    iterations: 3
+    enabled: true

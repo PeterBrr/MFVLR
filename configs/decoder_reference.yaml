@@ -1,0 +1,64 @@
+# APPROVED engineering baseline D01-D08; Option A remains a future proposal.
+schema_version: 1
+profile: decoder_reference_v1
+mve_config: paper_reference.yaml
+review:
+  phase: 2B
+  status: APPROVED
+  decisions: {D01: APPROVED, D02: APPROVED, D03: APPROVED, D04: APPROVED, D05: APPROVED, D06: APPROVED, D07: APPROVED, D08: APPROVED}
+  source: explicit_user_phase2b_implementation_instruction
+  client_date: "2026-10-11"
+  classification: ASSUMED
+  scopes: [vision_decoder, mve_vd_verification]
+  selected_option: B
+  option_a_status: PROPOSED
+  author_architecture_confirmed: false
+  training_authorized: false
+  evaluation_authorized: false
+proposal:
+  decoder:
+    skip_policy: bottleneck_only
+    input_shape: [1024, 14, 14]
+    channels: [[1024, 512], [512, 256], [256, 128], [128, 64]]
+    upsample: {kernel: 2, stride: 2, padding: 0, output_padding: 0, dilation: 1, groups: 1, bias: true, activation: identity}
+    convolution: {kernel: 3, stride: 1, padding: 1, dilation: 1, groups: 1, bias: true, layers_per_stage: 2, activation: relu, inplace: false}
+    normalization: none
+    dropout: 0.0
+    trunk_evaluations: 1
+    appearance_head: {in_channels: 64, out_channels: 3, kernel: 1, bias: true, activation: identity}
+    mask_head: {in_channels: 64, out_channels: 2, kernel: 1, bias: true, activation: identity, class_order: [background, manipulated]}
+  initialization:
+    seed: 0
+    generator: private_cpu
+    up_weights: xavier_uniform_gain_1
+    conv_weights: kaiming_normal_fan_in_relu
+    head_weights: xavier_uniform_gain_1
+    biases: zero
+    order: [U1_up_conv1_conv2, U2_up_conv1_conv2, U3_up_conv1_conv2, U4_up_conv1_conv2, appearance_head, mask_head]
+  integration:
+    reuse_appearance: true
+    detach_reconstruction: false
+    clip_reconstruction: false
+    residual: absolute_difference
+    fusion: addition
+    decoder_on_residual: false
+  verification:
+    expected_unique_vd_parameters: 9055365
+    expected_trunk_parameters: 9055040
+    expected_mve_parameters: 32078912
+    expected_mve_vd_parameters: 41134277
+    fp32_atol: 1.0e-6
+    fp32_rtol: 1.0e-5
+    fp64_atol: 1.0e-10
+    fp64_rtol: 1.0e-8
+    batch_sizes: [1, 2]
+    n1_applies_to_decoder: false
+  runtime: {device: cpu, precision: float32, threads: 4, deterministic: true, amp: false}
+  diagnostics:
+    enabled: false
+    iterations: 0
+    batch_size: 1
+    input_seed: 17
+    optimizer_updates: false
+    is_paper_loss: false
+    note: reference_workload_not_training

@@ -1,0 +1,4331 @@
+{
+  "source": "Approved M1-M5 MVE contract and conditional N1 approval with verified numerical evidence",
+  "reference_schema": {
+    "kind": "map",
+    "keys": {
+      "schema_version": {
+        "kind": "int"
+      },
+      "profile": {
+        "kind": "string"
+      },
+      "contract": {
+        "kind": "string"
+      },
+      "review": {
+        "kind": "map",
+        "keys": {
+          "phase_1_documentation_accepted": {
+            "kind": "bool"
+          },
+          "decision_status": {
+            "kind": "string"
+          },
+          "implementation_authorized": {
+            "kind": "bool"
+          },
+          "authorized_implementation_scopes": {
+            "kind": "list",
+            "item": {
+              "kind": "string"
+            }
+          },
+          "training_authorized": {
+            "kind": "bool"
+          },
+          "approved_decisions": {
+            "kind": "list",
+            "item": {
+              "kind": "string"
+            }
+          },
+          "mve_approval": {
+            "kind": "map",
+            "keys": {
+              "status": {
+                "kind": "string"
+              },
+              "bundles": {
+                "kind": "list",
+                "item": {
+                  "kind": "string"
+                }
+              },
+              "scope": {
+                "kind": "string"
+              },
+              "source": {
+                "kind": "string"
+              },
+              "client_date": {
+                "kind": "string"
+              },
+              "classification": {
+                "kind": "string"
+              },
+              "confirms_author_architecture": {
+                "kind": "bool"
+              },
+              "production_skip_decoder_approved": {
+                "kind": "bool"
+              },
+              "portions": {
+                "kind": "map",
+                "keys": {
+                  "A01": {
+                    "kind": "string"
+                  },
+                  "A02": {
+                    "kind": "string"
+                  },
+                  "A03": {
+                    "kind": "string"
+                  },
+                  "A04": {
+                    "kind": "string"
+                  },
+                  "A05": {
+                    "kind": "string"
+                  },
+                  "A06": {
+                    "kind": "string"
+                  },
+                  "A07": {
+                    "kind": "string"
+                  },
+                  "A16": {
+                    "kind": "string"
+                  },
+                  "A22": {
+                    "kind": "string"
+                  },
+                  "A23": {
+                    "kind": "string"
+                  },
+                  "A30": {
+                    "kind": "string"
+                  },
+                  "A31": {
+                    "kind": "string"
+                  },
+                  "A35": {
+                    "kind": "string"
+                  }
+                }
+              }
+            }
+          },
+          "valid_statuses": {
+            "kind": "list",
+            "item": {
+              "kind": "string"
+            }
+          },
+          "decisions": {
+            "kind": "map",
+            "keys": {
+              "A01": {
+                "kind": "string"
+              },
+              "A02": {
+                "kind": "string"
+              },
+              "A03": {
+                "kind": "string"
+              },
+              "A04": {
+                "kind": "string"
+              },
+              "A05": {
+                "kind": "string"
+              },
+              "A06": {
+                "kind": "string"
+              },
+              "A07": {
+                "kind": "string"
+              },
+              "A08": {
+                "kind": "string"
+              },
+              "A09": {
+                "kind": "string"
+              },
+              "A10": {
+                "kind": "string"
+              },
+              "A11": {
+                "kind": "string"
+              },
+              "A12": {
+                "kind": "string"
+              },
+              "A13": {
+                "kind": "string"
+              },
+              "A14": {
+                "kind": "string"
+              },
+              "A15": {
+                "kind": "string"
+              },
+              "A16": {
+                "kind": "string"
+              },
+              "A17": {
+                "kind": "string"
+              },
+              "A18": {
+                "kind": "string"
+              },
+              "A19": {
+                "kind": "string"
+              },
+              "A20": {
+                "kind": "string"
+              },
+              "A21": {
+                "kind": "string"
+              },
+              "A22": {
+                "kind": "string"
+              },
+              "A23": {
+                "kind": "string"
+              },
+              "A24": {
+                "kind": "string"
+              },
+              "A25": {
+                "kind": "string"
+              },
+              "A26": {
+                "kind": "string"
+              },
+              "A27": {
+                "kind": "string"
+              },
+              "A28": {
+                "kind": "string"
+              },
+              "A29": {
+                "kind": "string"
+              },
+              "A30": {
+                "kind": "string"
+              },
+              "A31": {
+                "kind": "string"
+              },
+              "A32": {
+                "kind": "string"
+              },
+              "A33": {
+                "kind": "string"
+              },
+              "A34": {
+                "kind": "string"
+              },
+              "A35": {
+                "kind": "string"
+              }
+            }
+          },
+          "mve_approval_bundles": {
+            "kind": "list",
+            "item": {
+              "kind": "string"
+            }
+          },
+          "scope_status": {
+            "kind": "map",
+            "keys": {
+              "mve_coding": {
+                "kind": "string"
+              },
+              "vision_decoder_coding": {
+                "kind": "string"
+              },
+              "language_and_losses": {
+                "kind": "string"
+              },
+              "benchmark_training": {
+                "kind": "string"
+              },
+              "secondary_studies": {
+                "kind": "string"
+              }
+            }
+          },
+          "blockers": {
+            "kind": "map",
+            "keys": {
+              "mve_coding": {
+                "kind": "list",
+                "item": {
+                  "kind": "string"
+                }
+              },
+              "benchmark_training": {
+                "kind": "list",
+                "item": {
+                  "kind": "string"
+                }
+              }
+            }
+          },
+          "numerical_amendments": {
+            "kind": "map",
+            "keys": {
+              "N1": {
+                "kind": "map",
+                "keys": {
+                  "status": {
+                    "kind": "string"
+                  },
+                  "source": {
+                    "kind": "string"
+                  },
+                  "conditions_verified": {
+                    "kind": "bool"
+                  },
+                  "scope": {
+                    "kind": "string"
+                  },
+                  "evidence": {
+                    "kind": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "evidence": {
+        "kind": "map",
+        "keys": {
+          "paper": {
+            "kind": "string"
+          },
+          "paper_sha256": {
+            "kind": "string"
+          },
+          "equation_ledger": {
+            "kind": "string"
+          },
+          "proposal_default_classification": {
+            "kind": "string"
+          },
+          "unapproved_choice_status": {
+            "kind": "string"
+          },
+          "mve_adoption_status": {
+            "kind": "string"
+          },
+          "explicit_paths": {
+            "kind": "map",
+            "keys": {
+              "proposal.mve.input.channels": {
+                "kind": "string"
+              },
+              "proposal.mve.input.height": {
+                "kind": "string"
+              },
+              "proposal.mve.input.width": {
+                "kind": "string"
+              },
+              "proposal.mve.encoder.bottleneck_shape": {
+                "kind": "string"
+              },
+              "proposal.mve.tokenizer.embed_dim": {
+                "kind": "string"
+              },
+              "proposal.mve.tokenizer.class_token.learnable": {
+                "kind": "string"
+              },
+              "proposal.mve.tokenizer.position.learnable": {
+                "kind": "string"
+              },
+              "proposal.mve.transformer.depth": {
+                "kind": "string"
+              },
+              "proposal.mve.transformer.embed_dim": {
+                "kind": "string"
+              },
+              "proposal.mve.sharing.share_parameters_between_roles": {
+                "kind": "string"
+              },
+              "proposal.mve.residual.operation": {
+                "kind": "string"
+              },
+              "proposal.mve.fusion.operation": {
+                "kind": "string"
+              },
+              "proposal.vision_decoder.shared_trunk": {
+                "kind": "string"
+              },
+              "proposal.vision_decoder.appearance_head.out_channels": {
+                "kind": "string"
+              },
+              "proposal.vision_decoder.mask_head.out_channels": {
+                "kind": "string"
+              },
+              "proposal.heads.detection.out_features": {
+                "kind": "string"
+              },
+              "proposal.heads.detection.hidden_layers": {
+                "kind": "string"
+              },
+              "proposal.heads.adapter.hidden_layers": {
+                "kind": "string"
+              },
+              "proposal.language.vocabulary_size": {
+                "kind": "string"
+              },
+              "proposal.language.sequence_length": {
+                "kind": "string"
+              },
+              "proposal.language.embed_dim": {
+                "kind": "string"
+              },
+              "proposal.language.encoder.depth": {
+                "kind": "string"
+              },
+              "proposal.language.decoder.depth": {
+                "kind": "string"
+              },
+              "proposal.language.vocabulary_output.weight_tied": {
+                "kind": "string"
+              },
+              "proposal.language.vim.key_value_length": {
+                "kind": "string"
+              },
+              "proposal.language.vim.scale_denominator": {
+                "kind": "string"
+              },
+              "proposal.losses.cmc.initial_temperature": {
+                "kind": "string"
+              },
+              "proposal.losses.cmc.trainable_temperature": {
+                "kind": "string"
+              },
+              "proposal.losses.cmc.positive_pairs": {
+                "kind": "string"
+              },
+              "proposal.losses.kl.temperature": {
+                "kind": "string"
+              },
+              "proposal.losses.lr.reduction": {
+                "kind": "string"
+              },
+              "proposal.losses.weights": {
+                "kind": "string"
+              },
+              "proposal.data.masks.threshold": {
+                "kind": "string"
+              },
+              "proposal.data.masks.real_value": {
+                "kind": "string"
+              },
+              "proposal.data.masks.efs_value": {
+                "kind": "string"
+              },
+              "proposal.training.batch_size": {
+                "kind": "string"
+              },
+              "proposal.training.optimizer.name": {
+                "kind": "string"
+              },
+              "proposal.training.optimizer.learning_rate": {
+                "kind": "string"
+              },
+              "proposal.training.optimizer.weight_decay": {
+                "kind": "string"
+              },
+              "proposal.training.scheduler.period_epochs": {
+                "kind": "string"
+              },
+              "proposal.training.scheduler.factor": {
+                "kind": "string"
+              },
+              "proposal.initialization.pretrained_weights": {
+                "kind": "string"
+              }
+            }
+          },
+          "derived_paths": {
+            "kind": "map",
+            "keys": {
+              "proposal.mve.tokenizer.spatial_token_count": {
+                "kind": "string"
+              },
+              "proposal.mve.tokenizer.sequence_length": {
+                "kind": "string"
+              },
+              "proposal.mve.transformer.head_dim": {
+                "kind": "string"
+              },
+              "proposal.verification.expected_unique_mve_parameters": {
+                "kind": "string"
+              }
+            }
+          },
+          "decision_groups": {
+            "kind": "map",
+            "keys": {
+              "mve": {
+                "kind": "list",
+                "item": {
+                  "kind": "string"
+                }
+              },
+              "language": {
+                "kind": "list",
+                "item": {
+                  "kind": "string"
+                }
+              },
+              "losses": {
+                "kind": "list",
+                "item": {
+                  "kind": "string"
+                }
+              },
+              "training_data_evaluation": {
+                "kind": "list",
+                "item": {
+                  "kind": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "paper_explicit": {
+        "kind": "map",
+        "keys": {
+          "image_shape": {
+            "kind": "list",
+            "item": {
+              "kind": "int"
+            }
+          },
+          "local_shape": {
+            "kind": "list",
+            "item": {
+              "kind": "int"
+            }
+          },
+          "image_blocks": {
+            "kind": "int"
+          },
+          "language_encoder_blocks": {
+            "kind": "int"
+          },
+          "language_decoder_blocks": {
+            "kind": "int"
+          },
+          "embed_dim": {
+            "kind": "int"
+          },
+          "vocabulary_size": {
+            "kind": "int"
+          },
+          "text_length": {
+            "kind": "int"
+          },
+          "classes": {
+            "kind": "int"
+          },
+          "batch_size": {
+            "kind": "int"
+          },
+          "reported_total_parameters_millions": {
+            "kind": "number"
+          },
+          "reported_total_flops_billions": {
+            "kind": "number"
+          },
+          "reported_hardware": {
+            "kind": "string"
+          },
+          "vim_equation_10": {
+            "kind": "string"
+          },
+          "total_equation_27": {
+            "kind": "string"
+          }
+        }
+      },
+      "proposal": {
+        "kind": "map",
+        "keys": {
+          "execution": {
+            "kind": "map",
+            "keys": {
+              "scope": {
+                "kind": "string"
+              },
+              "components": {
+                "kind": "list",
+                "item": {
+                  "kind": "string"
+                }
+              },
+              "reject_unapproved_execution": {
+                "kind": "bool"
+              }
+            }
+          },
+          "mve": {
+            "kind": "map",
+            "keys": {
+              "input": {
+                "kind": "map",
+                "keys": {
+                  "channels": {
+                    "kind": "int"
+                  },
+                  "height": {
+                    "kind": "int"
+                  },
+                  "width": {
+                    "kind": "int"
+                  },
+                  "layout": {
+                    "kind": "string"
+                  },
+                  "dtype": {
+                    "kind": "string"
+                  },
+                  "appearance_range": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "number"
+                    }
+                  },
+                  "appearance_range_is_preprocessing_contract": {
+                    "kind": "bool"
+                  },
+                  "implicit_resize": {
+                    "kind": "bool"
+                  },
+                  "implicit_dtype_or_device_conversion": {
+                    "kind": "bool"
+                  },
+                  "implicit_normalization": {
+                    "kind": "bool"
+                  },
+                  "finite_values_required": {
+                    "kind": "bool"
+                  },
+                  "nonempty_batch_required": {
+                    "kind": "bool"
+                  }
+                }
+              },
+              "encoder": {
+                "kind": "map",
+                "keys": {
+                  "family": {
+                    "kind": "string"
+                  },
+                  "stage_channels": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "int"
+                    }
+                  },
+                  "convolutions_per_stage": {
+                    "kind": "int"
+                  },
+                  "convolution": {
+                    "kind": "map",
+                    "keys": {
+                      "kernel_size": {
+                        "kind": "int"
+                      },
+                      "stride": {
+                        "kind": "int"
+                      },
+                      "padding": {
+                        "kind": "int"
+                      },
+                      "padding_mode": {
+                        "kind": "string"
+                      },
+                      "dilation": {
+                        "kind": "int"
+                      },
+                      "groups": {
+                        "kind": "int"
+                      },
+                      "bias": {
+                        "kind": "bool"
+                      }
+                    }
+                  },
+                  "activation": {
+                    "kind": "string"
+                  },
+                  "activation_inplace": {
+                    "kind": "bool"
+                  },
+                  "normalization": {
+                    "kind": "string"
+                  },
+                  "dropout": {
+                    "kind": "number"
+                  },
+                  "pooling": {
+                    "kind": "map",
+                    "keys": {
+                      "kind": {
+                        "kind": "string"
+                      },
+                      "after_stages": {
+                        "kind": "list",
+                        "item": {
+                          "kind": "int"
+                        }
+                      },
+                      "kernel_size": {
+                        "kind": "int"
+                      },
+                      "stride": {
+                        "kind": "int"
+                      },
+                      "padding": {
+                        "kind": "int"
+                      },
+                      "dilation": {
+                        "kind": "int"
+                      },
+                      "ceil_mode": {
+                        "kind": "bool"
+                      }
+                    }
+                  },
+                  "bottleneck_shape": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "int"
+                    }
+                  },
+                  "appearance_skip_stages": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "int"
+                    }
+                  },
+                  "appearance_skip_shapes": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "list",
+                      "item": {
+                        "kind": "int"
+                      }
+                    }
+                  },
+                  "skip_detach": {
+                    "kind": "bool"
+                  },
+                  "return_residual_skips": {
+                    "kind": "bool"
+                  }
+                }
+              },
+              "tokenizer": {
+                "kind": "map",
+                "keys": {
+                  "flatten_order": {
+                    "kind": "string"
+                  },
+                  "projection_in_features": {
+                    "kind": "int"
+                  },
+                  "embed_dim": {
+                    "kind": "int"
+                  },
+                  "projection_bias": {
+                    "kind": "bool"
+                  },
+                  "spatial_token_count": {
+                    "kind": "int"
+                  },
+                  "sequence_length": {
+                    "kind": "int"
+                  },
+                  "class_token": {
+                    "kind": "map",
+                    "keys": {
+                      "learnable": {
+                        "kind": "bool"
+                      },
+                      "parameter_shape": {
+                        "kind": "list",
+                        "item": {
+                          "kind": "int"
+                        }
+                      },
+                      "placement": {
+                        "kind": "string"
+                      },
+                      "index": {
+                        "kind": "int"
+                      }
+                    }
+                  },
+                  "position": {
+                    "kind": "map",
+                    "keys": {
+                      "learnable": {
+                        "kind": "bool"
+                      },
+                      "parameter_shape": {
+                        "kind": "list",
+                        "item": {
+                          "kind": "int"
+                        }
+                      },
+                      "interpolate": {
+                        "kind": "bool"
+                      }
+                    }
+                  },
+                  "embedding_normalization": {
+                    "kind": "string"
+                  },
+                  "embedding_dropout": {
+                    "kind": "number"
+                  }
+                }
+              },
+              "transformer": {
+                "kind": "map",
+                "keys": {
+                  "depth": {
+                    "kind": "int"
+                  },
+                  "embed_dim": {
+                    "kind": "int"
+                  },
+                  "heads": {
+                    "kind": "int"
+                  },
+                  "head_dim": {
+                    "kind": "int"
+                  },
+                  "block_order": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  },
+                  "ln": {
+                    "kind": "map",
+                    "keys": {
+                      "normalized_dim": {
+                        "kind": "int"
+                      },
+                      "epsilon": {
+                        "kind": "number"
+                      },
+                      "elementwise_affine": {
+                        "kind": "bool"
+                      },
+                      "bias": {
+                        "kind": "bool"
+                      }
+                    }
+                  },
+                  "attention": {
+                    "kind": "map",
+                    "keys": {
+                      "projections": {
+                        "kind": "string"
+                      },
+                      "qkv_bias": {
+                        "kind": "bool"
+                      },
+                      "output_bias": {
+                        "kind": "bool"
+                      },
+                      "scale_denominator": {
+                        "kind": "string"
+                      },
+                      "softmax_axis": {
+                        "kind": "string"
+                      },
+                      "causal": {
+                        "kind": "bool"
+                      },
+                      "padding_mask": {
+                        "kind": "bool"
+                      },
+                      "dropout": {
+                        "kind": "number"
+                      }
+                    }
+                  },
+                  "ffn": {
+                    "kind": "map",
+                    "keys": {
+                      "in_features": {
+                        "kind": "int"
+                      },
+                      "hidden_features": {
+                        "kind": "int"
+                      },
+                      "out_features": {
+                        "kind": "int"
+                      },
+                      "activation": {
+                        "kind": "string"
+                      },
+                      "gelu_approximation": {
+                        "kind": "string"
+                      },
+                      "bias": {
+                        "kind": "bool"
+                      },
+                      "dropout": {
+                        "kind": "number"
+                      }
+                    }
+                  },
+                  "residual_dropout": {
+                    "kind": "number"
+                  },
+                  "stochastic_depth": {
+                    "kind": "number"
+                  },
+                  "layer_scale": {
+                    "kind": "nullable"
+                  },
+                  "final_normalization": {
+                    "kind": "string"
+                  },
+                  "output_projection": {
+                    "kind": "string"
+                  },
+                  "share_blocks_across_depth": {
+                    "kind": "bool"
+                  }
+                }
+              },
+              "sharing": {
+                "kind": "map",
+                "keys": {
+                  "share_parameters_between_roles": {
+                    "kind": "bool"
+                  },
+                  "owner": {
+                    "kind": "string"
+                  },
+                  "number_of_registered_encoders": {
+                    "kind": "int"
+                  },
+                  "roles": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  },
+                  "separate_role_positions": {
+                    "kind": "bool"
+                  },
+                  "separate_role_normalization": {
+                    "kind": "bool"
+                  },
+                  "initialize_once": {
+                    "kind": "bool"
+                  },
+                  "checkpoint_subtrees": {
+                    "kind": "int"
+                  }
+                }
+              },
+              "residual": {
+                "kind": "map",
+                "keys": {
+                  "operation": {
+                    "kind": "string"
+                  },
+                  "operands": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  },
+                  "detach_reconstruction": {
+                    "kind": "bool"
+                  },
+                  "detach_residual": {
+                    "kind": "bool"
+                  },
+                  "subgradient_at_zero": {
+                    "kind": "number"
+                  },
+                  "clip": {
+                    "kind": "bool"
+                  },
+                  "renormalize": {
+                    "kind": "bool"
+                  },
+                  "upper_bound": {
+                    "kind": "nullable"
+                  }
+                }
+              },
+              "fusion": {
+                "kind": "map",
+                "keys": {
+                  "operation": {
+                    "kind": "string"
+                  },
+                  "operands": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  },
+                  "normalize": {
+                    "kind": "bool"
+                  },
+                  "output_shape_without_batch": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "int"
+                    }
+                  }
+                }
+              },
+              "api": {
+                "kind": "map",
+                "keys": {
+                  "appearance_method": {
+                    "kind": "string"
+                  },
+                  "forward_inputs": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  },
+                  "appearance_fields": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  },
+                  "output_fields": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  },
+                  "cached_record_policy": {
+                    "kind": "string"
+                  },
+                  "persistent_activation_cache": {
+                    "kind": "bool"
+                  },
+                  "owns_decoder": {
+                    "kind": "bool"
+                  },
+                  "owns_classifier": {
+                    "kind": "bool"
+                  }
+                }
+              }
+            }
+          },
+          "vision_decoder": {
+            "kind": "map",
+            "keys": {
+              "enabled": {
+                "kind": "bool"
+              },
+              "shared_trunk": {
+                "kind": "bool"
+              },
+              "trunk_evaluations_per_appearance": {
+                "kind": "int"
+              },
+              "skip_policy": {
+                "kind": "string"
+              },
+              "upsample": {
+                "kind": "map",
+                "keys": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "kernel_size": {
+                    "kind": "int"
+                  },
+                  "stride": {
+                    "kind": "int"
+                  },
+                  "padding": {
+                    "kind": "int"
+                  },
+                  "output_padding": {
+                    "kind": "int"
+                  },
+                  "dilation": {
+                    "kind": "int"
+                  },
+                  "groups": {
+                    "kind": "int"
+                  },
+                  "bias": {
+                    "kind": "bool"
+                  },
+                  "channel_pairs": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "list",
+                      "item": {
+                        "kind": "int"
+                      }
+                    }
+                  }
+                }
+              },
+              "post_concat_convolution_channels": {
+                "kind": "list",
+                "item": {
+                  "kind": "list",
+                  "item": {
+                    "kind": "int"
+                  }
+                }
+              },
+              "convolution_kernel": {
+                "kind": "int"
+              },
+              "convolution_padding": {
+                "kind": "int"
+              },
+              "convolution_stride": {
+                "kind": "int"
+              },
+              "convolution_bias": {
+                "kind": "bool"
+              },
+              "activation": {
+                "kind": "string"
+              },
+              "normalization": {
+                "kind": "string"
+              },
+              "dropout": {
+                "kind": "number"
+              },
+              "appearance_head": {
+                "kind": "map",
+                "keys": {
+                  "in_channels": {
+                    "kind": "int"
+                  },
+                  "out_channels": {
+                    "kind": "int"
+                  },
+                  "kernel_size": {
+                    "kind": "int"
+                  },
+                  "bias": {
+                    "kind": "bool"
+                  },
+                  "activation": {
+                    "kind": "string"
+                  }
+                }
+              },
+              "mask_head": {
+                "kind": "map",
+                "keys": {
+                  "in_channels": {
+                    "kind": "int"
+                  },
+                  "out_channels": {
+                    "kind": "int"
+                  },
+                  "kernel_size": {
+                    "kind": "int"
+                  },
+                  "bias": {
+                    "kind": "bool"
+                  },
+                  "activation": {
+                    "kind": "string"
+                  }
+                }
+              }
+            }
+          },
+          "heads": {
+            "kind": "map",
+            "keys": {
+              "enabled": {
+                "kind": "bool"
+              },
+              "detection": {
+                "kind": "map",
+                "keys": {
+                  "in_features": {
+                    "kind": "int"
+                  },
+                  "out_features": {
+                    "kind": "int"
+                  },
+                  "hidden_layers": {
+                    "kind": "int"
+                  },
+                  "bias": {
+                    "kind": "bool"
+                  }
+                }
+              },
+              "adapter": {
+                "kind": "map",
+                "keys": {
+                  "in_features": {
+                    "kind": "int"
+                  },
+                  "out_features": {
+                    "kind": "int"
+                  },
+                  "hidden_layers": {
+                    "kind": "int"
+                  },
+                  "bias": {
+                    "kind": "bool"
+                  }
+                }
+              }
+            }
+          },
+          "language": {
+            "kind": "map",
+            "keys": {
+              "enabled": {
+                "kind": "bool"
+              },
+              "vocabulary_size": {
+                "kind": "int"
+              },
+              "embed_dim": {
+                "kind": "int"
+              },
+              "sequence_length": {
+                "kind": "int"
+              },
+              "prompt_levels": {
+                "kind": "list",
+                "item": {
+                  "kind": "string"
+                }
+              },
+              "packing": {
+                "kind": "string"
+              },
+              "tokens_per_level": {
+                "kind": "int"
+              },
+              "level_order": {
+                "kind": "list",
+                "item": {
+                  "kind": "string"
+                }
+              },
+              "add_bos_eos_per_level": {
+                "kind": "bool"
+              },
+              "padding_side": {
+                "kind": "string"
+              },
+              "truncation": {
+                "kind": "string"
+              },
+              "tokenizer": {
+                "kind": "map",
+                "keys": {
+                  "family": {
+                    "kind": "string"
+                  },
+                  "artifact_path": {
+                    "kind": "nullable"
+                  },
+                  "artifact_sha256": {
+                    "kind": "nullable"
+                  },
+                  "version": {
+                    "kind": "nullable"
+                  },
+                  "bos_id": {
+                    "kind": "nullable"
+                  },
+                  "eos_id": {
+                    "kind": "nullable"
+                  },
+                  "pad_fill_id": {
+                    "kind": "nullable"
+                  },
+                  "readiness": {
+                    "kind": "string"
+                  }
+                }
+              },
+              "encoder": {
+                "kind": "map",
+                "keys": {
+                  "depth": {
+                    "kind": "int"
+                  },
+                  "heads": {
+                    "kind": "int"
+                  },
+                  "ffn_hidden": {
+                    "kind": "int"
+                  },
+                  "ffn_activation": {
+                    "kind": "string"
+                  },
+                  "order": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  },
+                  "additional_norms": {
+                    "kind": "bool"
+                  },
+                  "ln_epsilon": {
+                    "kind": "number"
+                  },
+                  "mha_bias": {
+                    "kind": "bool"
+                  },
+                  "ffn_bias": {
+                    "kind": "bool"
+                  },
+                  "causal": {
+                    "kind": "bool"
+                  },
+                  "key_padding_mask": {
+                    "kind": "bool"
+                  },
+                  "pooling": {
+                    "kind": "string"
+                  },
+                  "pooling_index": {
+                    "kind": "int"
+                  },
+                  "final_normalization": {
+                    "kind": "string"
+                  },
+                  "dropout": {
+                    "kind": "number"
+                  }
+                }
+              },
+              "decoder": {
+                "kind": "map",
+                "keys": {
+                  "depth": {
+                    "kind": "int"
+                  },
+                  "heads": {
+                    "kind": "int"
+                  },
+                  "ffn_hidden": {
+                    "kind": "int"
+                  },
+                  "ffn_activation": {
+                    "kind": "string"
+                  },
+                  "order": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  },
+                  "shift": {
+                    "kind": "string"
+                  },
+                  "targets": {
+                    "kind": "string"
+                  },
+                  "causal_self_attention": {
+                    "kind": "bool"
+                  },
+                  "key_padding_mask": {
+                    "kind": "bool"
+                  },
+                  "memory_mask": {
+                    "kind": "string"
+                  },
+                  "extra_normalizations": {
+                    "kind": "bool"
+                  },
+                  "mha_bias": {
+                    "kind": "bool"
+                  },
+                  "ffn_bias": {
+                    "kind": "bool"
+                  },
+                  "dropout": {
+                    "kind": "number"
+                  }
+                }
+              },
+              "positions": {
+                "kind": "string"
+              },
+              "vocabulary_output": {
+                "kind": "map",
+                "keys": {
+                  "weight_tied": {
+                    "kind": "bool"
+                  },
+                  "bias": {
+                    "kind": "bool"
+                  }
+                }
+              },
+              "vim": {
+                "kind": "map",
+                "keys": {
+                  "key_value_length": {
+                    "kind": "int"
+                  },
+                  "heads": {
+                    "kind": "int"
+                  },
+                  "scale_denominator": {
+                    "kind": "string"
+                  },
+                  "softmax_axis": {
+                    "kind": "string"
+                  },
+                  "projection_bias": {
+                    "kind": "bool"
+                  },
+                  "attention_dropout": {
+                    "kind": "number"
+                  },
+                  "output_contract": {
+                    "kind": "string"
+                  },
+                  "residual_owner": {
+                    "kind": "string"
+                  },
+                  "independent_instance_per_block": {
+                    "kind": "bool"
+                  },
+                  "keep_qk_projections_despite_singleton_degeneracy": {
+                    "kind": "bool"
+                  }
+                }
+              },
+              "ffpp_separate_model_proposal": {
+                "kind": "map",
+                "keys": {
+                  "prompt_levels": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  },
+                  "sequence_length": {
+                    "kind": "int"
+                  },
+                  "pooling_index": {
+                    "kind": "int"
+                  },
+                  "classification": {
+                    "kind": "string"
+                  },
+                  "approval": {
+                    "kind": "string"
+                  }
+                }
+              }
+            }
+          },
+          "losses": {
+            "kind": "map",
+            "keys": {
+              "enabled": {
+                "kind": "bool"
+              },
+              "formulation": {
+                "kind": "string"
+              },
+              "weights": {
+                "kind": "map",
+                "keys": {
+                  "fd": {
+                    "kind": "number"
+                  },
+                  "lr": {
+                    "kind": "number"
+                  },
+                  "cmc": {
+                    "kind": "number"
+                  },
+                  "fl": {
+                    "kind": "number"
+                  },
+                  "ar": {
+                    "kind": "number"
+                  },
+                  "kl": {
+                    "kind": "number"
+                  }
+                }
+              },
+              "fd": {
+                "kind": "map",
+                "keys": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "reduction": {
+                    "kind": "string"
+                  }
+                }
+              },
+              "ar": {
+                "kind": "map",
+                "keys": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "reduction": {
+                    "kind": "string"
+                  }
+                }
+              },
+              "fl": {
+                "kind": "map",
+                "keys": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "reduction": {
+                    "kind": "string"
+                  }
+                }
+              },
+              "lr": {
+                "kind": "map",
+                "keys": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "reduction": {
+                    "kind": "string"
+                  },
+                  "include_padding_positions": {
+                    "kind": "bool"
+                  },
+                  "include_bos_eos_positions": {
+                    "kind": "bool"
+                  }
+                }
+              },
+              "cmc": {
+                "kind": "map",
+                "keys": {
+                  "similarity": {
+                    "kind": "string"
+                  },
+                  "normalize_features": {
+                    "kind": "bool"
+                  },
+                  "positive_pairs": {
+                    "kind": "string"
+                  },
+                  "reverse_direction": {
+                    "kind": "string"
+                  },
+                  "reduction": {
+                    "kind": "string"
+                  },
+                  "initial_temperature": {
+                    "kind": "number"
+                  },
+                  "trainable_temperature": {
+                    "kind": "bool"
+                  },
+                  "parameterization": {
+                    "kind": "string"
+                  },
+                  "initial_log_temperature": {
+                    "kind": "number"
+                  },
+                  "effective_temperature": {
+                    "kind": "string"
+                  },
+                  "weight_decay_on_log_temperature": {
+                    "kind": "number"
+                  },
+                  "clamp_temperature": {
+                    "kind": "bool"
+                  },
+                  "reject_nonfinite_or_nonpositive_effective_temperature": {
+                    "kind": "bool"
+                  }
+                }
+              },
+              "kl": {
+                "kind": "map",
+                "keys": {
+                  "direction": {
+                    "kind": "string"
+                  },
+                  "temperature": {
+                    "kind": "number"
+                  },
+                  "softmax_convention": {
+                    "kind": "string"
+                  },
+                  "softmax_axis": {
+                    "kind": "string"
+                  },
+                  "reduction": {
+                    "kind": "string"
+                  },
+                  "detach_text_target": {
+                    "kind": "bool"
+                  },
+                  "multiply_by_temperature_squared": {
+                    "kind": "bool"
+                  }
+                }
+              }
+            }
+          },
+          "data": {
+            "kind": "map",
+            "keys": {
+              "dataset": {
+                "kind": "string"
+              },
+              "training_source_generator": {
+                "kind": "nullable_string"
+              },
+              "first_evaluation_generators": {
+                "kind": "list",
+                "item": {
+                  "kind": "string"
+                }
+              },
+              "dataset_root": {
+                "kind": "nullable"
+              },
+              "train_manifest": {
+                "kind": "nullable"
+              },
+              "validation_manifest": {
+                "kind": "nullable"
+              },
+              "test_manifests": {
+                "kind": "nullable"
+              },
+              "source_pair_manifest": {
+                "kind": "nullable"
+              },
+              "grouping_manifest": {
+                "kind": "nullable"
+              },
+              "artifacts_verified": {
+                "kind": "bool"
+              },
+              "image_preprocessing": {
+                "kind": "map",
+                "keys": {
+                  "supplied_aligned_face_crops_required": {
+                    "kind": "bool"
+                  },
+                  "extra_face_detection": {
+                    "kind": "bool"
+                  },
+                  "native_pair_shape_must_match": {
+                    "kind": "bool"
+                  },
+                  "color_order": {
+                    "kind": "string"
+                  },
+                  "target_size": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "int"
+                    }
+                  },
+                  "preserve_aspect_ratio": {
+                    "kind": "bool"
+                  },
+                  "resize": {
+                    "kind": "string"
+                  },
+                  "antialias": {
+                    "kind": "bool"
+                  },
+                  "align_corners": {
+                    "kind": "bool"
+                  },
+                  "output_scale": {
+                    "kind": "string"
+                  },
+                  "mean_std_normalization": {
+                    "kind": "bool"
+                  },
+                  "augmentation": {
+                    "kind": "string"
+                  },
+                  "image_backend_version": {
+                    "kind": "nullable"
+                  }
+                }
+              },
+              "masks": {
+                "kind": "map",
+                "keys": {
+                  "difference_resolution": {
+                    "kind": "string"
+                  },
+                  "difference_arithmetic": {
+                    "kind": "string"
+                  },
+                  "grayscale_weights_rgb": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "number"
+                    }
+                  },
+                  "grayscale_divisor": {
+                    "kind": "number"
+                  },
+                  "threshold": {
+                    "kind": "number"
+                  },
+                  "comparison": {
+                    "kind": "string"
+                  },
+                  "resize_after_threshold": {
+                    "kind": "string"
+                  },
+                  "real_value": {
+                    "kind": "int"
+                  },
+                  "efs_value": {
+                    "kind": "int"
+                  },
+                  "missing_or_unaligned_source_pair": {
+                    "kind": "string"
+                  }
+                }
+              },
+              "splits": {
+                "kind": "map",
+                "keys": {
+                  "prefer_official_splits": {
+                    "kind": "bool"
+                  },
+                  "prefer_official_validation": {
+                    "kind": "bool"
+                  },
+                  "fallback_validation_fraction_of_source_training_groups": {
+                    "kind": "number"
+                  },
+                  "fallback_split_seed": {
+                    "kind": "int"
+                  },
+                  "disjoint_groups": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  },
+                  "missing_group_metadata": {
+                    "kind": "string"
+                  },
+                  "target_test_tuning": {
+                    "kind": "bool"
+                  }
+                }
+              }
+            }
+          },
+          "training": {
+            "kind": "map",
+            "keys": {
+              "enabled": {
+                "kind": "bool"
+              },
+              "batch_size": {
+                "kind": "int"
+              },
+              "max_epochs": {
+                "kind": "int"
+              },
+              "max_steps": {
+                "kind": "nullable"
+              },
+              "seed": {
+                "kind": "int"
+              },
+              "final_repeat_seeds": {
+                "kind": "list",
+                "item": {
+                  "kind": "int"
+                }
+              },
+              "sampling": {
+                "kind": "string"
+              },
+              "class_balancing": {
+                "kind": "bool"
+              },
+              "drop_last_train_batch": {
+                "kind": "bool"
+              },
+              "gradient_accumulation_steps": {
+                "kind": "int"
+              },
+              "distributed_negatives": {
+                "kind": "bool"
+              },
+              "optimizer": {
+                "kind": "map",
+                "keys": {
+                  "name": {
+                    "kind": "string"
+                  },
+                  "learning_rate": {
+                    "kind": "number"
+                  },
+                  "weight_decay": {
+                    "kind": "number"
+                  },
+                  "betas": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "number"
+                    }
+                  },
+                  "epsilon": {
+                    "kind": "number"
+                  },
+                  "amsgrad": {
+                    "kind": "bool"
+                  },
+                  "decoupled_weight_decay": {
+                    "kind": "bool"
+                  },
+                  "decay_exemptions": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  }
+                }
+              },
+              "scheduler": {
+                "kind": "map",
+                "keys": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "period_epochs": {
+                    "kind": "int"
+                  },
+                  "factor": {
+                    "kind": "number"
+                  },
+                  "step_timing": {
+                    "kind": "string"
+                  }
+                }
+              },
+              "warmup_epochs": {
+                "kind": "int"
+              },
+              "gradient_clipping": {
+                "kind": "nullable"
+              },
+              "early_stopping": {
+                "kind": "bool"
+              },
+              "validation_frequency_epochs": {
+                "kind": "int"
+              },
+              "checkpoint_selection": {
+                "kind": "map",
+                "keys": {
+                  "domain": {
+                    "kind": "string"
+                  },
+                  "primary": {
+                    "kind": "string"
+                  },
+                  "tie_breakers": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "initialization": {
+            "kind": "map",
+            "keys": {
+              "pretrained_weights": {
+                "kind": "bool"
+              },
+              "seed": {
+                "kind": "int"
+              },
+              "device": {
+                "kind": "string"
+              },
+              "conv2d_weights": {
+                "kind": "map",
+                "keys": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "mode": {
+                    "kind": "string"
+                  },
+                  "nonlinearity": {
+                    "kind": "string"
+                  }
+                }
+              },
+              "visual_linear_weights": {
+                "kind": "map",
+                "keys": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "gain": {
+                    "kind": "number"
+                  }
+                }
+              },
+              "visual_qkv_initialization": {
+                "kind": "string"
+              },
+              "all_visual_biases": {
+                "kind": "string"
+              },
+              "layer_norm_scale": {
+                "kind": "string"
+              },
+              "layer_norm_bias": {
+                "kind": "string"
+              },
+              "visual_class_and_position": {
+                "kind": "map",
+                "keys": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "mean": {
+                    "kind": "number"
+                  },
+                  "std": {
+                    "kind": "number"
+                  }
+                }
+              },
+              "visual_initialization_order": {
+                "kind": "list",
+                "item": {
+                  "kind": "string"
+                }
+              },
+              "initialize_shared_encoder_once": {
+                "kind": "bool"
+              },
+              "later_module_initialization_requires_separate_contract": {
+                "kind": "bool"
+              }
+            }
+          },
+          "evaluation": {
+            "kind": "map",
+            "keys": {
+              "enabled": {
+                "kind": "bool"
+              },
+              "unit": {
+                "kind": "string"
+              },
+              "detection_decision": {
+                "kind": "string"
+              },
+              "auc_score": {
+                "kind": "string"
+              },
+              "mask_decision": {
+                "kind": "string"
+              },
+              "miou": {
+                "kind": "string"
+              },
+              "miou_population": {
+                "kind": "string"
+              },
+              "absent_class_union_zero": {
+                "kind": "string"
+              },
+              "single_class_auc": {
+                "kind": "string"
+              },
+              "target_threshold_optimization": {
+                "kind": "bool"
+              },
+              "corruption_recipe": {
+                "kind": "nullable"
+              },
+              "gt_threshold_sensitivity_evaluation_target": {
+                "kind": "string"
+              },
+              "numerical_replication_tolerance": {
+                "kind": "nullable"
+              }
+            }
+          },
+          "runtime": {
+            "kind": "map",
+            "keys": {
+              "device": {
+                "kind": "string"
+              },
+              "devices": {
+                "kind": "int"
+              },
+              "precision": {
+                "kind": "string"
+              },
+              "amp": {
+                "kind": "bool"
+              },
+              "compile": {
+                "kind": "bool"
+              },
+              "gradient_checkpointing": {
+                "kind": "bool"
+              },
+              "distributed": {
+                "kind": "bool"
+              },
+              "deterministic_algorithms": {
+                "kind": "bool"
+              },
+              "cudnn_benchmark": {
+                "kind": "bool"
+              },
+              "data_loader_workers": {
+                "kind": "int"
+              },
+              "versions": {
+                "kind": "map",
+                "keys": {
+                  "python": {
+                    "kind": "nullable"
+                  },
+                  "pytorch": {
+                    "kind": "nullable"
+                  },
+                  "image_backend": {
+                    "kind": "nullable"
+                  },
+                  "tokenizer": {
+                    "kind": "nullable"
+                  }
+                }
+              }
+            }
+          },
+          "verification": {
+            "kind": "map",
+            "keys": {
+              "expected_unique_mve_parameters": {
+                "kind": "int"
+              },
+              "expected_cnn_parameters": {
+                "kind": "int"
+              },
+              "expected_transformer_block_parameters": {
+                "kind": "int"
+              },
+              "parameter_counts_establish_paper_fidelity": {
+                "kind": "bool"
+              },
+              "fp32_atol": {
+                "kind": "number"
+              },
+              "fp32_rtol": {
+                "kind": "number"
+              },
+              "fp64_atol": {
+                "kind": "number"
+              },
+              "fp64_rtol": {
+                "kind": "number"
+              },
+              "initial_batch_sizes": {
+                "kind": "list",
+                "item": {
+                  "kind": "int"
+                }
+              },
+              "later_resource_batch_size": {
+                "kind": "int"
+              },
+              "required_mve_tests": {
+                "kind": "list",
+                "item": {
+                  "kind": "string"
+                }
+              },
+              "mve_t12_cross_batch": {
+                "kind": "map",
+                "keys": {
+                  "amendment": {
+                    "kind": "string"
+                  },
+                  "device": {
+                    "kind": "string"
+                  },
+                  "dtype": {
+                    "kind": "string"
+                  },
+                  "atol": {
+                    "kind": "number"
+                  },
+                  "rtol": {
+                    "kind": "number"
+                  }
+                }
+              }
+            }
+          },
+          "diagnostics": {
+            "kind": "map",
+            "keys": {
+              "enabled": {
+                "kind": "bool"
+              },
+              "synthetic_input": {
+                "kind": "bool"
+              },
+              "input_distribution": {
+                "kind": "string"
+              },
+              "input_rng_seed": {
+                "kind": "int"
+              },
+              "input_rng_independent_of_initialization": {
+                "kind": "bool"
+              },
+              "iterations": {
+                "kind": "int"
+              },
+              "batch_size": {
+                "kind": "int"
+              },
+              "input_requires_grad": {
+                "kind": "bool"
+              },
+              "reconstruction_fixture": {
+                "kind": "map",
+                "keys": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "scale": {
+                    "kind": "number"
+                  },
+                  "offset": {
+                    "kind": "number"
+                  }
+                }
+              },
+              "objective": {
+                "kind": "string"
+              },
+              "objective_is_paper_loss": {
+                "kind": "bool"
+              },
+              "backward": {
+                "kind": "bool"
+              },
+              "optimizer_updates": {
+                "kind": "bool"
+              },
+              "clear_gradients_each_iteration": {
+                "kind": "bool"
+              }
+            }
+          },
+          "provenance": {
+            "kind": "map",
+            "keys": {
+              "record_config_and_paper_hash": {
+                "kind": "bool"
+              },
+              "record_dataset_and_tokenizer_hashes": {
+                "kind": "bool"
+              },
+              "record_software_and_hardware": {
+                "kind": "bool"
+              },
+              "preserve_conflicting_paper_targets": {
+                "kind": "bool"
+              },
+              "require_explicit_approval_record": {
+                "kind": "bool"
+              },
+              "claim_exact_author_architecture": {
+                "kind": "bool"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "overlay_schema": {
+    "kind": "map",
+    "keys": {
+      "schema_version": {
+        "kind": "int"
+      },
+      "profile": {
+        "kind": "string"
+      },
+      "base": {
+        "kind": "string"
+      },
+      "contract": {
+        "kind": "string"
+      },
+      "review": {
+        "kind": "map",
+        "keys": {
+          "decision_status": {
+            "kind": "string"
+          },
+          "implementation_authorized": {
+            "kind": "bool"
+          },
+          "authorized_implementation_scopes": {
+            "kind": "list",
+            "item": {
+              "kind": "string"
+            }
+          },
+          "training_authorized": {
+            "kind": "bool"
+          },
+          "approved_decisions": {
+            "kind": "list",
+            "item": {
+              "kind": "string"
+            }
+          },
+          "mve_approval": {
+            "kind": "map",
+            "keys": {
+              "status": {
+                "kind": "string"
+              },
+              "bundles": {
+                "kind": "list",
+                "item": {
+                  "kind": "string"
+                }
+              },
+              "scope": {
+                "kind": "string"
+              },
+              "source": {
+                "kind": "string"
+              },
+              "client_date": {
+                "kind": "string"
+              },
+              "classification": {
+                "kind": "string"
+              },
+              "confirms_author_architecture": {
+                "kind": "bool"
+              },
+              "production_skip_decoder_approved": {
+                "kind": "bool"
+              }
+            }
+          },
+          "work_status": {
+            "kind": "string"
+          },
+          "blocker": {
+            "kind": "nullable"
+          },
+          "numerical_amendments": {
+            "kind": "map",
+            "keys": {
+              "N1": {
+                "kind": "map",
+                "keys": {
+                  "status": {
+                    "kind": "string"
+                  },
+                  "source": {
+                    "kind": "string"
+                  },
+                  "conditions_verified": {
+                    "kind": "bool"
+                  },
+                  "scope": {
+                    "kind": "string"
+                  },
+                  "evidence": {
+                    "kind": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "classification": {
+        "kind": "string"
+      },
+      "decision_ids": {
+        "kind": "list",
+        "item": {
+          "kind": "string"
+        }
+      },
+      "merge_policy": {
+        "kind": "map",
+        "keys": {
+          "target": {
+            "kind": "string"
+          },
+          "mappings": {
+            "kind": "string"
+          },
+          "sequences": {
+            "kind": "string"
+          },
+          "scalars": {
+            "kind": "string"
+          },
+          "explicit_null": {
+            "kind": "string"
+          },
+          "unknown_keys": {
+            "kind": "string"
+          },
+          "propagate_approval": {
+            "kind": "bool"
+          }
+        }
+      },
+      "overrides": {
+        "kind": "partial_map",
+        "keys": {
+          "execution": {
+            "kind": "map",
+            "keys": {
+              "scope": {
+                "kind": "string"
+              },
+              "components": {
+                "kind": "list",
+                "item": {
+                  "kind": "string"
+                }
+              },
+              "reject_unapproved_execution": {
+                "kind": "bool"
+              }
+            }
+          },
+          "mve": {
+            "kind": "map",
+            "keys": {
+              "input": {
+                "kind": "map",
+                "keys": {
+                  "channels": {
+                    "kind": "int"
+                  },
+                  "height": {
+                    "kind": "int"
+                  },
+                  "width": {
+                    "kind": "int"
+                  },
+                  "layout": {
+                    "kind": "string"
+                  },
+                  "dtype": {
+                    "kind": "string"
+                  },
+                  "appearance_range": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "number"
+                    }
+                  },
+                  "appearance_range_is_preprocessing_contract": {
+                    "kind": "bool"
+                  },
+                  "implicit_resize": {
+                    "kind": "bool"
+                  },
+                  "implicit_dtype_or_device_conversion": {
+                    "kind": "bool"
+                  },
+                  "implicit_normalization": {
+                    "kind": "bool"
+                  },
+                  "finite_values_required": {
+                    "kind": "bool"
+                  },
+                  "nonempty_batch_required": {
+                    "kind": "bool"
+                  }
+                }
+              },
+              "encoder": {
+                "kind": "map",
+                "keys": {
+                  "family": {
+                    "kind": "string"
+                  },
+                  "stage_channels": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "int"
+                    }
+                  },
+                  "convolutions_per_stage": {
+                    "kind": "int"
+                  },
+                  "convolution": {
+                    "kind": "map",
+                    "keys": {
+                      "kernel_size": {
+                        "kind": "int"
+                      },
+                      "stride": {
+                        "kind": "int"
+                      },
+                      "padding": {
+                        "kind": "int"
+                      },
+                      "padding_mode": {
+                        "kind": "string"
+                      },
+                      "dilation": {
+                        "kind": "int"
+                      },
+                      "groups": {
+                        "kind": "int"
+                      },
+                      "bias": {
+                        "kind": "bool"
+                      }
+                    }
+                  },
+                  "activation": {
+                    "kind": "string"
+                  },
+                  "activation_inplace": {
+                    "kind": "bool"
+                  },
+                  "normalization": {
+                    "kind": "string"
+                  },
+                  "dropout": {
+                    "kind": "number"
+                  },
+                  "pooling": {
+                    "kind": "map",
+                    "keys": {
+                      "kind": {
+                        "kind": "string"
+                      },
+                      "after_stages": {
+                        "kind": "list",
+                        "item": {
+                          "kind": "int"
+                        }
+                      },
+                      "kernel_size": {
+                        "kind": "int"
+                      },
+                      "stride": {
+                        "kind": "int"
+                      },
+                      "padding": {
+                        "kind": "int"
+                      },
+                      "dilation": {
+                        "kind": "int"
+                      },
+                      "ceil_mode": {
+                        "kind": "bool"
+                      }
+                    }
+                  },
+                  "bottleneck_shape": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "int"
+                    }
+                  },
+                  "appearance_skip_stages": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "int"
+                    }
+                  },
+                  "appearance_skip_shapes": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "list",
+                      "item": {
+                        "kind": "int"
+                      }
+                    }
+                  },
+                  "skip_detach": {
+                    "kind": "bool"
+                  },
+                  "return_residual_skips": {
+                    "kind": "bool"
+                  }
+                }
+              },
+              "tokenizer": {
+                "kind": "map",
+                "keys": {
+                  "flatten_order": {
+                    "kind": "string"
+                  },
+                  "projection_in_features": {
+                    "kind": "int"
+                  },
+                  "embed_dim": {
+                    "kind": "int"
+                  },
+                  "projection_bias": {
+                    "kind": "bool"
+                  },
+                  "spatial_token_count": {
+                    "kind": "int"
+                  },
+                  "sequence_length": {
+                    "kind": "int"
+                  },
+                  "class_token": {
+                    "kind": "map",
+                    "keys": {
+                      "learnable": {
+                        "kind": "bool"
+                      },
+                      "parameter_shape": {
+                        "kind": "list",
+                        "item": {
+                          "kind": "int"
+                        }
+                      },
+                      "placement": {
+                        "kind": "string"
+                      },
+                      "index": {
+                        "kind": "int"
+                      }
+                    }
+                  },
+                  "position": {
+                    "kind": "map",
+                    "keys": {
+                      "learnable": {
+                        "kind": "bool"
+                      },
+                      "parameter_shape": {
+                        "kind": "list",
+                        "item": {
+                          "kind": "int"
+                        }
+                      },
+                      "interpolate": {
+                        "kind": "bool"
+                      }
+                    }
+                  },
+                  "embedding_normalization": {
+                    "kind": "string"
+                  },
+                  "embedding_dropout": {
+                    "kind": "number"
+                  }
+                }
+              },
+              "transformer": {
+                "kind": "map",
+                "keys": {
+                  "depth": {
+                    "kind": "int"
+                  },
+                  "embed_dim": {
+                    "kind": "int"
+                  },
+                  "heads": {
+                    "kind": "int"
+                  },
+                  "head_dim": {
+                    "kind": "int"
+                  },
+                  "block_order": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  },
+                  "ln": {
+                    "kind": "map",
+                    "keys": {
+                      "normalized_dim": {
+                        "kind": "int"
+                      },
+                      "epsilon": {
+                        "kind": "number"
+                      },
+                      "elementwise_affine": {
+                        "kind": "bool"
+                      },
+                      "bias": {
+                        "kind": "bool"
+                      }
+                    }
+                  },
+                  "attention": {
+                    "kind": "map",
+                    "keys": {
+                      "projections": {
+                        "kind": "string"
+                      },
+                      "qkv_bias": {
+                        "kind": "bool"
+                      },
+                      "output_bias": {
+                        "kind": "bool"
+                      },
+                      "scale_denominator": {
+                        "kind": "string"
+                      },
+                      "softmax_axis": {
+                        "kind": "string"
+                      },
+                      "causal": {
+                        "kind": "bool"
+                      },
+                      "padding_mask": {
+                        "kind": "bool"
+                      },
+                      "dropout": {
+                        "kind": "number"
+                      }
+                    }
+                  },
+                  "ffn": {
+                    "kind": "map",
+                    "keys": {
+                      "in_features": {
+                        "kind": "int"
+                      },
+                      "hidden_features": {
+                        "kind": "int"
+                      },
+                      "out_features": {
+                        "kind": "int"
+                      },
+                      "activation": {
+                        "kind": "string"
+                      },
+                      "gelu_approximation": {
+                        "kind": "string"
+                      },
+                      "bias": {
+                        "kind": "bool"
+                      },
+                      "dropout": {
+                        "kind": "number"
+                      }
+                    }
+                  },
+                  "residual_dropout": {
+                    "kind": "number"
+                  },
+                  "stochastic_depth": {
+                    "kind": "number"
+                  },
+                  "layer_scale": {
+                    "kind": "nullable"
+                  },
+                  "final_normalization": {
+                    "kind": "string"
+                  },
+                  "output_projection": {
+                    "kind": "string"
+                  },
+                  "share_blocks_across_depth": {
+                    "kind": "bool"
+                  }
+                }
+              },
+              "sharing": {
+                "kind": "map",
+                "keys": {
+                  "share_parameters_between_roles": {
+                    "kind": "bool"
+                  },
+                  "owner": {
+                    "kind": "string"
+                  },
+                  "number_of_registered_encoders": {
+                    "kind": "int"
+                  },
+                  "roles": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  },
+                  "separate_role_positions": {
+                    "kind": "bool"
+                  },
+                  "separate_role_normalization": {
+                    "kind": "bool"
+                  },
+                  "initialize_once": {
+                    "kind": "bool"
+                  },
+                  "checkpoint_subtrees": {
+                    "kind": "int"
+                  }
+                }
+              },
+              "residual": {
+                "kind": "map",
+                "keys": {
+                  "operation": {
+                    "kind": "string"
+                  },
+                  "operands": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  },
+                  "detach_reconstruction": {
+                    "kind": "bool"
+                  },
+                  "detach_residual": {
+                    "kind": "bool"
+                  },
+                  "subgradient_at_zero": {
+                    "kind": "number"
+                  },
+                  "clip": {
+                    "kind": "bool"
+                  },
+                  "renormalize": {
+                    "kind": "bool"
+                  },
+                  "upper_bound": {
+                    "kind": "nullable"
+                  }
+                }
+              },
+              "fusion": {
+                "kind": "map",
+                "keys": {
+                  "operation": {
+                    "kind": "string"
+                  },
+                  "operands": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  },
+                  "normalize": {
+                    "kind": "bool"
+                  },
+                  "output_shape_without_batch": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "int"
+                    }
+                  }
+                }
+              },
+              "api": {
+                "kind": "map",
+                "keys": {
+                  "appearance_method": {
+                    "kind": "string"
+                  },
+                  "forward_inputs": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  },
+                  "appearance_fields": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  },
+                  "output_fields": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  },
+                  "cached_record_policy": {
+                    "kind": "string"
+                  },
+                  "persistent_activation_cache": {
+                    "kind": "bool"
+                  },
+                  "owns_decoder": {
+                    "kind": "bool"
+                  },
+                  "owns_classifier": {
+                    "kind": "bool"
+                  }
+                }
+              }
+            }
+          },
+          "vision_decoder": {
+            "kind": "map",
+            "keys": {
+              "enabled": {
+                "kind": "bool"
+              },
+              "shared_trunk": {
+                "kind": "bool"
+              },
+              "trunk_evaluations_per_appearance": {
+                "kind": "int"
+              },
+              "skip_policy": {
+                "kind": "string"
+              },
+              "upsample": {
+                "kind": "map",
+                "keys": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "kernel_size": {
+                    "kind": "int"
+                  },
+                  "stride": {
+                    "kind": "int"
+                  },
+                  "padding": {
+                    "kind": "int"
+                  },
+                  "output_padding": {
+                    "kind": "int"
+                  },
+                  "dilation": {
+                    "kind": "int"
+                  },
+                  "groups": {
+                    "kind": "int"
+                  },
+                  "bias": {
+                    "kind": "bool"
+                  },
+                  "channel_pairs": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "list",
+                      "item": {
+                        "kind": "int"
+                      }
+                    }
+                  }
+                }
+              },
+              "post_concat_convolution_channels": {
+                "kind": "list",
+                "item": {
+                  "kind": "list",
+                  "item": {
+                    "kind": "int"
+                  }
+                }
+              },
+              "convolution_kernel": {
+                "kind": "int"
+              },
+              "convolution_padding": {
+                "kind": "int"
+              },
+              "convolution_stride": {
+                "kind": "int"
+              },
+              "convolution_bias": {
+                "kind": "bool"
+              },
+              "activation": {
+                "kind": "string"
+              },
+              "normalization": {
+                "kind": "string"
+              },
+              "dropout": {
+                "kind": "number"
+              },
+              "appearance_head": {
+                "kind": "map",
+                "keys": {
+                  "in_channels": {
+                    "kind": "int"
+                  },
+                  "out_channels": {
+                    "kind": "int"
+                  },
+                  "kernel_size": {
+                    "kind": "int"
+                  },
+                  "bias": {
+                    "kind": "bool"
+                  },
+                  "activation": {
+                    "kind": "string"
+                  }
+                }
+              },
+              "mask_head": {
+                "kind": "map",
+                "keys": {
+                  "in_channels": {
+                    "kind": "int"
+                  },
+                  "out_channels": {
+                    "kind": "int"
+                  },
+                  "kernel_size": {
+                    "kind": "int"
+                  },
+                  "bias": {
+                    "kind": "bool"
+                  },
+                  "activation": {
+                    "kind": "string"
+                  }
+                }
+              }
+            }
+          },
+          "heads": {
+            "kind": "map",
+            "keys": {
+              "enabled": {
+                "kind": "bool"
+              },
+              "detection": {
+                "kind": "map",
+                "keys": {
+                  "in_features": {
+                    "kind": "int"
+                  },
+                  "out_features": {
+                    "kind": "int"
+                  },
+                  "hidden_layers": {
+                    "kind": "int"
+                  },
+                  "bias": {
+                    "kind": "bool"
+                  }
+                }
+              },
+              "adapter": {
+                "kind": "map",
+                "keys": {
+                  "in_features": {
+                    "kind": "int"
+                  },
+                  "out_features": {
+                    "kind": "int"
+                  },
+                  "hidden_layers": {
+                    "kind": "int"
+                  },
+                  "bias": {
+                    "kind": "bool"
+                  }
+                }
+              }
+            }
+          },
+          "language": {
+            "kind": "map",
+            "keys": {
+              "enabled": {
+                "kind": "bool"
+              },
+              "vocabulary_size": {
+                "kind": "int"
+              },
+              "embed_dim": {
+                "kind": "int"
+              },
+              "sequence_length": {
+                "kind": "int"
+              },
+              "prompt_levels": {
+                "kind": "list",
+                "item": {
+                  "kind": "string"
+                }
+              },
+              "packing": {
+                "kind": "string"
+              },
+              "tokens_per_level": {
+                "kind": "int"
+              },
+              "level_order": {
+                "kind": "list",
+                "item": {
+                  "kind": "string"
+                }
+              },
+              "add_bos_eos_per_level": {
+                "kind": "bool"
+              },
+              "padding_side": {
+                "kind": "string"
+              },
+              "truncation": {
+                "kind": "string"
+              },
+              "tokenizer": {
+                "kind": "map",
+                "keys": {
+                  "family": {
+                    "kind": "string"
+                  },
+                  "artifact_path": {
+                    "kind": "nullable"
+                  },
+                  "artifact_sha256": {
+                    "kind": "nullable"
+                  },
+                  "version": {
+                    "kind": "nullable"
+                  },
+                  "bos_id": {
+                    "kind": "nullable"
+                  },
+                  "eos_id": {
+                    "kind": "nullable"
+                  },
+                  "pad_fill_id": {
+                    "kind": "nullable"
+                  },
+                  "readiness": {
+                    "kind": "string"
+                  }
+                }
+              },
+              "encoder": {
+                "kind": "map",
+                "keys": {
+                  "depth": {
+                    "kind": "int"
+                  },
+                  "heads": {
+                    "kind": "int"
+                  },
+                  "ffn_hidden": {
+                    "kind": "int"
+                  },
+                  "ffn_activation": {
+                    "kind": "string"
+                  },
+                  "order": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  },
+                  "additional_norms": {
+                    "kind": "bool"
+                  },
+                  "ln_epsilon": {
+                    "kind": "number"
+                  },
+                  "mha_bias": {
+                    "kind": "bool"
+                  },
+                  "ffn_bias": {
+                    "kind": "bool"
+                  },
+                  "causal": {
+                    "kind": "bool"
+                  },
+                  "key_padding_mask": {
+                    "kind": "bool"
+                  },
+                  "pooling": {
+                    "kind": "string"
+                  },
+                  "pooling_index": {
+                    "kind": "int"
+                  },
+                  "final_normalization": {
+                    "kind": "string"
+                  },
+                  "dropout": {
+                    "kind": "number"
+                  }
+                }
+              },
+              "decoder": {
+                "kind": "map",
+                "keys": {
+                  "depth": {
+                    "kind": "int"
+                  },
+                  "heads": {
+                    "kind": "int"
+                  },
+                  "ffn_hidden": {
+                    "kind": "int"
+                  },
+                  "ffn_activation": {
+                    "kind": "string"
+                  },
+                  "order": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  },
+                  "shift": {
+                    "kind": "string"
+                  },
+                  "targets": {
+                    "kind": "string"
+                  },
+                  "causal_self_attention": {
+                    "kind": "bool"
+                  },
+                  "key_padding_mask": {
+                    "kind": "bool"
+                  },
+                  "memory_mask": {
+                    "kind": "string"
+                  },
+                  "extra_normalizations": {
+                    "kind": "bool"
+                  },
+                  "mha_bias": {
+                    "kind": "bool"
+                  },
+                  "ffn_bias": {
+                    "kind": "bool"
+                  },
+                  "dropout": {
+                    "kind": "number"
+                  }
+                }
+              },
+              "positions": {
+                "kind": "string"
+              },
+              "vocabulary_output": {
+                "kind": "map",
+                "keys": {
+                  "weight_tied": {
+                    "kind": "bool"
+                  },
+                  "bias": {
+                    "kind": "bool"
+                  }
+                }
+              },
+              "vim": {
+                "kind": "map",
+                "keys": {
+                  "key_value_length": {
+                    "kind": "int"
+                  },
+                  "heads": {
+                    "kind": "int"
+                  },
+                  "scale_denominator": {
+                    "kind": "string"
+                  },
+                  "softmax_axis": {
+                    "kind": "string"
+                  },
+                  "projection_bias": {
+                    "kind": "bool"
+                  },
+                  "attention_dropout": {
+                    "kind": "number"
+                  },
+                  "output_contract": {
+                    "kind": "string"
+                  },
+                  "residual_owner": {
+                    "kind": "string"
+                  },
+                  "independent_instance_per_block": {
+                    "kind": "bool"
+                  },
+                  "keep_qk_projections_despite_singleton_degeneracy": {
+                    "kind": "bool"
+                  }
+                }
+              },
+              "ffpp_separate_model_proposal": {
+                "kind": "map",
+                "keys": {
+                  "prompt_levels": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  },
+                  "sequence_length": {
+                    "kind": "int"
+                  },
+                  "pooling_index": {
+                    "kind": "int"
+                  },
+                  "classification": {
+                    "kind": "string"
+                  },
+                  "approval": {
+                    "kind": "string"
+                  }
+                }
+              }
+            }
+          },
+          "losses": {
+            "kind": "map",
+            "keys": {
+              "enabled": {
+                "kind": "bool"
+              },
+              "formulation": {
+                "kind": "string"
+              },
+              "weights": {
+                "kind": "map",
+                "keys": {
+                  "fd": {
+                    "kind": "number"
+                  },
+                  "lr": {
+                    "kind": "number"
+                  },
+                  "cmc": {
+                    "kind": "number"
+                  },
+                  "fl": {
+                    "kind": "number"
+                  },
+                  "ar": {
+                    "kind": "number"
+                  },
+                  "kl": {
+                    "kind": "number"
+                  }
+                }
+              },
+              "fd": {
+                "kind": "map",
+                "keys": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "reduction": {
+                    "kind": "string"
+                  }
+                }
+              },
+              "ar": {
+                "kind": "map",
+                "keys": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "reduction": {
+                    "kind": "string"
+                  }
+                }
+              },
+              "fl": {
+                "kind": "map",
+                "keys": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "reduction": {
+                    "kind": "string"
+                  }
+                }
+              },
+              "lr": {
+                "kind": "map",
+                "keys": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "reduction": {
+                    "kind": "string"
+                  },
+                  "include_padding_positions": {
+                    "kind": "bool"
+                  },
+                  "include_bos_eos_positions": {
+                    "kind": "bool"
+                  }
+                }
+              },
+              "cmc": {
+                "kind": "map",
+                "keys": {
+                  "similarity": {
+                    "kind": "string"
+                  },
+                  "normalize_features": {
+                    "kind": "bool"
+                  },
+                  "positive_pairs": {
+                    "kind": "string"
+                  },
+                  "reverse_direction": {
+                    "kind": "string"
+                  },
+                  "reduction": {
+                    "kind": "string"
+                  },
+                  "initial_temperature": {
+                    "kind": "number"
+                  },
+                  "trainable_temperature": {
+                    "kind": "bool"
+                  },
+                  "parameterization": {
+                    "kind": "string"
+                  },
+                  "initial_log_temperature": {
+                    "kind": "number"
+                  },
+                  "effective_temperature": {
+                    "kind": "string"
+                  },
+                  "weight_decay_on_log_temperature": {
+                    "kind": "number"
+                  },
+                  "clamp_temperature": {
+                    "kind": "bool"
+                  },
+                  "reject_nonfinite_or_nonpositive_effective_temperature": {
+                    "kind": "bool"
+                  }
+                }
+              },
+              "kl": {
+                "kind": "map",
+                "keys": {
+                  "direction": {
+                    "kind": "string"
+                  },
+                  "temperature": {
+                    "kind": "number"
+                  },
+                  "softmax_convention": {
+                    "kind": "string"
+                  },
+                  "softmax_axis": {
+                    "kind": "string"
+                  },
+                  "reduction": {
+                    "kind": "string"
+                  },
+                  "detach_text_target": {
+                    "kind": "bool"
+                  },
+                  "multiply_by_temperature_squared": {
+                    "kind": "bool"
+                  }
+                }
+              }
+            }
+          },
+          "data": {
+            "kind": "map",
+            "keys": {
+              "dataset": {
+                "kind": "string"
+              },
+              "training_source_generator": {
+                "kind": "nullable_string"
+              },
+              "first_evaluation_generators": {
+                "kind": "list",
+                "item": {
+                  "kind": "string"
+                }
+              },
+              "dataset_root": {
+                "kind": "nullable"
+              },
+              "train_manifest": {
+                "kind": "nullable"
+              },
+              "validation_manifest": {
+                "kind": "nullable"
+              },
+              "test_manifests": {
+                "kind": "nullable"
+              },
+              "source_pair_manifest": {
+                "kind": "nullable"
+              },
+              "grouping_manifest": {
+                "kind": "nullable"
+              },
+              "artifacts_verified": {
+                "kind": "bool"
+              },
+              "image_preprocessing": {
+                "kind": "map",
+                "keys": {
+                  "supplied_aligned_face_crops_required": {
+                    "kind": "bool"
+                  },
+                  "extra_face_detection": {
+                    "kind": "bool"
+                  },
+                  "native_pair_shape_must_match": {
+                    "kind": "bool"
+                  },
+                  "color_order": {
+                    "kind": "string"
+                  },
+                  "target_size": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "int"
+                    }
+                  },
+                  "preserve_aspect_ratio": {
+                    "kind": "bool"
+                  },
+                  "resize": {
+                    "kind": "string"
+                  },
+                  "antialias": {
+                    "kind": "bool"
+                  },
+                  "align_corners": {
+                    "kind": "bool"
+                  },
+                  "output_scale": {
+                    "kind": "string"
+                  },
+                  "mean_std_normalization": {
+                    "kind": "bool"
+                  },
+                  "augmentation": {
+                    "kind": "string"
+                  },
+                  "image_backend_version": {
+                    "kind": "nullable"
+                  }
+                }
+              },
+              "masks": {
+                "kind": "map",
+                "keys": {
+                  "difference_resolution": {
+                    "kind": "string"
+                  },
+                  "difference_arithmetic": {
+                    "kind": "string"
+                  },
+                  "grayscale_weights_rgb": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "number"
+                    }
+                  },
+                  "grayscale_divisor": {
+                    "kind": "number"
+                  },
+                  "threshold": {
+                    "kind": "number"
+                  },
+                  "comparison": {
+                    "kind": "string"
+                  },
+                  "resize_after_threshold": {
+                    "kind": "string"
+                  },
+                  "real_value": {
+                    "kind": "int"
+                  },
+                  "efs_value": {
+                    "kind": "int"
+                  },
+                  "missing_or_unaligned_source_pair": {
+                    "kind": "string"
+                  }
+                }
+              },
+              "splits": {
+                "kind": "map",
+                "keys": {
+                  "prefer_official_splits": {
+                    "kind": "bool"
+                  },
+                  "prefer_official_validation": {
+                    "kind": "bool"
+                  },
+                  "fallback_validation_fraction_of_source_training_groups": {
+                    "kind": "number"
+                  },
+                  "fallback_split_seed": {
+                    "kind": "int"
+                  },
+                  "disjoint_groups": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  },
+                  "missing_group_metadata": {
+                    "kind": "string"
+                  },
+                  "target_test_tuning": {
+                    "kind": "bool"
+                  }
+                }
+              }
+            }
+          },
+          "training": {
+            "kind": "map",
+            "keys": {
+              "enabled": {
+                "kind": "bool"
+              },
+              "batch_size": {
+                "kind": "int"
+              },
+              "max_epochs": {
+                "kind": "int"
+              },
+              "max_steps": {
+                "kind": "nullable"
+              },
+              "seed": {
+                "kind": "int"
+              },
+              "final_repeat_seeds": {
+                "kind": "list",
+                "item": {
+                  "kind": "int"
+                }
+              },
+              "sampling": {
+                "kind": "string"
+              },
+              "class_balancing": {
+                "kind": "bool"
+              },
+              "drop_last_train_batch": {
+                "kind": "bool"
+              },
+              "gradient_accumulation_steps": {
+                "kind": "int"
+              },
+              "distributed_negatives": {
+                "kind": "bool"
+              },
+              "optimizer": {
+                "kind": "map",
+                "keys": {
+                  "name": {
+                    "kind": "string"
+                  },
+                  "learning_rate": {
+                    "kind": "number"
+                  },
+                  "weight_decay": {
+                    "kind": "number"
+                  },
+                  "betas": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "number"
+                    }
+                  },
+                  "epsilon": {
+                    "kind": "number"
+                  },
+                  "amsgrad": {
+                    "kind": "bool"
+                  },
+                  "decoupled_weight_decay": {
+                    "kind": "bool"
+                  },
+                  "decay_exemptions": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  }
+                }
+              },
+              "scheduler": {
+                "kind": "map",
+                "keys": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "period_epochs": {
+                    "kind": "int"
+                  },
+                  "factor": {
+                    "kind": "number"
+                  },
+                  "step_timing": {
+                    "kind": "string"
+                  }
+                }
+              },
+              "warmup_epochs": {
+                "kind": "int"
+              },
+              "gradient_clipping": {
+                "kind": "nullable"
+              },
+              "early_stopping": {
+                "kind": "bool"
+              },
+              "validation_frequency_epochs": {
+                "kind": "int"
+              },
+              "checkpoint_selection": {
+                "kind": "map",
+                "keys": {
+                  "domain": {
+                    "kind": "string"
+                  },
+                  "primary": {
+                    "kind": "string"
+                  },
+                  "tie_breakers": {
+                    "kind": "list",
+                    "item": {
+                      "kind": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "initialization": {
+            "kind": "map",
+            "keys": {
+              "pretrained_weights": {
+                "kind": "bool"
+              },
+              "seed": {
+                "kind": "int"
+              },
+              "device": {
+                "kind": "string"
+              },
+              "conv2d_weights": {
+                "kind": "map",
+                "keys": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "mode": {
+                    "kind": "string"
+                  },
+                  "nonlinearity": {
+                    "kind": "string"
+                  }
+                }
+              },
+              "visual_linear_weights": {
+                "kind": "map",
+                "keys": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "gain": {
+                    "kind": "number"
+                  }
+                }
+              },
+              "visual_qkv_initialization": {
+                "kind": "string"
+              },
+              "all_visual_biases": {
+                "kind": "string"
+              },
+              "layer_norm_scale": {
+                "kind": "string"
+              },
+              "layer_norm_bias": {
+                "kind": "string"
+              },
+              "visual_class_and_position": {
+                "kind": "map",
+                "keys": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "mean": {
+                    "kind": "number"
+                  },
+                  "std": {
+                    "kind": "number"
+                  }
+                }
+              },
+              "visual_initialization_order": {
+                "kind": "list",
+                "item": {
+                  "kind": "string"
+                }
+              },
+              "initialize_shared_encoder_once": {
+                "kind": "bool"
+              },
+              "later_module_initialization_requires_separate_contract": {
+                "kind": "bool"
+              }
+            }
+          },
+          "evaluation": {
+            "kind": "map",
+            "keys": {
+              "enabled": {
+                "kind": "bool"
+              },
+              "unit": {
+                "kind": "string"
+              },
+              "detection_decision": {
+                "kind": "string"
+              },
+              "auc_score": {
+                "kind": "string"
+              },
+              "mask_decision": {
+                "kind": "string"
+              },
+              "miou": {
+                "kind": "string"
+              },
+              "miou_population": {
+                "kind": "string"
+              },
+              "absent_class_union_zero": {
+                "kind": "string"
+              },
+              "single_class_auc": {
+                "kind": "string"
+              },
+              "target_threshold_optimization": {
+                "kind": "bool"
+              },
+              "corruption_recipe": {
+                "kind": "nullable"
+              },
+              "gt_threshold_sensitivity_evaluation_target": {
+                "kind": "string"
+              },
+              "numerical_replication_tolerance": {
+                "kind": "nullable"
+              }
+            }
+          },
+          "runtime": {
+            "kind": "map",
+            "keys": {
+              "device": {
+                "kind": "string"
+              },
+              "devices": {
+                "kind": "int"
+              },
+              "precision": {
+                "kind": "string"
+              },
+              "amp": {
+                "kind": "bool"
+              },
+              "compile": {
+                "kind": "bool"
+              },
+              "gradient_checkpointing": {
+                "kind": "bool"
+              },
+              "distributed": {
+                "kind": "bool"
+              },
+              "deterministic_algorithms": {
+                "kind": "bool"
+              },
+              "cudnn_benchmark": {
+                "kind": "bool"
+              },
+              "data_loader_workers": {
+                "kind": "int"
+              },
+              "versions": {
+                "kind": "map",
+                "keys": {
+                  "python": {
+                    "kind": "nullable"
+                  },
+                  "pytorch": {
+                    "kind": "nullable"
+                  },
+                  "image_backend": {
+                    "kind": "nullable"
+                  },
+                  "tokenizer": {
+                    "kind": "nullable"
+                  }
+                }
+              }
+            }
+          },
+          "verification": {
+            "kind": "map",
+            "keys": {
+              "expected_unique_mve_parameters": {
+                "kind": "int"
+              },
+              "expected_cnn_parameters": {
+                "kind": "int"
+              },
+              "expected_transformer_block_parameters": {
+                "kind": "int"
+              },
+              "parameter_counts_establish_paper_fidelity": {
+                "kind": "bool"
+              },
+              "fp32_atol": {
+                "kind": "number"
+              },
+              "fp32_rtol": {
+                "kind": "number"
+              },
+              "fp64_atol": {
+                "kind": "number"
+              },
+              "fp64_rtol": {
+                "kind": "number"
+              },
+              "initial_batch_sizes": {
+                "kind": "list",
+                "item": {
+                  "kind": "int"
+                }
+              },
+              "later_resource_batch_size": {
+                "kind": "int"
+              },
+              "required_mve_tests": {
+                "kind": "list",
+                "item": {
+                  "kind": "string"
+                }
+              }
+            }
+          },
+          "diagnostics": {
+            "kind": "map",
+            "keys": {
+              "enabled": {
+                "kind": "bool"
+              },
+              "synthetic_input": {
+                "kind": "bool"
+              },
+              "input_distribution": {
+                "kind": "string"
+              },
+              "input_rng_seed": {
+                "kind": "int"
+              },
+              "input_rng_independent_of_initialization": {
+                "kind": "bool"
+              },
+              "iterations": {
+                "kind": "int"
+              },
+              "batch_size": {
+                "kind": "int"
+              },
+              "input_requires_grad": {
+                "kind": "bool"
+              },
+              "reconstruction_fixture": {
+                "kind": "map",
+                "keys": {
+                  "kind": {
+                    "kind": "string"
+                  },
+                  "scale": {
+                    "kind": "number"
+                  },
+                  "offset": {
+                    "kind": "number"
+                  }
+                }
+              },
+              "objective": {
+                "kind": "string"
+              },
+              "objective_is_paper_loss": {
+                "kind": "bool"
+              },
+              "backward": {
+                "kind": "bool"
+              },
+              "optimizer_updates": {
+                "kind": "bool"
+              },
+              "clear_gradients_each_iteration": {
+                "kind": "bool"
+              }
+            }
+          },
+          "provenance": {
+            "kind": "map",
+            "keys": {
+              "record_config_and_paper_hash": {
+                "kind": "bool"
+              },
+              "record_dataset_and_tokenizer_hashes": {
+                "kind": "bool"
+              },
+              "record_software_and_hardware": {
+                "kind": "bool"
+              },
+              "preserve_conflicting_paper_targets": {
+                "kind": "bool"
+              },
+              "require_explicit_approval_record": {
+                "kind": "bool"
+              },
+              "claim_exact_author_architecture": {
+                "kind": "bool"
+              }
+            }
+          }
+        }
+      },
+      "acceptance": {
+        "kind": "map",
+        "keys": {
+          "unchanged_proposal_subtrees": {
+            "kind": "list",
+            "item": {
+              "kind": "string"
+            }
+          },
+          "benchmark_results_allowed": {
+            "kind": "bool"
+          },
+          "requires_dataset_or_tokenizer": {
+            "kind": "bool"
+          },
+          "full_reference_batch_eight_resource_test_replaced": {
+            "kind": "bool"
+          },
+          "note": {
+            "kind": "string"
+          }
+        }
+      }
+    }
+  },
+  "approved_subtrees": {
+    "mve": {
+      "input": {
+        "channels": 3,
+        "height": 224,
+        "width": 224,
+        "layout": "NCHW",
+        "dtype": "float32",
+        "appearance_range": [
+          0.0,
+          1.0
+        ],
+        "appearance_range_is_preprocessing_contract": true,
+        "implicit_resize": false,
+        "implicit_dtype_or_device_conversion": false,
+        "implicit_normalization": false,
+        "finite_values_required": true,
+        "nonempty_batch_required": true
+      },
+      "encoder": {
+        "family": "proposed_padded_unet_contracting_path",
+        "stage_channels": [
+          64,
+          128,
+          256,
+          512,
+          1024
+        ],
+        "convolutions_per_stage": 2,
+        "convolution": {
+          "kernel_size": 3,
+          "stride": 1,
+          "padding": 1,
+          "padding_mode": "zeros",
+          "dilation": 1,
+          "groups": 1,
+          "bias": true
+        },
+        "activation": "relu",
+        "activation_inplace": false,
+        "normalization": "none",
+        "dropout": 0.0,
+        "pooling": {
+          "kind": "max_pool_2d",
+          "after_stages": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "kernel_size": 2,
+          "stride": 2,
+          "padding": 0,
+          "dilation": 1,
+          "ceil_mode": false
+        },
+        "bottleneck_shape": [
+          1024,
+          14,
+          14
+        ],
+        "appearance_skip_stages": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "appearance_skip_shapes": [
+          [
+            64,
+            224,
+            224
+          ],
+          [
+            128,
+            112,
+            112
+          ],
+          [
+            256,
+            56,
+            56
+          ],
+          [
+            512,
+            28,
+            28
+          ]
+        ],
+        "skip_detach": false,
+        "return_residual_skips": false
+      },
+      "tokenizer": {
+        "flatten_order": "row_major_spatial_then_channels",
+        "projection_in_features": 1024,
+        "embed_dim": 512,
+        "projection_bias": true,
+        "spatial_token_count": 196,
+        "sequence_length": 197,
+        "class_token": {
+          "learnable": true,
+          "parameter_shape": [
+            1,
+            1,
+            512
+          ],
+          "placement": "append",
+          "index": 196
+        },
+        "position": {
+          "learnable": true,
+          "parameter_shape": [
+            1,
+            197,
+            512
+          ],
+          "interpolate": false
+        },
+        "embedding_normalization": "none",
+        "embedding_dropout": 0.0
+      },
+      "transformer": {
+        "depth": 4,
+        "embed_dim": 512,
+        "heads": 8,
+        "head_dim": 64,
+        "block_order": [
+          "pre_ln_self_attention_residual",
+          "pre_ln_ffn_residual"
+        ],
+        "ln": {
+          "normalized_dim": 512,
+          "epsilon": 1e-05,
+          "elementwise_affine": true,
+          "bias": true
+        },
+        "attention": {
+          "projections": "separate_q_k_v",
+          "qkv_bias": true,
+          "output_bias": true,
+          "scale_denominator": "sqrt_head_dim",
+          "softmax_axis": "keys",
+          "causal": false,
+          "padding_mask": false,
+          "dropout": 0.0
+        },
+        "ffn": {
+          "in_features": 512,
+          "hidden_features": 2048,
+          "out_features": 512,
+          "activation": "gelu",
+          "gelu_approximation": "none",
+          "bias": true,
+          "dropout": 0.0
+        },
+        "residual_dropout": 0.0,
+        "stochastic_depth": 0.0,
+        "layer_scale": null,
+        "final_normalization": "none",
+        "output_projection": "none",
+        "share_blocks_across_depth": false
+      },
+      "sharing": {
+        "share_parameters_between_roles": true,
+        "owner": "mve.shared_encoder",
+        "number_of_registered_encoders": 1,
+        "roles": [
+          "appearance",
+          "residual"
+        ],
+        "separate_role_positions": false,
+        "separate_role_normalization": false,
+        "initialize_once": true,
+        "checkpoint_subtrees": 1
+      },
+      "residual": {
+        "operation": "absolute_difference",
+        "operands": [
+          "reconstruction",
+          "input_image"
+        ],
+        "detach_reconstruction": false,
+        "detach_residual": false,
+        "subgradient_at_zero": 0.0,
+        "clip": false,
+        "renormalize": false,
+        "upper_bound": null
+      },
+      "fusion": {
+        "operation": "elementwise_sum",
+        "operands": [
+          "appearance_global",
+          "residual_global"
+        ],
+        "normalize": false,
+        "output_shape_without_batch": [
+          1,
+          512
+        ]
+      },
+      "api": {
+        "appearance_method": "encode_appearance",
+        "forward_inputs": [
+          "image",
+          "reconstruction",
+          "optional_appearance_encoding"
+        ],
+        "appearance_fields": [
+          "local",
+          "skips",
+          "tokens",
+          "global_token"
+        ],
+        "output_fields": [
+          "appearance",
+          "residual_image",
+          "residual_tokens",
+          "residual_global",
+          "fused_global"
+        ],
+        "cached_record_policy": "explicit_same_input_same_graph_same_parameters",
+        "persistent_activation_cache": false,
+        "owns_decoder": false,
+        "owns_classifier": false
+      }
+    },
+    "initialization": {
+      "pretrained_weights": false,
+      "seed": 0,
+      "device": "cpu_before_device_transfer",
+      "conv2d_weights": {
+        "kind": "kaiming_normal",
+        "mode": "fan_in",
+        "nonlinearity": "relu"
+      },
+      "visual_linear_weights": {
+        "kind": "xavier_uniform",
+        "gain": 1.0
+      },
+      "visual_qkv_initialization": "independent_matrices",
+      "all_visual_biases": "zeros",
+      "layer_norm_scale": "ones",
+      "layer_norm_bias": "zeros",
+      "visual_class_and_position": {
+        "kind": "normal_untruncated",
+        "mean": 0.0,
+        "std": 0.02
+      },
+      "visual_initialization_order": [
+        "convolution_layers_in_stage_order",
+        "local_to_token_projection",
+        "class_token",
+        "position_embedding",
+        "blocks_in_depth_order_ln1_q_k_v_o_ln2_fc1_fc2"
+      ],
+      "initialize_shared_encoder_once": true,
+      "later_module_initialization_requires_separate_contract": true
+    },
+    "verification": {
+      "expected_unique_mve_parameters": 32078912,
+      "expected_cnn_parameters": 18843200,
+      "expected_transformer_block_parameters": 3152384,
+      "parameter_counts_establish_paper_fidelity": false,
+      "fp32_atol": 1e-06,
+      "fp32_rtol": 1e-05,
+      "fp64_atol": 1e-10,
+      "fp64_rtol": 1e-08,
+      "initial_batch_sizes": [
+        1,
+        2
+      ],
+      "later_resource_batch_size": 8,
+      "required_mve_tests": [
+        "MVE-T01",
+        "MVE-T02",
+        "MVE-T03",
+        "MVE-T04",
+        "MVE-T05",
+        "MVE-T06",
+        "MVE-T07",
+        "MVE-T08",
+        "MVE-T09",
+        "MVE-T10",
+        "MVE-T11",
+        "MVE-T12",
+        "MVE-T13",
+        "MVE-T14"
+      ],
+      "mve_t12_cross_batch": {
+        "amendment": "N1",
+        "device": "cpu",
+        "dtype": "float32",
+        "atol": 5e-06,
+        "rtol": 1e-05
+      }
+    }
+  },
+  "paper_explicit": {
+    "image_shape": [
+      3,
+      224,
+      224
+    ],
+    "local_shape": [
+      1024,
+      14,
+      14
+    ],
+    "image_blocks": 4,
+    "language_encoder_blocks": 12,
+    "language_decoder_blocks": 7,
+    "embed_dim": 512,
+    "vocabulary_size": 49408,
+    "text_length": 308,
+    "classes": 2,
+    "batch_size": 8,
+    "reported_total_parameters_millions": 141.0,
+    "reported_total_flops_billions": 173.04,
+    "reported_hardware": "Tesla_V100",
+    "vim_equation_10": "T_glo[j,i] = softmax(Q[j,i] K[j,i]^T / sqrt(r/d)) V[j,i]",
+    "total_equation_27": "L = L_fd + L_lr + L_cmc + L_fl + L_ar + L_kl"
+  },
+  "approved_numerical_amendments": {
+    "N1": {
+      "status": "APPROVED",
+      "source": "explicit_user_n1_conditional_approval",
+      "conditions_verified": true,
+      "scope": "MVE-T12_cross_batch_size_cpu_float32_only",
+      "evidence": "../artifacts/phase2a/n1_review/numerical_evidence.json"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "provenance": "Independently authored mathematical fixtures; no production loss outputs used as expectations",
+  "uniform": {"fd": 0.6931471805599453, "fl": 0.6931471805599453, "lr": 3328.82323108241},
+  "fd": {"logit_rows": [[0.0, 0.0], [0.6931471805599453, 0.0]], "labels": [0, 1]},
+  "cmc": {"visual_first_two": [[1.0, 0.0], [0.0, 2.0]], "language_first_two": [[3.0, 4.0], [5.0, 6.0]], "raw_dot": [[3.0, 5.0], [8.0, 12.0]], "initial_temperature": 0.07},
+  "kl": {"P_pair": [0.8, 0.2], "Q_pair": [0.3, 0.7], "repetitions": 256, "temperature": 0.5},
+  "ar": {"target": 0.0, "reconstruction": 2.0, "expected": 4.0},
+  "lr": {"vocabulary": 49408, "tokens": 308, "pad": 0, "bos": 49406, "eos": 49407, "boundary_positions": [0, 76, 77, 153, 154, 230, 231, 307]}
+}

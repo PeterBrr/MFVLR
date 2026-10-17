@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "repository": "https://github.com/openai/CLIP",
+  "commit": "d05afc436d78f1c48dc0dbf8e5980a9d471f35f6",
+  "commit_date": "2026-03-25T18:46:40Z",
+  "client_acquisition_date": "2026-10-11",
+  "files": {
+    "clip/simple_tokenizer.py": {
+      "url": "https://raw.githubusercontent.com/openai/CLIP/d05afc436d78f1c48dc0dbf8e5980a9d471f35f6/clip/simple_tokenizer.py",
+      "sha256": "d1b09f10ed3d1e2c343619cb98cbfacb92363dd8607526a43aa7fe2d60d15bad",
+      "bytes": 4632
+    },
+    "clip/clip.py": {
+      "url": "https://raw.githubusercontent.com/openai/CLIP/d05afc436d78f1c48dc0dbf8e5980a9d471f35f6/clip/clip.py",
+      "sha256": "9540f200fbf8145479fa655382a56dab048d238cc698b9cbd8df3b6d86d3f1b6",
+      "bytes": 9644
+    },
+    "clip/bpe_simple_vocab_16e6.txt.gz": {
+      "url": "https://raw.githubusercontent.com/openai/CLIP/d05afc436d78f1c48dc0dbf8e5980a9d471f35f6/clip/bpe_simple_vocab_16e6.txt.gz",
+      "sha256": "924691ac288e54409236115652ad4aa250f48203de50a9e4722a6ecd48d6804a",
+      "bytes": 1356917,
+      "decompressed_sha256": "67603cfda2e032ad77b5f8808af37789d590db664b26df8705d2bf8b3c553fc8"
+    },
+    "LICENSE": {
+      "url": "https://raw.githubusercontent.com/openai/CLIP/d05afc436d78f1c48dc0dbf8e5980a9d471f35f6/LICENSE",
+      "sha256": "987e63b32f6c89ff5160e429458a872ff048e6860b590a3912e938f9da8f14db",
+      "bytes": 1064
+    }
+  },
+  "learned_model_weights_downloaded": false,
+  "source_role": "Official tokenizer and tokenize-function reference; clip.py is never imported wholesale",
+  "dependencies": {
+    "ftfy": "6.3.1",
+    "regex": "2026.6.28",
+    "wcwidth": "0.2.13"
+  },
+  "vocabulary": {
+    "size": 49408,
+    "bos": 49406,
+    "eos": 49407,
+    "padding_value": 0,
+    "ordered_vocabulary_sha256": "2a71978dcdb511468c1418448eeb3ef50e750c2bc9ac24dd02caaf5bb2ffccf8",
+    "ordered_byte_map_sha256": "aba59f73320ca76c25519caab1bf4d83b779e4f35f02b6c6200a0cbee4196577",
+    "hash_serialization": "UTF-8 JSON ensure_ascii=False separators=(',',':'), no trailing newline"
+  }
+}

@@ -1,0 +1,17 @@
+schema: mfvlr-research-a11-v1
+scope: A1-D01-module-correctness-only
+architecture:
+  blocks: 7
+  dimensions: 512
+  heads: 8
+  ffn: 2048
+  ln_eps: 1.0e-05
+  ln_variance: population
+  ln_axis: -1
+  ln_gamma: 1.0
+  ln_beta: 0.0
+  vim_residual: once-outside-norm
+initialization: copy-accepted-FP32-common-state-constant-new-norms
+full_experiments_enabled: false
+seed: 0
+variant: P3

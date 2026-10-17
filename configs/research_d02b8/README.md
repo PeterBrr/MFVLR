@@ -1,0 +1,1 @@
+PROPOSED mock metadata only. All-zero dataset hash is a synthetic test sentinel, not a real dataset pin. Execution is disabled. These files cannot authorize a run; replace metadata only after a separately approved dataset contract. No loader or optimizer exists in this scope.

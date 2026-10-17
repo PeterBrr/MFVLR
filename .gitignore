@@ -1,0 +1,35 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+*.egg-info/
+build/
+dist/
+
+# Local scientific evidence and large/generated inputs remain in the workspace.
+/artifacts/
+/data/
+/papers/
+/tmp/
+/.phase2c1_deps/
+/.github-setup/
+
+# Credentials and local environment files.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+/.aws/
+/.codex/
+/.agents/
+
+# Checkpoints and generated tensor caches.
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.npy
+*.npz
+*.f32
+*.f64

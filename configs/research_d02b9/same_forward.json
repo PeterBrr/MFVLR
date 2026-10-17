@@ -1,0 +1,32 @@
+{
+  "cell": "D02B-G01-A0-SAME-FORWARD",
+  "execution_enabled": false,
+  "B0_D08": false,
+  "parameter_tensors": 508,
+  "elements": 154156232,
+  "forward_count": 1,
+  "gradient_passes": [
+    "fd",
+    "lr",
+    "cmc",
+    "fl",
+    "ar",
+    "kl",
+    "total"
+  ],
+  "retain_graph": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false
+  ],
+  "state_sha256": "1865527facba9adc8a14d443c112d492698d275ce4e8beaa784aee61a514895a",
+  "atol": 1e-06,
+  "rtol": 1e-05,
+  "backend": "Windows CPU C4M",
+  "fixture": "original G01 real B1",
+  "resource_capacity_verified": false
+}
