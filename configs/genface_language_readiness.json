@@ -1,0 +1,24 @@
+{
+  "schema": "mfvlr-internal-pilot-v1",
+  "model": {
+    "variant": "skip_resize_conv_v2",
+    "resize_mode": "nearest",
+    "language_visual_gradients": "stop_all",
+    "residual_gradient": "detach_reconstruction",
+    "skip_connections": "concat",
+    "reconstruction_activation": "identity",
+    "mask_background_weight": 1.0,
+    "mask_foreground_weight": 4.0,
+    "mask_loss_weight": 1.0,
+    "vim_residual": "double",
+    "language_normalization": "pre_norm"
+  },
+  "loss_weights": {"fd": 0.1, "ar": 1.0, "fl": 1.0, "lr": 0.0001, "cmc": 0.01, "kl": 0.01},
+  "protocol": {
+    "scope": "Readiness only: 16 train images, fresh language, warm-start visual epoch30; no validation/test tuning",
+    "normalization": "Experimental pre-LN LE/LD and final LN; not author-confirmed",
+    "residual": "2x+delta; singleton K/V unchanged; full LE memory retained",
+    "cmc": "Microbatch2, instance positives, not effective-batch4 contrastive negatives",
+    "weights": "Manual starting weights, not calibrated or paper reproduction"
+  }
+}

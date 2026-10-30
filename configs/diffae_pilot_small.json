@@ -1,0 +1,24 @@
+{
+  "schema": "mfvlr-internal-pilot-v1",
+  "seed": 0,
+  "device": "cuda",
+  "batch_size": 2,
+  "threads": 4,
+  "manifests": {
+    "train": "artifacts/diffae_pilot/manifests/train.jsonl",
+    "val": "artifacts/diffae_pilot/manifests/val.jsonl",
+    "test": "artifacts/diffae_pilot/manifests/test.jsonl"
+  },
+  "tiny": {"limit": 32, "max_steps": 100, "epochs": 7, "lr": 0.000001},
+  "pilot": {"limit": 1000, "max_steps": null, "epochs": 5, "lr": 0.00001},
+  "optimizer": {"weight_decay": 0.001, "betas": [0.9, 0.999], "eps": 1e-8},
+  "checkpoint_every": 200,
+  "protocol": {
+    "subset": "1000 fixed train samples: 500 real + 500 Diffae; original val/test unchanged",
+    "rgb": "RGB float32 [0,1], PIL bilinear resize to 224x224, no augmentation",
+    "mask": "supplied binary mask; 1/255 foreground, nearest resize to 224x224",
+    "language": "pinned CLIP tokenizer; four 77-token segments",
+    "losses": "unchanged A0 FD+LR+CMC+FL+AR+KL, unit weights, FP32",
+    "limitations": "internal pilot; unknown subject mapping and mask provenance; historical G01 FAIL unresolved"
+  }
+}

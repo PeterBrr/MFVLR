@@ -1,0 +1,40 @@
+{
+  "schema": "mfvlr-internal-pilot-v1",
+  "seed": 0,
+  "device": "cuda",
+  "batch_size": 2,
+  "threads": 4,
+  "run_name": "pilot_skip_detach_manual_v2",
+  "output_root": "artifacts/diffae_pilot/runs",
+  "validation_before_training": true,
+  "model": {
+    "variant": "skip_resize_conv_v2",
+    "resize_mode": "nearest",
+    "language_visual_gradients": "stop_all",
+    "residual_gradient": "detach_reconstruction",
+    "skip_connections": "concat",
+    "mask_background_weight": 1.0,
+    "mask_foreground_weight": 4.0,
+    "mask_loss_weight": 1.0
+  },
+  "loss_weights": {"fd": 1.0, "lr": 0.0, "cmc": 0.0, "fl": 0.25, "ar": 1.0, "kl": 0.0},
+  "manifests": {
+    "train": "artifacts/diffae_pilot/manifests/train.jsonl",
+    "val": "artifacts/diffae_pilot/manifests/val.jsonl",
+    "test": "artifacts/diffae_pilot/manifests/test.jsonl"
+  },
+  "tiny": {"limit": 32, "max_steps": null, "epochs": 1, "lr": 0.00001},
+  "pilot": {"limit": 1000, "max_steps": null, "epochs": 5, "lr": 0.00001},
+  "optimizer": {"name": "Adam", "weight_decay": 0.001, "temperature_weight_decay": 0.0, "betas": [0.9, 0.999], "eps": 1e-8},
+  "checkpoint_every": 200,
+  "protocol": {
+    "subset": "Fixed balanced train subset within existing split; val/test unchanged",
+    "rgb": "RGB float32 [0,1], bilinear resize 224x224, no augmentation",
+    "mask": "Supplied author dataset binary GT; nearest resize 224x224",
+    "decoder": "Experimental four concatenated appearance skips, nearest resize-conv, shared AD/MD trunk and distinct heads",
+    "gradient": "Detach reconstruction only on input to residual encoder; AR and FL keep decoder/skip gradients; IE/RE still share weights",
+    "losses": "1 FD + 1 AR + 0.25 weighted FL; foreground class weight 4; disabled objectives report zero and are not executed",
+    "language": "LR/CMC/KL weights are zero; tokenizer and FLT are not executed or instantiated",
+    "limitations": "Engineering ablation, not author-confirmed architecture; initial manual weights are not optimized; unknown identity mapping; old numerical audit unchanged"
+  }
+}

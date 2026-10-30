@@ -1,0 +1,90 @@
+ĐỐI CHIẾU CÁC BÀI MFVLR TRÍCH DẪN VỀ RECONSTRUCTION / RESIDUAL
+Ngày đọc: 22/10/2026
+
+Phạm vi: giải thích ý nghĩa việc tái dựng A thành B rồi dùng |B-A|, và giới
+hạn khi suy từ paper khác sang cấu hình MFVLR trong workspace.
+Đã đọc PDF nghiên cứu gốc từ CVF, không chỉ dựa mô tả trong MFVLR.
+Số [26], [30], [44], [57] là số tài liệu tham khảo trong MFVLR.
+Số trang dưới đây tính từ đầu từng PDF, không phải số trang proceedings.
+
+1. DIRE [26] — ICCV2023
+Tên: DIRE for Diffusion-Generated Image Detection, Zhendong Wang và cộng sự.
+Trong MFVLR: mụcII-A, tr.3; xuất hiện trong các bảng so sánh.
+Nguồn: https://openaccess.thecvf.com/content/ICCV2023/html/Wang_DIRE_for_Diffusion-Generated_Image_Detection_ICCV_2023_paper.html
+PDF cục bộ: tmp/paper_review/DIRE_ICCV2023.pdf.
+Vị trí: tr.1–2 và mục3.2, tr.4–5; Eq.(9), Eq.(10).
+
+Dùng diffusion model đã pretrained để DDIM inversion/reconstruction, rồi lấy
+sai khác tuyệt đối và train classifier trên residual. Tác giả quan sát ảnh
+diffusion-generated được tái dựng tốt hơn ảnh thật trong thiết lập của họ.
+Trích ngắn: "by a pre-trained diffusion model" (tr.1).
+Liên hệ: residual có thể chứa tín hiệu phân biệt dù cùng hướng tới tái dựng.
+Khác MFVLR: AD hiện train từ đầu bằng AR cùng các objective, không phải diffusion
+reconstructor pretrained. Không suy rằng fake luôn có residual lớn hơn real,
+hoặc kết luận DIRE áp dụng nguyên vẹn cho ảnh Diffae chỉnh một phần.
+
+2. RECCE [57] — CVPR2022
+Tên: End-to-End Reconstruction-Classification Learning for Face Forgery Detection,
+Junyi Cao và cộng sự.
+Trong MFVLR: BảngVIII, tr.13, là phương pháp so sánh, không phải recipe AD.
+Nguồn: https://openaccess.thecvf.com/content/CVPR2022/html/Cao_End-to-End_Reconstruction-Classification_Learning_for_Face_Forgery_Detection_CVPR_2022_paper.html
+PDF cục bộ: tmp/paper_review/RECCE_CVPR2022.pdf.
+Vị trí: mục3.1/Fig.2/Eq.(1)–(4), tr.3; mục3.4/Eq.(10), tr.5.
+
+Reconstruction loss L1 chỉ tính trên ảnh thật; thêm white noise vào input
+khi train. Có metric learning và reconstruction-guided attention để phân biệt.
+Trích: "would not significantly improve the learned representations" (tr.3),
+trong nhận xét về nhánh tái dựng đầu vào đơn thuần.
+Liên hệ: cần cơ chế khiến reconstruction hữu ích cho detection, không chỉ giảm
+sai số ảnh. Đây không phải định lý mọi reconstruction đều vô ích.
+Khác MFVLR: AR Eq.(17)/code hiện không chọn real-only, dùng squared error.
+Đổi sang RECCE là ablation thay objective, không phải sửa hiển nhiên theo MFVLR.
+
+3. DiffForensics [30] — CVPR2024
+Tên: DiffForensics: Leveraging Diffusion Prior to Image Forgery Detection and
+Localization, Zeqin Yu và cộng sự.
+Trong MFVLR: mụcII-A, tr.3 và các bảng detection/localization.
+Nguồn: https://openaccess.thecvf.com/content/CVPR2024/html/Yu_DiffForensics_Leveraging_Diffusion_Prior_to_Image_Forgery_Detection_and_Localization_CVPR_2024_paper.html
+PDF cục bộ: tmp/paper_review/DiffForensics_CVPR2024.pdf.
+Vị trí: mục3.1–3.2, tr.3–4, Eq.(1), Fig.2; mục4.1 tr.5.
+
+Hai giai đoạn: pretrain denoising diffusion với encoder segmentation pretrained
+được freeze, rồi fine-tune cả encoder/decoder cho detection và localization.
+Pretraining học dự đoán noise; có module tăng cường edge khi fine-tune.
+Liên hệ: tái dựng/khử nhiễu là cách học feature trước task cuối, không yêu cầu
+residual thô tự động bằng mask. Khác lịch train scratch/joint của MFVLR.
+Không lấy sigmoid của edge head trong bài này làm bằng chứng AD MFVLR phải có
+sigmoid, cũng không tự thêm pretraining vào baseline mà không ghi là biến thể.
+
+4. U-Net [44] — MICCAI2015
+Nguồn: https://arxiv.org/pdf/1505.04597
+PDF cục bộ: tmp/paper_review/unet_2015_reference.pdf; mục2, tr.4.
+Đã đối chiếu expanding path: up-convolution, skip concatenation, conv3x3+ReLU
+và head1x1. Đây là cơ sở kiến trúc; không tự trả lời cách cân AR/FL/FD hoặc
+chứng minh residual của MFVLR hữu ích. Cần thích nghi kích thước/padding.
+
+ĐỐI CHIẾU VỚI CÂU HỎI HIỆN TẠI
+
+- MFVLR [PDF2605.10071v1], tr.7 Eq.(17): AR kéo B gần A; tr.5–6: residual
+  tuyệt đối và nhánh reconstruction. Mục đích nêu là học representation.
+- DIRE và RECCE đưa ra hai cơ chế tạo tín hiệu phân biệt khác nhau: prior
+  diffusion pretrained so với học phân bố ảnh thật. Không có quy tắc chung
+  rằng residual lớn luôn đồng nghĩa ảnh giả.
+- Với MFVLR, B gần A có thể giúp học feature, nhưng AR giảm không tự chứng minh
+  detection/localization tốt hơn. Cần kiểm tra cả mục tiêu cuối.
+- Các nguồn trên chưa xác nhận AD MFVLR phải có sigmoid/clamp, hoặc AR phải
+  lấy spatial sum/mean cụ thể. Giữ các điểm đó là lựa chọn cần ghi nhận.
+
+CÁCH TỰ KIỂM CHỨNG ĐỀ XUẤT, CHƯA THỰC HIỆN Ở BƯỚC ĐỌC PAPER
+
+1. Log range A/B/residual, phần trăm B ngoài[0,1], AR và detection/localization
+   theo real/fake. Không kết luận chỉ từ residual trung bình hoặc hình xem.
+2. So FL riêng, FL+AR, FL+FD và tổ hợp; chốt dữ liệu/seed/số bước/metric.
+   Ablation bỏ AR vẫn có thể giữ AD/residual với gradient FD; không gọi đó là
+   đã loại nhánh reconstruction hoặc chứng minh AD không còn được huấn luyện.
+3. Nếu thử real-only AR hoặc denoising/pretraining, ghi thành biến thể nghiên
+   cứu mới. Không đổi nhiều yếu tố cùng lúc hoặc chọn hyperparameter theo test.
+
+Đọc ưu tiên: RECCE mục3.1 cho câu hỏi "tái dựng gần đầu vào có ích gì?";
+DIRE mục3.2 để hiểu residual phụ thuộc prior; U-Net cho decoder; DiffForensics
+cho hướng pretraining/fine-tuning. Chưa thay model/train khi lập ghi chú này.

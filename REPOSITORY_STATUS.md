@@ -1,5 +1,11 @@
 # MFVLR documented reproduction
 
+An independently scoped internal Diffae pilot now has `train.py`, `evaluate.py`,
+file-backed inputs and resumable checkpoints. See [the pilot guide](docs/diffae_pilot_run.md).
+These tools do not alter historical acceptance or establish numerical readiness;
+the old preparation-only trainer remains disabled. Full A0 training was not run
+while preparing this pipeline.
+
 This repository contains the documented A0 engineering baseline, research-only
 verification infrastructure, configurations, unit tests and design/acceptance
 reports. The original architecture's undocumented details are not claimed as

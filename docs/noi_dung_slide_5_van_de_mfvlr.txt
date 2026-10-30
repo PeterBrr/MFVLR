@@ -1,0 +1,348 @@
+NỘI DUNG SLIDE: 5 VẤN ĐỀ TRONG BẢN TRIỂN KHAI MFVLR
+Ngày: 26/10/2026
+
+Tài liệu chính:
+C:\Ổ đĩa D\Download\bao_cao_5_van_de_decoder_loss_gradient_ngon_ngu.md
+
+Cấu trúc: 14 slide chính, khoảng25 phút; 5 phút trao đổi.
+Phụ lục A1–A4 dùng khi cần trả lời sâu, không tính vào25 phút.
+Các dòng “Nguồn cho ghi chú” dùng để điền speaker notes hoặc chân trang.
+Số liệu A0 lịch sử và kết quả pilot mới được ghi riêng, không gộp thành
+một thí nghiệm. Các hướng cải tiến chưa mặc định đã được triển khai.
+
+======================================================================
+SLIDE 01 — RÀ SOÁT BẢN TRIỂN KHAI MFVLR
+Thời lượng: 0,5 phút
+======================================================================
+
+- Decoder, loss/gradient và nhánh ngôn ngữ.
+- Mục tiêu: làm rõ lựa chọn triển khai và các cơ chế cần kiểm chứng.
+- Xin ý kiến về thứ tự thí nghiệm để hoàn thiện bản tái hiện.
+
+Nguồn cho ghi chú: tài liệu chính; paper MFVLR, arXiv:2605.10071v1.
+
+======================================================================
+SLIDE 02 — PHẠM VI VÀ NĂM VẤN ĐỀ ƯU TIÊN
+Thời lượng: 1,5 phút
+======================================================================
+
+- A0 là baseline kỹ thuật diễn giải paper, chưa xác nhận là kiến trúc gốc.
+- Nhánh ảnh: decoder chỉ dùng bottleneck, AD/MD chung trunk.
+- Nhánh ngôn ngữ: LD thiếu LayerNorm; VIM chỉ dùng một visual K/V.
+- Tối ưu: sáu loss khác thang đo; prompt reconstruction có nguy cơ đường tắt.
+- Phân biệt: hành vi code, bằng chứng đã đo và giả thuyết cần thử.
+
+Nguồn cho ghi chú: tài liệu chính, bảng tổng hợp đầu bài;
+src/mfvlr/integration.py; docs/doi_chieu_bao_cao_5_van_de_va_tom_tat.md.
+
+======================================================================
+SLIDE 03 — VẤN ĐỀ 1: DECODER VÀ ĐƯỜNG RESIDUAL ẢNH
+Thời lượng: 1,5 phút
+======================================================================
+
+- IE/RE dùng chung encoder; AD/MD dùng chung trunk và hai head riêng.
+- Decoder A0: feature14×14 -> bốn tầng upsampling -> ảnh/mask224×224.
+- Encoder có bốn skip feature nhưng decoder hiện không sử dụng.
+- Ảnh tái tạo B tạo residual R=|B−A| để tiếp tục trích đặc trưng detection.
+- Không detach residual: mục tiêu phía sau có thể cập nhật ngược về AD.
+
+Chuỗi dữ liệu để đưa vào slide:
+Ảnh A -> IE -> decoder chung -> AD -> B -> |B−A| -> RE -> detection
+                         -> MD -> mask -> loss FL
+
+Nguồn cho ghi chú: paper tr.5–6, Hình4, §III-B/C;
+src/mfvlr/vision_decoder.py; src/mfvlr/mve.py; src/mfvlr/integration.py.
+
+======================================================================
+SLIDE 04 — VẤN ĐỀ 1: NGUY CƠ VÀ PHÉP SO DECODER
+Thời lượng: 2 phút
+======================================================================
+
+- Thiếu skip có thể hạn chế biên/texture nhỏ; đây là giả thuyết, chưa có
+  phép so cùng điều kiện để kết luận bắt buộc cần skip.
+- Residual có thể chứa lỗi tái tạo thông thường, chưa chỉ ra vùng giả.
+- Trunk chung nhận nhiều mục tiêu; AD tuyến tính còn có thể ra ngoài[0,1].
+- Hướng thử: bottleneck-only so với decoder có skip, giữ nguyên loss/head.
+- Ưu: bổ sung thông tin vị trí. Nhược: tăng compute/bộ nhớ và chưa xác nhận
+  cách nối skip gốc của MFVLR; cần đánh giá cả AUC và chất lượng mask.
+
+Thông tin tham khảo khi trình bày:
+- VD A0 hiện có9.055.365 tham số.
+- Phương án skip Option A trong hồ sơ thiết kế:12.188.805 tham số;
+  chưa phải decoder đang train.
+- Không đổi đồng thời skip, sigmoid và detach trong một phép đối chiếu.
+
+Nguồn cho ghi chú: tài liệu chính, mục1;
+docs/phase2b_decoder_contract.md; src/mfvlr/vision_decoder.py.
+
+======================================================================
+SLIDE 05 — VẤN ĐỀ 2: LD BẢY BLOCK KHÔNG CÓ LAYERNORM
+Thời lượng: 2 phút
+======================================================================
+
+- Mỗi LD block: masked self-attention -> LE-memory attention -> FF -> VIM.
+- Cộng residual ở từng bước; không có LayerNorm trong block hoặc cuối LD.
+- Số liệu fixture lịch sử CPU FP32, B=2, được tài liệu nguồn dẫn:
+    LE12/memory RMS:44,56
+    LD01 RMS:51,10 -> LD03:172,15 -> LD05:492,15 -> LD07:1.252,64.
+- Activation tăng mạnh nhưng còn hữu hạn; chưa chứng minh training phân kỳ.
+- Có thể tăng độ nhạy gradient; finite checks chỉ bắt NaN/Inf.
+
+Nguồn cho ghi chú: paper tr.6–8, Eq.13–16;
+src/mfvlr/language_decoder.py; src/mfvlr/flt.py;
+tài liệu chính, mục2, dẫn fixture real_efs lịch sử.
+Số RMS là dẫn lại tài liệu, không phải đo trên pilot GenFace mới.
+
+======================================================================
+SLIDE 06 — VẤN ĐỀ 2: ĐỐI CHIẾU A0, PRE-LN VÀ POST-LN
+Thời lượng: 1,5 phút
+======================================================================
+
+- A0: giữ LD không LN, làm đối chứng cho cách diễn giải hiện tại.
+- P3: pre-LN cho self-attention, memory-attention và FF.
+- Q3: post-LN sau ba residual tương ứng; VIM ngoài các norm ở cả P3/Q3.
+- Source P3/Q3 đã có; mỗi phương án thêm21 LayerNorm,21.504 tham số.
+- Ưu: có thể cải thiện conditioning. Nhược: đổi giả định kiến trúc;
+  activation nhỏ hơn chưa đủ chứng minh detection/localization tốt hơn.
+
+Phép kiểm chứng:
+- Cùng trọng số chung ban đầu; theo dõi RMS/gradient và sai khác số học.
+- Sau đó đối chiếu chất lượng nhiệm vụ; không thay initializer/loss cùng lúc.
+
+Nguồn cho ghi chú: src/mfvlr_research/decoder_a11.py;
+docs/phase2d2_a11_acceptance_snapshot.md; tài liệu chính, mục2.
+
+======================================================================
+SLIDE 07 — VẤN ĐỀ 3: HỆ SỐ LOSS BẰNG1, THANG ĐO KHÁC NHAU
+Thời lượng: 2 phút
+======================================================================
+
+Công thức tổng trong baseline:
+L = L_FD + L_LR + L_CMC + L_FL + L_AR + L_KL
+
+- FD: cross-entropy hai lớp, mean batch.
+- LR: sum308 token rồi mean batch; hiện tính cả PAD/BOS/EOS.
+- FL: mean cross-entropy trên batch/pixel; AR: mean squared error toàn ảnh.
+- CMC: raw dot/temperature; KL: sum512 chiều rồi mean batch.
+- Hệ số1 không bảo đảm các loss tạo gradient đóng góp ngang nhau.
+
+Ví dụ đổi reduction, giữ các yếu tố khác:
+- AR sum kênh/pixel rồi mean batch lớn hơn mean toàn tensor150.528 lần
+  ở RGB224×224; FL không trọng số sum pixel/mean batch lớn hơn50.176 lần.
+
+Nguồn cho ghi chú: paper Eq.17–27; src/mfvlr/objectives.py.
+Weighted FL của resize-conv là biến thể riêng, không phải FL A0 trong bảng.
+
+======================================================================
+SLIDE 08 — VẤN ĐỀ 3: GRADIENT LỚN VÀ KIỂM TRA ADDITIVITY
+Thời lượng: 2,5 phút
+======================================================================
+
+- Fixture G01-A0 lịch sử: B=1, một ảnh thật; CMC=0.
+- Gradient norm toàn roster: LR khoảng37,14 triệu; FD khoảng1.047;
+  FL khoảng1,609; AR khoảng1,573.
+- Trong fixture đó, PAD chiếm khoảng75,16% scalar LR;
+  chưa suy được PAD chiếm cùng tỷ lệ gradient.
+- Additivity lịch sử:293/508 tensor không đạt ngưỡng đối chiếu.
+- Additivity FAIL và gradient các nhiệm vụ nghịch hướng là hai vấn đề khác.
+
+Hai phép đo cần phân biệt:
+1) Additivity: grad(sum L_i) có khớp sum grad(L_i) theo tolerance không?
+2) Xung đột task: cosine(g_i,g_j) trên cùng tham số có âm không?
+
+Nguồn cho ghi chú: tài liệu chính, mục3;
+docs/phase2d2_d02b8_gradient_forensics.md.
+Đây là số liệu fixture lịch sử, chưa đại diện toàn bộ batch train hoặc Adam.
+
+======================================================================
+SLIDE 09 — VẤN ĐỀ 3: CÁCH TÁCH NGUYÊN NHÂN LOSS
+Thời lượng: 1,5 phút
+======================================================================
+
+- Đo norm/cosine trên cùng encoder/trunk và qua nhiều batch/giai đoạn.
+- Tách kiểm tra số học A0 khỏi thí nghiệm thay loss hoặc kiến trúc.
+- Với LR: thử bỏ PAD riêng, hoặc đổi reduction riêng; không đổi cả hai.
+- Ưu: tách được ảnh hưởng. Nhược: thay objective có thể đổi cả thang loss
+  và lợi ích ngữ nghĩa; loss thấp hơn chưa đủ chứng minh model tốt hơn.
+- Theo dõi tái tạo, detection, mask và báo giả trên ảnh thật cùng nhau.
+
+Quyết định đã triển khai trong skip_resize_conv_v2, A0 giữ cũ:
+- Bỏ target PAD nhưng giữ token-sum rồi batch-mean.
+- Weight pixel giả khác với hệ số lambda nhân toàn bộ FL.
+
+Nguồn cho ghi chú: tài liệu chính, mục3; src/mfvlr/objectives.py;
+docs/nhung_diem_can_lam_ro_paper_va_code.txt, vấn đề06–08 và15.
+
+======================================================================
+SLIDE 10 — VẤN ĐỀ 4: VIM CHỈ CÓ MỘT VISUAL KEY/VALUE
+Thời lượng: 2 phút
+======================================================================
+
+- Có19 VIM riêng:12 ở LE,7 ở LD; Q là nhiều token ngôn ngữ.
+- K/V chỉ có một visual token mỗi head; softmax chạy theo trục key.
+- Với logits hữu hạn: softmax([a])=[1], nên Attention(Q,K,V)=V.
+- Phần chèn ảnh giống nhau giữa các vị trí từ trong một head;
+  không lựa chọn visual key theo từng query.
+- Q/K không nhận task gradient qua attention này; V/output vẫn học được,
+  token sau residual vẫn có thể khác nhau.
+
+Công thức đặt trên slide:
+Delta_t = W_out(W_v(I_v))
+dDelta/dQ = 0; dDelta/dK = 0   khi chỉ có một key
+
+Nguồn cho ghi chú: paper Hình5, Eq.4–11, BảngXV;
+src/mfvlr/vim.py; tài liệu chính, mục4.
+
+======================================================================
+SLIDE 11 — VẤN ĐỀ 4: GIỮ GLOBAL INJECTION HAY THỬ NHIỀU KEY?
+Thời lượng: 1,5 phút
+======================================================================
+
+- Q/K của19 VIM có tổng9.961.472 tham số; task gradient qua singleton bằng0.
+- Giữ một key: ít chi phí attention; vẫn đưa ngữ cảnh ảnh vào text.
+- Hướng1: thử V->O rồi broadcast; gần hành vi singleton khi hữu hạn,
+  cần kiểm chứng forward/gradient và cách xử lý nonfinite/checkpoint.
+- Hướng2: nhiều visual key để query chọn nội dung; tăng compute và cần chốt
+  nguồn patch từ appearance/residual. Đây là biến thể mới, chưa chọn.
+- Đổi scale một mình không sửa được softmax=1 với một key hữu hạn.
+
+Nguồn cho ghi chú: src/mfvlr/vim.py; tài liệu chính, mục4.
+Giữ baseline class-token làm đối chứng; không suy tác giả dùng nhiều key.
+
+======================================================================
+SLIDE 12 — VẤN ĐỀ 5: TÁI TẠO PROMPT VÀ ĐƯỜNG TẮT VĂN BẢN
+Thời lượng: 2 phút
+======================================================================
+
+- Bốn prompt ->4 đoạn77 vị trí ->308 token; nhiều vị trí là PAD.
+- LE đọc toàn bộ prompt; LD cross-attention vào toàn bộ memory LE.
+- Causal self-attention ở LD không ngăn thông tin target/tương lai qua LE.
+- LR có thể giảm nhờ prompt memory/phần đệm mà chưa cần dùng ảnh đủ mạnh.
+- KL căn chỉnh hai phía cùng học; text đã nhận ảnh qua VIM, không phải
+  teacher ngữ nghĩa độc lập. Inference của model vẫn chỉ dùng ảnh.
+
+Nguồn cho ghi chú: paper §III-D, Eq.12–16 và24–25;
+src/mfvlr/tokenizer.py; language_encoder.py; language_decoder.py;
+flt.py; integration.py; objectives.py; tài liệu chính, mục5.
+Nguy cơ đường tắt chưa được định lượng đầy đủ; không đồng nghĩa label leak
+khi inference ảnh-only.
+
+======================================================================
+SLIDE 13 — VẤN ĐỀ 5: POOLING, CMC VÀ PHÉP ĐO PHỤ THUỘC ẢNH
+Thời lượng: 2 phút
+======================================================================
+
+- A0 lấy vị trí307 làm global text, thường là PAD; hidden tại PAD vẫn
+  có thể chứa ngữ cảnh, chưa thể kết luận pooling này tất yếu sai.
+- Đã triển khai EOS cuối thực sự và L2 trước dot CMC trong skipv2.
+- CMC diagonal-only có thể coi prompt cùng ngữ nghĩa là negative;
+  dự án hiện giữ cách chọn positive này theo công thức tác giả.
+- Probe: đổi/xáo trộn visual conditioning ở cả LE/LD, đo LR phần nội dung;
+  đánh giá lợi ích cuối bằng visual-only trên validation.
+- Ưu: xác định mức sử dụng ảnh. Nhược: sửa pooling/CMC hoặc prompt sẽ đổi
+  giả định; cần thử riêng, không chỉ chọn theo LR giảm.
+
+Nguồn cho ghi chú: tài liệu chính, mục5;
+src/mfvlr/language_encoder.py; src/mfvlr/objectives.py;
+docs/nhung_diem_can_lam_ro_paper_va_code.txt, vấn đề14,17–19.
+KL hai phía cùng học được giữ; multi-positive/denoising chưa phải recipe đã chọn.
+
+======================================================================
+SLIDE 14 — CÁC QUYẾT ĐỊNH CẦN THỐNG NHẤT
+Thời lượng: 2,5 phút; sau đó5 phút trao đổi
+======================================================================
+
+- Decoder: chấp nhận thử skip/tách nhánh như ablation, hay cần thêm chi tiết
+  tác giả trước khi coi một cấu hình là bản tái hiện?
+- LD: có ưu tiên so A0/P3/Q3 để kiểm tra thang activation và gradient?
+- Loss: giữ baseline rõ ràng; thay masking, reduction hoặc hệ số từng yếu tố.
+- VIM: giữ class-token đối chứng, làm rõ vai trò query và quy ước residual.
+- Language: kiểm tra thực sự dùng ảnh; chọn cải tiến theo detection/mask,
+  đồng thời giữ giả định và giới hạn thực nghiệm minh bạch.
+
+Nguồn cho ghi chú: tài liệu chính, phần thứ tự xử lý;
+docs/doi_chieu_bao_cao_5_van_de_va_tom_tat.md.
+Các hướng trên là đề xuất cần kiểm chứng; không mặc định đều đã triển khai.
+
+
+PHỤ LỤC — KHÔNG BẮT BUỘC TRÌNH BÀY TRONG25 PHÚT
+
+======================================================================
+SLIDE A1 — BỔ SUNG MỚI: AR/FD/FL TỪ TRỌNG SỐ KHỞI TẠO MỚI
+======================================================================
+
+- 4 ảnh train GenFace; cùng khởi tạo;200 cập nhật mỗi nhánh; không language.
+- MSE cuối: AR0,00532; AR+FD0,00803; AR+FL0,01357; AR+FD+FL0,23202.
+- AR riêng học được cấu trúc mặt nhưng vẫn mờ; thêm task đổi chất lượng AD.
+- Nhánh ba loss dao động: MSE bước175=0,03384, bước200=0,23202.
+- Chưa chứng minh xung đột cố định: gradient AR–FD ban đầu còn cùng hướng;
+  cần xem quá trình tối ưu, LR và khả năng học ảnh mới.
+
+Nguồn cho ghi chú: docs/ad_scratch_test_vi.md;
+artifacts/genface_ad_scratch_20261025/report.json.
+Hình có sẵn: artifacts/genface_ad_scratch_20261025/comparison_final.png;
+artifacts/genface_ad_scratch_20261025/loss_curves.png.
+Đây là cập nhật thực nghiệm ngoài tài liệu chính; số liệu trên ảnh train.
+
+======================================================================
+SLIDE A2 — BỔ SUNG MỚI: PILOT TÁCH CNN ENCODER CHO MASK
+======================================================================
+
+- 32 ảnh train/64 validation;200 cập nhật; AR+FD+FL từ đầu; cùng lịch batch.
+- Chỉ tách CNN mask; IE/RE và trunk decoder AD/MD vẫn chia sẻ như đã mô tả.
+- Validation: MSE0,08991 ->0,18639; IoU foreground fake0,11857% ->0,001563%.
+- AUC52,54% ->54,79% trên64 ảnh; cả hai nhánh vẫn gần toàn nền.
+- Đã cô lập gradient ở CNN, nhưng chưa cải thiện model; thêm18,84M tham số,
+  peak CUDA allocated khoảng3331 ->3885 MiB. Một seed chưa đủ kết luận chung.
+
+Nguồn cho ghi chú: docs/split_mask_encoder_pilot_vi.md;
+artifacts/genface_split_mask_encoder_pilot_20261025/report.json.
+Hình có sẵn: artifacts/genface_split_mask_encoder_pilot_20261025/val_comparison.png;
+artifacts/genface_split_mask_encoder_pilot_20261025/validation_curves.png.
+Đây là cập nhật ngoài tài liệu chính; IoU ghi trên fake, không phải mIoU hai lớp.
+
+======================================================================
+SLIDE A3 — QUY ƯỚC RESIDUAL VIM VÀ NHỮNG ĐIỂM CHƯA CHỐT THEO TÁC GIẢ
+======================================================================
+
+- Code A0 hiện trả Delta, caller tạo x+Delta: cộng residual một lần.
+- File báo cáo chính giữ cách này; Hình5/Eq.16 có ranh giới module chưa rõ.
+- Dự án đã chốt thử2*x+Delta nhưng chưa triển khai; đây là lựa chọn diễn giải,
+  chưa xác nhận ý định hoặc code tác giả.
+- Cộng hai lần đổi tỷ lệ x/Delta và thang activation; phải thử độc lập với LN.
+- Không chạy VIM hai lần; không dùng lựa chọn residual để khẳng định fidelity.
+
+Nguồn cho ghi chú: paper Hình5 và Eq.16; src/mfvlr/vim.py;
+docs/nhung_diem_can_lam_ro_paper_va_code.txt, vấn đề11.
+
+======================================================================
+SLIDE A4 — NGUỒN VÀ PHẠM VI CÁC CON SỐ
+======================================================================
+
+- Paper MFVLR:2605.10071v1.pdf; Hình4–6, Eq.4–27, BảngIX/XV.
+- A0: full154,16M, nhánh ảnh41,14M; resize-conv:152,07M và39,05M.
+- P3/Q3 là source nghiên cứu có sẵn; các pilot ảnh vừa rồi chưa dùng chúng.
+- Số activation/G01 là lịch sử từ tài liệu nguồn; JSON gốc tương ứng chưa
+  có trong workspace này để đối chiếu lại toàn bộ.
+- Pilot nội bộ đã chạy không đồng nghĩa FAIL số học A0 lịch sử đã được sửa;
+  kiểm tra số học và kết quả nhiệm vụ được báo cáo riêng.
+
+Nguồn cho ghi chú:
+1. Paper: D:\New folder (2)\MFVLR\2605.10071v1.pdf
+   https://arxiv.org/abs/2605.10071
+2. Source: src/mfvlr/{mve,vision_decoder,language_encoder,language_decoder,
+   vim,flt,objectives,integration}.py
+3. LayerNorm: src/mfvlr_research/decoder_a11.py;
+   docs/phase2d2_a11_acceptance_snapshot.md
+4. Gradient lịch sử: docs/phase2d2_d02b8_gradient_forensics.md
+5. Đối chiếu và cập nhật: docs/doi_chieu_bao_cao_5_van_de_va_tom_tat.md;
+   docs/ad_scratch_test_vi.md; docs/split_mask_encoder_pilot_vi.md
+
+THUẬT NGỮ DÙNG KHI TRÌNH BÀY
+AD: appearance decoder, tái tạo ảnh. MD: mask decoder, dự đoán mask.
+IE/RE: encoder cho ảnh đầu vào/ảnh residual, hiện dùng chung trọng số.
+LE/LD: language encoder/language decoder. VIM: Vision Injection Module.
+AR: loss tái tạo ảnh. FD: loss phát hiện thật/giả. FL: loss định vị vùng giả.
+LR: loss tái tạo ngôn ngữ, khác learning rate của optimizer.
+CMC: loss tương phản ảnh–ngôn ngữ. KL: loss căn chỉnh phân phối feature.
+PAD: token đệm. BOS/EOS: token bắt đầu/kết thúc chuỗi.

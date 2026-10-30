@@ -1,0 +1,514 @@
+BÁO CÁO GIẢNG VIÊN: TỔNG HỢP 29 VẤN ĐỀ CỦA DỰ ÁN MFVLR
+Cập nhật: 24/10/2026
+Đối chiếu: paper, source code trong workspace và các quyết định đã thảo luận.
+Tài liệu chi tiết: docs/nhung_diem_can_lam_ro_paper_va_code.txt.
+
+PHẠM VI VÀ CÁCH ĐỌC
+
+Mục tiêu hiện tại là hoàn thiện bản tái hiện và kiểm tra model có học được
+detection/localization trên pilot nhỏ. Chưa đánh giá generalization đầy đủ.
+29 mục dưới đây gồm điểm paper chưa rõ, lựa chọn triển khai, kiểm chứng thực
+nghiệm và giới hạn dữ liệu; không phải 29 lỗi đã được xác nhận của paper/code.
+Mỗi mục nêu vấn đề, code hiện dùng, hướng xử lý và ưu/nhược điểm của hướng đó.
+Các ưu điểm là cơ sở lựa chọn hoặc kỳ vọng, không mặc định đã được thực nghiệm
+chứng minh. Giữ số thứ tự 01–29 khớp tài liệu chi tiết sau khi gộp mục decoder.
+
+[P] là PDF 2605.10071v1.pdf, MFVLR, arXiv: 2605.10071v1; trang tính từ đầu PDF.
+Source trong workspace là bản triển khai lại, chưa xác nhận là mã gốc tác giả.
+AD: appearance decoder; MD: mask decoder; LE/LD: language encoder/decoder.
+FD: detection; FL: localization; AR: tái tạo ảnh; LR: tái tạo ngôn ngữ;
+CMC: tương phản ảnh–ngôn ngữ; KL: căn chỉnh phân phối đặc trưng.
+LR trong tên loss khác với learning rate được ghi đầy đủ trong báo cáo.
+
+HIỆN TRẠNG CHUNG VÀ NHỮNG ĐIỂM DỄ NHẦM
+
+- A0 là baseline diễn giải paper: decoder ConvTranspose2d, không skip,
+  gradient language đi về nhánh ảnh, FL không class weight.
+- resize_conv_v1 là biến thể thử nghiệm: resize-conv, vẫn không skip;
+  các config đã chạy dùng stop_all và weighted FL. Không gọi là nguyên trạng paper.
+- Đã chốt nhưng CHƯA triển khai: residual VIM hai lần (11), EOS pooling (14),
+  bỏ target PAD khỏi LR (15), L2-normalize trong CMC (17), mIoU toàn tập (26).
+- Đã có sẵn trong code và giữ nguyên: 19 VIM riêng (12), cấu trúc/full memory
+  của LD (16), positive theo cùng chỉ số (18), KL hai phía cùng học (19).
+- Đã triển khai mới: optimizer/scheduler theo phần tác giả công bố (24),
+  qua configs/diffae_pilot_paper_optimizer.json; các config pilot cũ giữ nguyên.
+- Còn mở về recipe tác giả: preprocessing (20), tổng epoch/early stopping (23),
+  threshold/hậu xử lý (27); một số chi tiết kiến trúc/loss vẫn cần đối chiếu.
+- GT có sẵn, không tạo lại (01–02); stop_all không phải câu hỏi paper (09);
+  thiếu mapping danh tính là giới hạn không chặn pilot (21); generalization
+  để giai đoạn sau (22). Chưa có cơ sở quy mask kém cho một nguyên nhân duy nhất.
+
+TỔNG HỢP 29 VẤN ĐỀ
+
+01. Sử dụng đúng GT do tác giả cung cấp
+Vấn đề: phân biệt xuất xứ GT với việc code ghép/biến đổi ảnh–mask đúng hay không.
+Code hiện tại: đọc mask sẵn, kiểm tra hash/kích thước/giá trị; coi 1 hoặc255
+  là foreground, resize nearest; kiểm tra mask real không có foreground.
+Hướng xử lý / trạng thái: đã làm rõ nguồn theo xác nhận người dùng: tải ảnh
+  và mask từ link dataset tác giả. Dùng GT này, kiểm tra nhanh pairing/resize;
+  không yêu cầu ảnh thật nguồn hoặc tái tạo GT để tiếp tục train.
+Ưu điểm: dùng nhãn phát hành, tránh thêm sai khác do tự dựng mask; kiểm tra
+  loader có thể thực hiện bằng dữ liệu sẵn có.
+Nhược điểm / giới hạn: nguồn chính thức không tự chứng minh code pairing đúng;
+  kiểm tra binary/hash không thay thế kiểm tra khớp vị trí ảnh–mask.
+Căn cứ: [P] tr. 4,7; src/mfvlr_research/pilot_data.py, PilotFaces.__getitem__.
+
+02. Quy trình tạo GT và ngưỡng0,1
+Vấn đề: paper tạo GT từ chênh lệch ảnh giả–nguồn, grayscale, chia255 và threshold.
+Code hiện tại: chỉ đọc GT đã cung cấp; không chạy lại thuật toán tạo mask.
+Hướng xử lý / trạng thái: chỉ giữ làm tham khảo, không còn là việc phải giải
+  quyết trước train. Chỉ nghiên cứu lại khi tạo GT mới hoặc làm ablation GT.
+Ưu điểm: tránh tốn thời gian và tránh thay nhãn chuẩn bằng một bản tái tạo
+  phụ thuộc lựa chọn grayscale/resize chưa rõ.
+Nhược điểm / giới hạn: chưa tự kiểm chứng lại quy trình sinh từng GT; không
+  suy ngưỡng tạo GT 0,1 thành ngưỡng xác suất mask dự đoán.
+Căn cứ: [P] tr. 7 III-E, tr. 15 V-J; dữ liệu GT có sẵn của người dùng.
+
+03. Cấu trúc decoder: upsampling, skip và head
+Vấn đề: MFVLR gọi U-Net decoder nhưng chưa nêu đầy đủ channel/kernel/padding/skip.
+Code hiện tại: A0 có4 tầng ConvTranspose2d2x2/stride2; biến thể dùng projection
+  1x1 -> resize x2 -> hai conv3x3+ReLU. Cả hai chỉ dùng bottleneck1024x14x14,
+  không dùng skip; trunk AD/MD chung, head reconstruction3 và mask2 kênh riêng.
+Hướng xử lý / trạng thái: đề xuất dựa U-Net[44] có skip từ encoder; thích nghi
+  padding/kích thước224x224 và giữ chia sẻ trunk. Chưa chốt đủ chi tiết/chưa sửa.
+Ưu điểm: có cơ sở từ bài tác giả trích dẫn; skip có thể bổ sung thông tin vị
+  trí/chi tiết bị mất khi xuống mẫu, giúp nhiệm vụ phân vùng.
+Nhược điểm / giới hạn: tăng bộ nhớ/compute; chưa xác nhận cách thích nghi của
+  MFVLR; chưa chứng minh cải thiện. Đổi upsampling đơn lẻ chưa sửa được mọi lỗi mask.
+Căn cứ: [P] tr. 6 III-C; [R1]; vision_decoder.py, pilot_variant.py.
+
+04. Gradient của các loss trên encoder/decoder dùng chung
+Vấn đề: các mục tiêu có thể hỗ trợ hoặc cản nhau trên cùng tham số; chưa có
+  bằng chứng xung đột là nguyên nhân duy nhất khiến mask kém.
+Code hiện tại: IE/RE dùng chung encoder, AD/MD dùng chung trunk; FD/FL/AR
+  cập nhật nhánh ảnh; A0 có thêm LR/CMC/KL, stop_all chặn nhóm language về ảnh.
+Hướng xử lý / trạng thái: có thể tự kiểm chứng. Đo norm/cosine từng loss trên
+  cùng batch/tham số trước optimizer; qua nhiều batch/tầng. Thử FL riêng,
+  FL+AR, FL+FD trước khi quyết định cân trọng số hoặc thử GradNorm/PCGrad.
+Ưu điểm: xác định đường gradient và tương tác bằng phép đo, tách giả thuyết
+  khỏi kết luận; có thể chủ động làm mà không chờ metadata từ tác giả.
+Nhược điểm / giới hạn: thêm chi phí đo; cosine chỉ mô tả cục bộ, norm chưa
+  tương đương cập nhật Adam. GradNorm/PCGrad là cải tiến nếu thử, không phải recipe gốc.
+Căn cứ: [P] tr. 5–8, Bảng X tr. 14; [R3–R4]; integration.py, mve.py, objectives.py.
+
+05. Miền reconstruction và cách gộp sai số AR
+Vấn đề: paper có MSE và batch-mean nhưng chưa rõ gộp kênh/pixel và activation AD.
+Code hiện tại: ảnh mục tiêu[0,1], AD tuyến tính không sigmoid/clamp; residual
+  abs(reconstruction-input), không detach; AR=mean sai số bình phương trên B, C, H, W.
+Hướng xử lý / trạng thái: đã lưu hai lựa chọn: sum kênh/pixel mỗi ảnh rồi
+  batch-mean, hoặc mean toàn tensor như code. Chưa đổi; sigmoid/tanh là ablation riêng.
+Ưu điểm: mean ít phụ thuộc số pixel; sum bám một cách đọc biểu thức1/B trong
+  paper. Viết tường minh giúp so loss và gradient đúng đơn vị.
+Nhược điểm / giới hạn: sum lớn hơn mean150.528 lần ở RGB224x224, đổi trọng
+  lượng AR so với loss khác; sigmoid giới hạn miền nhưng có thể bão hòa.
+  Không có đủ nguồn để xác nhận lựa chọn activation/reduction gốc.
+Căn cứ: [P] Eq. 17; objectives.py, appearance_reconstruction_loss; [R5–R7].
+
+06. Reduction của FL: gộp CE từng pixel thành scalar
+Vấn đề: CE từng pixel tính được rõ; phần chưa đủ chi tiết là pixel-sum/mean
+  và mẫu số khi thêm class weight.
+Code hiện tại: A0 mean CE trên B, H, W; biến thể dùng
+  FL=lambda_mask*sum(w[target]*NLL)/sum(w[target]).
+Hướng xử lý / trạng thái: giữ cách hiện có khi chẩn đoán; đã lưu các phương
+  án sum/B, mean/(BHW), weighted/(BHW), weighted/sum(w) để ablation riêng.
+Ưu điểm: phân biệt rõ hiệu ứng reduction với cân foreground; weighted mean
+  hiện tại không đổi khi nhân mọi class weight cùng một hệ số.
+Nhược điểm / giới hạn: sum/mean không trọng số khác50.176 lần ở224x224;
+  hai weighted reduction còn phụ thuộc tỷ lệ foreground. Không so scalar
+  loss giữa các định nghĩa rồi suy chất lượng mask hoặc coi là recipe tác giả.
+Căn cứ: [P] Eq. 18; [R1, R7, R8]; objectives.py, pilot_variant.py.
+
+07. Cân trọng số foreground theo tỷ lệ pixel
+Vấn đề: foreground ít có thể làm model thiên về nền; cân tổng trọng lượng
+  hai lớp không bảo đảm học đúng vị trí/hình dạng.
+Code hiện tại: biến thể có class weights[1,4]; config Diffae balanced dùng
+  foreground12,58317 từ3.693.983 foreground/46.482.017 background trên1.000 ảnh train.
+Hướng xử lý / trạng thái: đã đo và train thử1 epoch; tỷ lệ chỉ tính trên TRAIN.
+  Giữ đây là ablation riêng, đo lại nếu đổi dataset/subset; chưa chốt weight tối ưu.
+Ưu điểm: tăng ưu tiên các pixel giả, có quy tắc định lượng từ dữ liệu; IoU
+  foreground validation đã tăng khi so cùng1 epoch/500 bước.
+Nhược điểm / giới hạn: báo giả trên real cũng tăng; không sửa được mask mẫu
+  lặp chỉ bằng cân lớp. Weight foreground khác lambda nhân toàn bộ FL;
+  không mang tỷ lệ Diffae áp nguyên sang FF++ hoặc chọn bằng nhãn test.
+Căn cứ: mask_balance_pilot.json, comparison.json; tools/measure_mask_balance.py.
+
+08. Sáu loss hệ số1 nhưng khác thang đo
+Vấn đề: cộng sáu loss với hệ số1 không đồng nghĩa gradient đóng góp ngang nhau.
+Code hiện tại: LR token-sum/batch-mean, AR mean RGB/pixel, FL mean hoặc weighted
+  mean; FD/CMC/KL có các phép tổng hợp khác; tổng sáu objective hệ số1.
+Hướng xử lý / trạng thái: ghi rõ reduction, đo gradient như mục 04 rồi ablation
+  hệ số nếu có căn cứ; quyết định bỏ PAD ở mục 15 chưa được đưa vào code.
+Ưu điểm: giúp giải thích loss tổng và tránh chỉnh trọng số dựa vào scalar
+  thiếu đơn vị; có thể phân biệt loss lớn do số token với tín hiệu học hữu ích.
+Nhược điểm / giới hạn: đo/so gradient tốn thời gian; chưa có hệ số mới được
+  chứng minh. Loss giảm hoặc gradient norm lớn đơn lẻ chưa chứng minh task tốt/xấu.
+Căn cứ: [P] Eq. 27; objectives.py; [R3–R4].
+
+09. stop_all là cơ chế thử nghiệm bổ sung
+Vấn đề: không gán cơ chế chặn gradient do dự án thêm thành điểm mơ hồ của paper.
+Code hiện tại: các config resize-conv đã chạy detach feature ảnh trước FLT,
+  adapter và CMC; language/adapter/temperature vẫn học, MVE/VD nhận FD/FL/AR.
+Hướng xử lý / trạng thái: bỏ khỏi câu hỏi cần tác giả giải đáp theo phạm vi
+  đã thống nhất; vẫn ghi cơ chế để mô tả đúng thí nghiệm, không tự tắt nó.
+Ưu điểm: cô lập ảnh hưởng gradient language lên nhánh ảnh để chẩn đoán.
+Nhược điểm / giới hạn: loại cả lợi ích căn chỉnh từ language về nhánh ảnh nếu
+  có; kết quả không đại diện đầy đủ graph A0/paper. Không gọi là đã giải quyết xung đột.
+Căn cứ: src/mfvlr_research/pilot_variant.py, language_visual_feature.
+
+10. VIM một key/value có tạo tương tác phụ thuộc query không?
+Vấn đề: paper dùng class token làm K/V; với softmax theo trục key có độ dài1,
+  attention luôn bằng1 nên nhánh chèn ảnh không lựa chọn nội dung theo từng query.
+Code hiện tại: Q nhiều token, K/V một token mỗi ảnh/head; VIM có8 head,
+  key-axis softmax. Trong số học lý tưởng, gradient task qua nhánh này về Q/K bằng0.
+Hướng xử lý / trạng thái: giữ lựa chọn class token có căn cứ paper; đo trace/
+  gradient và cần giải thích thêm về vai trò Q/K; chưa tự đổi trục hoặc thêm patch K/V.
+Ưu điểm: giữ cấu trúc tác giả nêu và compute thấp; V/output vẫn có thể học
+  chèn thông tin ảnh, các token còn residual ngôn ngữ khác nhau.
+Nhược điểm / giới hạn: chưa thể hiện tương tác phụ thuộc từng từ như mô tả;
+  chưa chứng minh VIM vô ích hoặc là nguyên nhân mask thất bại.
+Căn cứ: [P] Eq. 4–11, V-F/Bảng XV; src/mfvlr/vim.py.
+
+11. Scale attention và cộng residual VIM một hay hai lần
+Vấn đề: Hình 5 có x+Delta trong khối VIM; Eq. 16 lại cộng x ngoài khối.
+  Eq. 11 chỉ ghép head, biểu thức không đánh số tiếp theo mới cộng residual.
+Code hiện tại: VIM trả Delta; caller LE/LD cộng x một lần. Mẫu số attention
+  giữ sqrt(r/d) được in trong paper, chưa đổi thành sqrt(d/r).
+Hướng xử lý / trạng thái: ĐÃ CHỐT dự án chọn y=2*x+Delta, CHƯA TRIỂN KHAI.
+  Đây là một VIM, không chạy attention hai lần. Eq. 16 thuộc LD; áp dụng cùng
+  quy ước cho LE là lựa chọn dự án, chưa xác nhận tác giả.
+Ưu điểm: giữ cả hai phép cộng theo cách đọc Hình 5 và Eq. 16 đã chọn.
+Nhược điểm / giới hạn: tăng đóng góp residual và đổi độ lớn activation; chưa
+  có bằng chứng tốt hơn. Ý định tác giả và scale vẫn cần đối chiếu; với một
+  key thì đổi scale không sửa hiện tượng softmax=1.
+Căn cứ: [P] Hình 5, Eq. 10–11,16; vim.py, language_encoder.py, language_decoder.py.
+
+12. Số lượng VIM và chia sẻ trọng số giữa block
+Vấn đề: câu “two VIMs” có thể bị hiểu là chỉ hai module toàn mạng.
+Code hiện tại: LE 12 block, LD 7 block; mỗi block tạo VIM riêng và Q/K/V/output
+  riêng, tổng 19 VIM; cùng giá trị khởi tạo không đồng nghĩa dùng chung tham số.
+Hướng xử lý / trạng thái: đã chốt giữ cấu trúc hiện có; không thêm VIM thứ
+  hai vào mỗi block. Mô tả block và Bảng IX hỗ trợ mạnh cách hiểu hai vị trí LE/LD.
+Ưu điểm: chênh tham số trong bảng~12,59M ở LE/~7,34M ở LD khớp12/7 module
+  riêng khi mỗi VIM~1,049M; có cơ sở định lượng, không chỉ dựa câu chữ.
+Nhược điểm / giới hạn: vẫn chưa đối chiếu mã gốc; module riêng tốn tham số
+  hơn dùng chung. Không còn là câu hỏi ưu tiên về số lượng VIM.
+Căn cứ: [P] tr. 6–8, V-E/Bảng IX; language_encoder.py, language_decoder.py.
+
+13. Đóng gói bốn prompt thành308 token
+Vấn đề: paper nêu tokenizer CLIP, n=308 nhưng chưa rõ tokenize riêng từng cấp
+  hay nối bốn câu rồi tokenize một lần, cùng special-token layout.
+Code hiện tại: 4 đoạn 77 vị trí; mỗi đoạn BOS+nội dung+EOS+PAD, tối đa 75 token
+  nội dung, vượt thì báo lỗi; nối thành308, embedding[308,512]. ID là mã định danh.
+Hướng xử lý / trạng thái: tạm giữ4x77 có căn cứ308=4x77; cách ghép chung là
+  phương án đối chiếu, chưa chọn. Cần nguồn xác nhận đóng gói gốc.
+Ưu điểm: giới hạn mỗi cấp rõ, hình dạng cố định và bảo toàn bốn mô tả theo thiết kế.
+Nhược điểm / giới hạn: nhiều PAD, cứng ngân sách mỗi cấp; khác cách ghép chung
+  về vị trí/BOS/EOS/target LR. Đệm dài hơn không thêm thông tin nội dung.
+Căn cứ: [P] tr. 6,8; [R2]; tokenizer.py, encode_levels; prompts.py.
+
+14. Chọn token đại diện ngôn ngữ tổng thể
+Vấn đề: “last token” trong paper có thể là EOS cuối nội dung hoặc vị trí cuối
+  sau padding; hai cách không tương đương.
+Code hiện tại: lấy hidden[:, 307:308, :], thường là PAD; tokenizer lưu vị trí
+  EOS nhưng pooling chưa dùng. PAD sau attention vẫn có thể chứa ngữ cảnh.
+Hướng xử lý / trạng thái: ĐÃ CHỐT EOS cuối thực sự, CHƯA TRIỂN KHAI: GenFace
+  là EOS L4, FF++ hai cấp là EOS L2; giữ[batch, 1,512]. Không dùng argmax ID
+  khi có nhiều EOS vì sẽ lấy EOS đầu; thiếu EOS phải báo lỗi.
+Ưu điểm: chọn token kết thúc nội dung xác định, có cơ sở EOS pooling của CLIP;
+  có thể tổng hợp ngữ cảnh qua attention/loss, không cần thêm token mới.
+Nhược điểm / giới hạn: chưa xác nhận tác giả MFVLR; chưa chứng minh tốt hơn
+  PAD; EOS cuối của4 đoạn là lựa chọn dự án. Không tự đổi attention hoặc LR.
+Căn cứ: [P] tr. 6; [R2]; language_encoder.py, encode; tokenizer.py.
+
+15. PAD có tham gia loss tái tạo ngôn ngữ không?
+Vấn đề: nhiều PAD có thể làm loss giảm nhờ học phần đệm; chưa biết tác giả mask ra sao.
+Code hiện tại: LR tính NLL cả308 target gồm PAD/BOS/EOS, sum token rồi mean batch.
+Hướng xử lý / trạng thái: ĐÃ CHỐT bỏ target PAD(ID0), CHƯA TRIỂN KHAI.
+  L_LR=(1/B)*sum(1[target!=PAD]*NLL). Giữ EOS/nội dung; chưa bỏ BOS,
+  không đồng thời đổi sang token-mean hoặc thêm attention padding mask.
+Ưu điểm: loại mục tiêu dự đoán đệm, tập trung LR vào target còn lại; giữ
+  reduction để tách ảnh hưởng của masking khỏi thay đổi mẫu số.
+Nhược điểm / giới hạn: giảm LR cơ học không chứng minh hiểu ảnh; có thể học
+  thuộc prompt. PAD embedding còn gradient gián tiếp; stop_all vẫn chặn LR
+  về ảnh, nên không kỳ vọng thay đổi này tự sửa mask.
+Căn cứ: [P] Eq. 25; [R8–R9]; objectives.py, language_reconstruction_loss.
+
+16. Cấu trúc LD và khả năng tái tạo qua memory LE
+Vấn đề: LD có thể đọc văn bản target qua LE, nên cần kiểm chứng mức phụ thuộc ảnh.
+Code hiện tại: 7 block, thứ tự masked self-attention -> cross-attention full LE
+  memory -> FF -> VIM; prepend BOS/dịch phải toàn308, cộng vị trí decoder.
+Hướng xử lý / trạng thái: đã chốt giữ thứ tự/full memory theo paper, code đã
+  khớp phần này. Không thêm causal mask vào memory hoặc bỏ LE để ép dùng ảnh.
+  Shift theo từng cấp/BOS còn là diễn giải; prepend vào target vốn có BOS tạo hai BOS đầu.
+Ưu điểm: đúng nhiệm vụ tái tạo prompt có ảnh hướng dẫn được mô tả, không
+  nhầm thành chỉ sinh caption từ ảnh; giữ cấu trúc tác giả đã xác định.
+Nhược điểm / giới hạn: đường tắt qua text là nguy cơ cần đo, chưa là lỗi;
+  causal LD self-attention không che thông tin trong LE. Cần hoán đổi/bỏ ảnh
+  nhất quán ở VIM cả LE/LD khi chẩn đoán. Residual đã chốt riêng ở mục 11 chưa sửa.
+Căn cứ: [P] Eq. 12–16, Hình 8/V-H; flt.py, language_decoder.py.
+
+17. Cosine hay raw dot trong CMC
+Vấn đề: paper vừa gọi cosine similarity vừa giải thích sim là dot product,
+  chưa nêu đủ bước L2-normalize.
+Code hiện tại: raw dot giữa vector ảnh/text rồi chia temperature học được0,07;
+  không L2-normalize, nên norm của vector ảnh hưởng điểm và gradient.
+Hướng xử lý / trạng thái: ĐÃ CHỐT L2 từng vector512 chiều trước dot trong
+  CMC, CHƯA TRIỂN KHAI; giữ feature gốc cho FD/KL và temperature hiện có.
+Ưu điểm: thực hiện cosine nhất quán với thuật ngữ paper và cách CLIP tính
+  similarity; so hướng, không để độ dài dương tự tăng điểm.
+Nhược điểm / giới hạn: bỏ thông tin độ lớn, đổi gradient/thang score; chưa
+  chứng minh tốt hơn. Epsilon cho norm nhỏ là lựa chọn số học, không phải
+  công bố của tác giả. Đây không phải L2 regularization.
+Căn cứ: [P] Eq. 20–23; [R2]; objectives.py, CrossModalContrastiveLoss.scores.
+
+18. Positive/negative khi nhiều ảnh dùng cùng prompt
+Vấn đề: khác chỉ số nhưng cùng mô tả vẫn bị coi là negative theo instance.
+Code hiện tại: diagonal positives, CMC đối xứng hai hướng; batch 2 có1 negative
+  mỗi anchor. Embedding sau VIM phụ thuộc ảnh, không mặc định bằng nhau khi text trùng.
+Hướng xử lý / trạng thái: đã chốt giữ theo paper, code đã khớp; không đổi sang
+  multi-positive theo class/generator/prompt, target mềm hoặc sampler mới.
+Ưu điểm: bám nhãn one-hot theo cặp tác giả nêu, giữ tín hiệu phân biệt từng
+  instance; không áp thêm một mục tiêu học khác mà thiếu kiểm chứng.
+Nhược điểm / giới hạn: negative có thể vẫn phù hợp về ngữ nghĩa; prompt
+  trùng và batch nhỏ cần đo thêm. ALBEF/SupCon cho hướng khác nhưng chưa chọn.
+Căn cứ: [P] Eq. 20–23; [R2, R10, R11]; objectives.py, CrossModalContrastiveLoss.forward.
+
+19. KL có teacher cố định hay hai phía cùng học?
+Vấn đề: công thức KL không đủ suy có detach/frozen teacher; paper nói căn chỉnh feature.
+Code hiện tại: KL(text||adapted visual), softmax T=0,5, sum512 chiều/mean batch,
+  không T^2; hai phía nhận gradient. stop_all chỉ chặn nhánh ảnh, LE/adapter vẫn học.
+Hướng xử lý / trạng thái: đã chốt giữ hai phía cùng học, code đã khớp; không
+  thêm detach text, teacher pretrained/EMA hoặc đóng băng LE; L2 mục 17 chỉ dành CMC.
+Ưu điểm: cho phép hai biểu diễn cùng thích nghi khi train từ đầu, chưa có
+  một teacher ngôn ngữ được xác nhận là mục tiêu đáng tin cậy.
+Nhược điểm / giới hạn: không bảo đảm hết thiên lệch; KL vẫn bất đối xứng và
+  có thể khớp biểu diễn ít thông tin. Cần theo dõi collapse/task validation;
+  stop_all khiến KL chưa trực tiếp huấn luyện encoder ảnh.
+Căn cứ: [P] Eq. 19; objectives.py, knowledge_distillation_loss; pilot_variant.py.
+
+20. Recipe tiền xử lý ảnh
+Vấn đề: MFVLR nêu input RGB224x224 nhưng chưa đủ crop/align, nội suy, pixel norm, augmentation.
+Code hiện tại: RGB -> bilinear224 -> float32/255; mask binary -> nearest224;
+  không crop/align thêm, augmentation hoặc mean/std. FF++ đã được cung cấp dạng crop.
+Hướng xử lý / trạng thái: VẪN MỞ về recipe tác giả; tạm giữ pipeline và ghi
+  là lựa chọn dự án. GenFace/RECCE/DIRE/CLIP cung cấp tham khảo, không xác nhận MFVLR kế thừa.
+Ưu điểm: pipeline đơn giản, xác định, giữ ảnh–mask khớp và miền target AR rõ;
+  giữ điều kiện hiện có giúp tách các ablation khác.
+Nhược điểm / giới hạn: chưa khẳng định tái hiện preprocessing gốc; resize
+  có thể mất chi tiết nhỏ, thiếu augmentation có thể hạn chế robust. Corruption
+  test trong paper không phải recipe augmentation train; không tự bổ sung.
+Căn cứ: [P] tr. 5,8,10; [R2, R5–R7, R12]; pilot_data.py.
+
+21. Độc lập ảnh nguồn/danh tính giữa các split
+Vấn đề: hash không phát hiện mọi quan hệ cùng nguồn/cùng người; người dùng
+  không có mapping đầy đủ từ dataset được tác giả cung cấp.
+Code hiện tại: audit ID/hash nội dung. GenFace chưa xác minh source/identity;
+  FF++ đã audit cả hai video nguồn không qua split, chưa chứng minh subject-disjoint.
+Hướng xử lý / trạng thái: giới hạn phụ thuộc metadata, KHÔNG CHẶN PILOT.
+  Giữ split được cung cấp, lấy subset trong từng split, giữ audit hiện có;
+  công bố giới hạn, không yêu cầu tự dựng danh tính hoặc tạo lại GT.
+Ưu điểm: tiếp tục chẩn đoán trong khả năng dữ liệu, không tự làm sai protocol
+  bằng trộn/chia lại; phân biệt niềm tin nguồn tải với kiểm chứng độc lập.
+Nhược điểm / giới hạn: chưa thể tuyên bố đánh giá trên danh tính chưa gặp;
+  chưa xác minh không có nghĩa phát hiện leakage. Tách video khác tách người.
+Căn cứ: train.py, pilot_datasets.py, audit_source_groups; FF++ preparation/report.json.
+
+22. Generalization so với paper
+Vấn đề: pilot cùng generator/dataset chưa đánh giá cross-generator/cross-dataset như paper.
+Code hiện tại: train/eval Diffae cùng miền; hai pilot FF++ train riêng và
+  validation cùng real/Deepfakes. Hai model train riêng không phải cross-dataset evaluation.
+Hướng xử lý / trạng thái: NGOÀI PHẠM VI HIỆN TẠI theo thống nhất, để giai đoạn
+  sau vì model còn đang được tái hiện; chưa thêm dữ liệu hoặc lượt đánh giá này.
+Ưu điểm: tập trung kiến trúc/loss/khả năng học, tiết kiệm nguồn lực và tránh
+  gán thất bại generalization cho model chưa hoàn thiện.
+Nhược điểm / giới hạn: kết quả pilot không chứng minh khả năng tổng quát
+  của paper; khi báo cáo phải ghi phạm vi cùng miền, không suy rộng từ AUC/IoU.
+Căn cứ: [P] IV-B/Bảng II–IV; các config Diffae/FF++ đã chạy.
+
+23. Subset, batch, tổng epoch và early stopping
+Vấn đề: batch paper=8; tổng epoch và có dùng early stopping hay không chưa rõ;
+  cách chọn checkpoint báo cáo của tác giả cũng chưa xác nhận.
+Code hiện tại: pilot batch 2, ngân sách cố định theo config/max_steps; Diffae
+  có1.000 ảnh5 epoch=2.500 bước, FF++1.000/2.000 ảnh1 epoch=500/1.000 bước.
+Hướng xử lý / trạng thái: VẪN MỞ về thời lượng/chính sách dừng tác giả;
+  giữ ngân sách chẩn đoán riêng, chưa đặt patience/epoch mới. Mốc15 epoch
+  là chu kỳ giảm learning rate, không phải tổng epoch; không suy45 epoch.
+Ưu điểm: pilot tiết kiệm, ghi số bước giúp so ngân sách đúng; không gán thông
+  số nội bộ cho tác giả khi thiếu bằng chứng.
+Nhược điểm / giới hạn: ít dữ liệu/bước có thể chưa hội tụ; accumulation4 lần
+  batch 2 không tự tạo7 negatives CMC nếu similarity vẫn tính từng microbatch.
+Căn cứ: [P] tr. 8; train.py, các config pilot; chính sách checkpoint xem mục 25.
+
+24. Optimizer và lịch learning rate
+Vấn đề: các pilot cũ dùng learning rate1e-5 cố định, khác1e-4 và lịch giảm của paper.
+Code hiện tại: ĐÃ TRIỂN KHAI hỗ trợ Adam/StepLR; config mới
+  configs/diffae_pilot_paper_optimizer.json dùng LR 1e-4, weight decay1e-3,
+  StepLR(step_size=15, gamma=0.1), lưu scheduler state và log LR epoch tiếp theo.
+Hướng xử lý / trạng thái: đã làm theo phần paper công bố qua config mới;
+  epoch 1–15 dùng1e-4, epoch 16–30 dùng1e-5. Config cũ giữ nguyên. Budget mới
+  vẫn1.000 ảnh, batch 2, 5 epoch, nên chưa có lần giảm LR; chưa chạy train mới.
+Ưu điểm: khớp optimizer/LR/lịch đã công bố, có state để tiếp tục đúng ranh giới;
+  26 test pilot và check-data1.000/400/400 đã đạt khi triển khai.
+Nhược điểm / giới hạn: betas(.9, .999), eps1e-8 và decay cả CMC log_temperature
+  trong config mới là lựa chọn dự án do paper chưa nêu groups; LR lớn hơn
+  cần theo dõi số học. Không đồng nghĩa toàn recipe/model đã khớp paper.
+Căn cứ: [P] tr. 8; train.py, pilot_optimization.py, config mới; mục 23 vẫn mở.
+
+25. Chọn checkpoint theo detection hay localization
+Vấn đề: checkpoint AUC tốt nhất có thể không có mask tốt nhất; tiêu chí tác giả chưa rõ.
+Code hiện tại: best.pt theo AUC validation, tie-break FD CE thấp hơn; lưu last.pt;
+  IoU/Dice chưa tham gia selection, chưa có các file best riêng cho mask/cân bằng.
+Hướng xử lý / trạng thái: tạm giữ AUC, mask dùng chẩn đoán. Về sau khi metric
+  và mask ổn định, có thể lưu best_detect/best_local hoặc best_balanced;
+  score minh họa alpha*AUC+(1-alpha)*mIoU, chưa chốt alpha/chưa triển khai.
+Ưu điểm: không ép chọn checkpoint theo metric mask chưa được triển khai;
+  lưu riêng hai task sau này giúp báo đúng đánh đổi thay vì gọi mọi task đều best.
+Nhược điểm / giới hạn: checkpoint hiện có thể bỏ qua cải thiện mask; weighted
+  score cần quy định ưu tiên dù hai metric cùng[0,1]. IoU thấp vẫn xếp hạng được,
+  nhưng đổi selection không sửa khả năng học. Chỉ chọn trên validation, tránh dùng test.
+Căn cứ: train.py, rank/improved/save; [P] tr. 8 và Bảng III–IV chưa nêu đủ selection.
+
+26. Định nghĩa mIoU và cách tổng hợp
+Vấn đề: paper nói class-wise mean IoU; metric cũ chỉ mean foreground IoU trên ảnh fake.
+Code hiện tại: báo fake_foreground_iou_macro, Dice trên fake và false-positive
+  area trên real riêng; CHƯA tính mIoU từ thống kê toàn tập.
+Hướng xử lý / trạng thái: ĐÃ CHỐT nhưng CHƯA TRIỂN KHAI: cộng TP/FP/FN/TN
+  pixel qua mọi ảnh real+fake trong từng tập đánh giá, không gộp val với test.
+  IoU_fg=TP/(TP+FP+FN); IoU_bg=TN/(TN+FP+FN); mIoU_global=(IoU_fg+IoU_bg)/2.
+  Union0 toàn tập: ghi lớp=null, bỏ khỏi mean và báo số lớp hợp lệ. Giữ metric phụ.
+Ưu điểm: tính cả FP trên real, lấy trung bình lớp như thuật ngữ paper; không
+  nhầm mean ảnh/batch với tính trên confusion toàn tập.
+Nhược điểm / giới hạn: vùng có union lớn có thể lấn át lỗi vùng nhỏ; chưa
+  xác nhận cách gộp gốc tác giả. Không đổi tên IoU pilot cũ thành mIoU này.
+Căn cứ: [P] IV-A, tr. 8; pilot_runtime.py, evaluate_visual; liên hệ mục 25/27.
+
+27. Threshold, hậu xử lý và kích thước đánh giá
+Vấn đề: chưa rõ đầy đủ cách tác giả nhị phân hóa dự đoán và xử lý mask trước metric.
+Code hiện tại: detection chọn threshold tối đaF1 validation trên grid0..1,
+  giữ khi test; mask argmax hai lớp, 224x224, không morphology/gate/resize về gốc.
+Hướng xử lý / trạng thái: VẪN MỞ về tác giả; tạm giữ quy tắc dự án. Ngưỡng
+  GT 0,1 đã rõ; V-J/Hình10 thử0,05/0,10/0,15, bàn GT và thay threshold khi train,
+  gợi ý ngưỡng tạo GT, chưa đủ suy p_fake>0,1 cho output. Chưa chọn sweep mới.
+Ưu điểm: baseline argmax có cơ sở đầu ra hai lớp và code segmentation liên
+  quan; giữ ngưỡng validation khi test tránh chọn theo test; không gate giúp
+  quan sát trực tiếp lỗi MD. Sau này có thể tuning một ngưỡng mask chung trên validation.
+Nhược điểm / giới hạn: chưa khớp recipe tác giả; tuning dễ phụ thuộc validation
+  nhỏ, threshold không sửa được feature kém. Độ phân giải/hậu xử lý đổi sẽ làm
+  metric đổi. Không lẫn threshold logit0 với sigmoid0,5 hay threshold tạo GT.
+Căn cứ: [P] tr. 6–8,15; [R13–R16]; pilot_runtime.py, export_masks.py.
+
+28. Kiến trúc chi tiết, pretraining và số tham số
+Vấn đề: nhiều chi tiết FF/bias/norm/channel/weight sharing chưa rõ; count chưa khớp.
+Code hiện tại: train từ đầu như phát biểu paper; tokenizer CLIP không phải
+  pretrained CLIP weights. Baseline A0 đã ghi nhận154.156.232 tham số,
+  paper báo~141M; không gán số A0 cho mọi biến thể resize-conv.
+Hướng xử lý / trạng thái: GIỮ THEO DÕI, ghi giả định và breakdown theo module,
+  xác minh phạm vi đếm/chia sẻ rồi đếm lại khi kiến trúc được chốt; chưa làm count mới.
+Ưu điểm: dùng chênh lệch làm dấu hiệu đối chiếu cụ thể mà không ép thay layer
+  tùy ý chỉ để đạt141M; ưu tiên căn cứ kiến trúc và khả năng học.
+Nhược điểm / giới hạn: chênh~13,16M đủ lớn để theo dõi, chưa chỉ ra vị trí
+  khác biệt hay nguyên nhân mask kém. Khớp count cũng chưa chứng minh tái hiện đúng.
+Căn cứ: [P] tr. 4,8, Bảng IX; mve.py, flt.py, heads.py và số baseline đã ghi nhận.
+
+29. Độ ổn định, tốc độ và công bằng ablation
+Vấn đề: một lần chạy hoặc thay nhiều yếu tố cùng lúc chưa đủ kết luận hiệu quả/nguyên nhân.
+Code hiện tại: cố định seed 0, deterministic, FP32, tắt TF32; num_workers=0;
+  có finite checks và log timing. Trainer hiện giới hạn seed 0, chưa có thí nghiệm nhiều seed.
+Hướng xử lý / trạng thái: giữ seed 0 để chẩn đoán; tách một thay đổi, giữ dữ
+  liệu/ngân sách/metric tương ứng; model ổn định rồi mới thử nhiều seed và
+  báo trung bình/độ dao động. Tách data, compute, validation, checkpoint khi đo tốc độ.
+Ưu điểm: dễ đối chiếu trong cùng môi trường, giảm kết luận nhầm do thứ tự
+  batch/khởi tạo; nhiều seed sau này giúp đánh giá độ bền của kết quả.
+Nhược điểm / giới hạn: nhiều seed tốn compute, cần hỗ trợ seed xuyên các module;
+  deterministic/check số học có thể tốn thời gian nhưng chưa là bottleneck đã đo.
+  FLOPs không suy trực tiếp thời gian GPU; seed chưa được chứng minh gây mask kém.
+Căn cứ: [P] Bảng X, XV; train.py; logs của các pilot đã chạy.
+
+MINH CHỨNG THỰC NGHIỆM VÀ GIỚI HẠN DIỄN GIẢI
+
+1. Diffae, class weight4 ->12,58317, cùng1 epoch/500 bước:
+   AUC validation66,88% ->67,57%; foreground IoU trên fake0,39% ->1,97%;
+   diện tích tô nhầm trên real0,35% ->1,86%. Weight tăng phản hồi nhưng
+   chưa chứng minh học đúng vùng chỉnh sửa, đánh đổi false positives rõ.
+   Nguồn: artifacts/diffae_pilot/runs/pilot_resize_conv_balanced_1ep/comparison.json.
+
+2. FF++1.000 ảnh/500 bước và2.000 ảnh/1.000 bước, cùng1 epoch:
+   - 1.000: AUC54,50%; foreground IoU fake0,23%; real FP area0,32%.
+   - 2.000: AUC55,89%; foreground IoU fake76,28%; real FP area22,50%.
+   Dự đoán pilot2.000 còn tô vùng giữa mặt trên real; IoU fake cao chưa
+   chứng minh phân biệt đúng dấu vết giả. Hai lượt khác cả dữ liệu và số
+   cập nhật, chưa tách riêng ảnh hưởng từng yếu tố. Đây chưa phải mIoU_global.
+   Nguồn: artifacts/ffpp_pilot/runs/ffpp_1000_1ep/val_metrics.json;
+   artifacts/ffpp_pilot/runs/ffpp_2000_1ep/val_metrics.json và masks_val/preview.jpg.
+   Hai lượt này đã hoàn tất; chưa chạy test trong queue FF++.
+
+3. Các kết quả trên dùng VIM residual một lần, pooling vị trí307, LR gồm PAD,
+   raw-dot CMC và metric cũ. Không dùng chúng làm bằng chứng cho các thay đổi
+   11/14/15/17/26 mới chốt trong tài liệu. Config optimizer mới chưa được train.
+
+4. Một số lượt Diffae đã xem test nhiều lần; nếu dùng các kết quả ấy để chỉnh
+   model thì tập đó không còn là kiểm chứng cuối hoàn toàn độc lập. Vòng phát
+   triển dùng validation; mọi báo cáo kết quả cần nêu lịch sử này đúng phạm vi.
+
+ƯU TIÊN TRAO ĐỔI VỚI GIẢNG VIÊN
+
+- Trước mắt: chốt thích nghi decoder có skip(03); kiểm tra overfit ít ảnh và
+  gradient FL/AR/FD(04–08). Chưa quy GT sai hoặc kết luận một nguyên nhân duy nhất.
+- Triển khai riêng và kiểm chứng các quyết định đã chốt nhưng còn ở tài liệu:
+  residual VIM(11), EOS pooling(14), mask PAD(15), cosine CMC(17), mIoU_global(26).
+  Lần tổng hợp báo cáo này không thực hiện các thay đổi code đó.
+- Cần nguồn bổ sung: chi tiết AR/FL, VIM singleton/scale, token packing,
+  preprocessing, tổng epoch/early stop và threshold. Công bố lựa chọn dự án
+  nếu chưa có nguồn, không trình bày chúng như sự thật đã xác nhận của tác giả.
+- Theo dõi count(28), giữ AUC selection tạm thời(25), ghi ngân sách/seed rõ(29).
+  Các mục đã có cơ sở/giữ code(12,16,18,19) không đặt lại thành lỗi chưa giải quyết.
+- Không mở lại tạo GT(02), không bắt buộc tự dựng mapping(21); stop_all chỉ là
+  ablation(09). Generalization(22) ngoài phạm vi hiện tại theo thống nhất.
+
+NGUỒN VÀ TỆP ĐỐI CHIẾU
+
+[P] MFVLR, arXiv: 2605.10071v1, PDF cục bộ2605.10071v1.pdf.
+    https://arxiv.org/abs/2605.10071
+    Trích ngắn theo chủ đề: “AD consists of a UNet decoder”(tr. 6);
+    “using the last token”(tr. 6); “our MFVLR model is trained from scratch”(tr. 4).
+[R1] U-Net, mục 2, tr. 4; skip concatenation và expanding path.
+     https://arxiv.org/pdf/1505.04597
+[R2] CLIP: tokenizer, EOS pooling và chuẩn hóa feature; code preprocess ảnh.
+     https://arxiv.org/html/2103.00020v1
+     https://github.com/openai/CLIP/blob/main/clip/model.py
+     https://github.com/openai/CLIP/blob/main/clip/clip.py
+[R3] GradNorm, ICML2018, cân độ lớn gradient đa nhiệm.
+     https://arxiv.org/abs/1711.02257
+[R4] PCGrad, NeurIPS2020, xung đột hướng gradient đa nhiệm.
+     https://arxiv.org/abs/2001.06782
+[R5] DIRE, ICCV2023, reconstruction/residual và preprocessing, mục 4.1.
+     https://openaccess.thecvf.com/content/ICCV2023/papers/Wang_DIRE_for_Diffusion-Generated_Image_Detection_ICCV_2023_paper.pdf
+[R6] RECCE, CVPR2022, real-only reconstruction và random horizontal flip.
+     https://openaccess.thecvf.com/content/CVPR2022/papers/Cao_End-to-End_Reconstruction-Classification_Learning_for_Face_Forgery_Detection_CVPR_2022_paper.pdf
+[R7] DiffForensics, CVPR2024, mục 3/loss, mục 4/implementation.
+     https://openaccess.thecvf.com/content/CVPR2024/papers/Yu_DiffForensics_Leveraging_Diffusion_Prior_to_Image_Forgery_Detection_and_Localization_CVPR_2024_paper.pdf
+[R8] PyTorch2.7 CrossEntropyLoss, ignore_index và reduction.
+     https://docs.pytorch.org/docs/2.7/generated/torch.nn.CrossEntropyLoss.html
+[R9] Harvard Annotated Transformer, Batch/LabelSmoothing/Loss Computation.
+     https://nlp.seas.harvard.edu/annotated-transformer/
+[R10] ALBEF, mục 3.3, negative vẫn phù hợp ngữ nghĩa và momentum targets.
+      https://arxiv.org/html/2107.07651v1#S3.SS3
+[R11] Supervised Contrastive Learning, nhiều positive cùng lớp.
+      https://arxiv.org/html/2004.11362v1
+[R12] GenFace, mụcV-A, augmentation cho CAEL; không xác nhận recipe MFVLR.
+      https://arxiv.org/html/2402.02003v2#S5.SS1
+[R13] MMSegmentation, postprocess_result, argmax/sigmoid threshold.
+      https://github.com/open-mmlab/mmsegmentation/blob/main/mmseg/models/segmentors/base.py
+[R14] SAM2ImagePredictor, threshold trên logit.
+      https://github.com/facebookresearch/sam2/blob/main/sam2/sam2_image_predictor.py
+[R15] scikit-learn, chọn ngưỡng bằng validation/cross-validation.
+      https://scikit-learn.org/stable/modules/classification_threshold.html
+[R16] DiffForensics supplemental, mục 2/Bảng1, fixed-threshold IoU/best-threshold F1.
+      https://openaccess.thecvf.com/content/CVPR2024/supplemental/Yu_DiffForensics_Leveraging_Diffusion_CVPR_2024_supplemental.pdf
+
+Source chính: train.py, evaluate.py, export_masks.py; src/mfvlr/{mve, vision_decoder,
+language_encoder, language_decoder, flt, vim, objectives, heads, integration, tokenizer}.py;
+src/mfvlr_research/{pilot_data, pilot_datasets, pilot_variant, pilot_runtime,
+pilot_optimization}.py; các configs pilot.
+Giải thích nguồn dài và các phương án khác lưu trong tài liệu chi tiết,
+docs/paper_tham_khao_reconstruction_residual_vi.txt và các báo cáo audit/pilot.

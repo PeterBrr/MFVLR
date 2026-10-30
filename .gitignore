@@ -12,6 +12,7 @@ dist/
 /papers/
 /tmp/
 /.phase2c1_deps/
+/.pilot_deps/
 /.github-setup/
 
 # Credentials and local environment files.

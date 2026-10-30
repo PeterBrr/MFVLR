@@ -7,7 +7,15 @@ from torch.nn import functional as F
 
 from mfvlr.integration import (MFVLRIntegration, ImageOnlyMFVLR, LanguagePredictions, pairing)
 from mfvlr.objectives import SixObjectives, LossValues, floating, indices, scalar, unit_weight_sum
-from mfvlr.vision_decoder import VisionDecoder
+from mfvlr.vision_decoder import VisionDecoder, VisionDecoderOutput
+
+
+def activate_reconstruction(value, activation):
+    if activation == 'identity':
+        return value
+    if activation == 'sigmoid':
+        return value.sigmoid()
+    raise ValueError('reconstruction_activation must be identity or sigmoid')
 
 
 class ResizeConvStage(nn.Module):
@@ -41,8 +49,11 @@ class ResizeConvTrunk(nn.Module):
 
 class ResizeConvDecoder(VisionDecoder):
     """Retain validated VD I/O and distinct heads; replace the trunk explicitly."""
-    def __init__(self, mode='nearest', seed=0):
+    def __init__(self, mode='nearest', seed=0, reconstruction_activation='identity'):
         nn.Module.__init__(self)
+        if reconstruction_activation not in ('identity', 'sigmoid'):
+            raise ValueError('Unsupported reconstruction_activation')
+        self.reconstruction_activation = reconstruction_activation
         if mode not in ('nearest', 'bilinear'):
             raise ValueError('Resize mode must be nearest or bilinear')
         self.skip_policy = 'bottleneck_only'
@@ -60,6 +71,11 @@ class ResizeConvDecoder(VisionDecoder):
             for head in (self.appearance_head, self.mask_head):
                 nn.init.xavier_uniform_(head.weight, generator=generator)
                 nn.init.zeros_(head.bias)
+
+    def forward(self, local):
+        output = super().forward(local)
+        return VisionDecoderOutput(output.features,
+            activate_reconstruction(output.reconstruction, self.reconstruction_activation), output.mask_logits)
 
 
 def language_visual_feature(visual, stop_all):
@@ -125,9 +141,17 @@ def variant_settings(config):
         return None
     expected = {'variant', 'resize_mode', 'language_visual_gradients', 'mask_background_weight',
                 'mask_foreground_weight', 'mask_loss_weight'}
+    if isinstance(settings, dict) and settings.get('variant') == 'skip_resize_conv_v2':
+        expected = expected | {'residual_gradient', 'skip_connections'}
+        if 'reconstruction_activation' in settings:
+            expected = expected | {'reconstruction_activation'}
+        if 'vim_residual' in settings:
+            expected = expected | {'vim_residual'}
+        if 'language_normalization' in settings:
+            expected = expected | {'language_normalization'}
     if not isinstance(settings, dict) or set(settings) != expected:
         raise ValueError('Experimental model settings must explicitly specify all variant fields')
-    if settings['variant'] != 'resize_conv_v1':
+    if settings['variant'] not in ('resize_conv_v1', 'skip_resize_conv_v2'):
         raise ValueError('Unknown experimental model variant')
     if settings['resize_mode'] not in ('nearest', 'bilinear'):
         raise ValueError('Unsupported resize mode')
@@ -137,7 +161,28 @@ def variant_settings(config):
         value = settings[name]
         if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value <= 0:
             raise ValueError(f'{name} must be a finite positive number')
+    if settings['variant'] == 'skip_resize_conv_v2':
+        if settings.get('vim_residual', 'single') not in ('single', 'double'):
+            raise ValueError('Unsupported vim_residual')
+        if settings.get('language_normalization', 'baseline') not in ('baseline', 'pre_norm'):
+            raise ValueError('Unsupported language_normalization')
+        if settings.get('reconstruction_activation', 'identity') not in ('identity', 'sigmoid'):
+            raise ValueError('Unsupported reconstruction_activation')
+        if settings['skip_connections'] not in ('concat', 'none'):
+            raise ValueError('Invalid skip_connections policy')
+        if settings['residual_gradient'] not in ('coupled', 'detach_reconstruction'):
+            raise ValueError('Invalid residual_gradient policy')
+        if settings['mask_loss_weight'] != 1.:
+            raise ValueError('Set mask_loss_weight=1 and use loss_weights.fl in v2')
+        from .pilot_skip import validate_loss_weights
+        validate_loss_weights(config.get('loss_weights'))
     return settings
+
+
+def language_enabled(config):
+    settings = variant_settings(config)
+    return (settings is None or settings['variant'] != 'skip_resize_conv_v2'
+            or any(config['loss_weights'][name] > 0 for name in ('lr', 'cmc', 'kl')))
 
 
 def training_model(config):
@@ -145,6 +190,9 @@ def training_model(config):
     if settings is None:
         from mfvlr.integration import MFVLRIntegration as Baseline
         return Baseline()
+    if settings['variant'] == 'skip_resize_conv_v2':
+        from .pilot_skip import SkipMFVLR
+        return SkipMFVLR(settings, config['loss_weights'])
     return ResizeConvMFVLR(settings)
 
 
@@ -152,4 +200,7 @@ def visual_model(config):
     settings = variant_settings(config)
     if settings is None:
         return ImageOnlyMFVLR()
+    if settings['variant'] == 'skip_resize_conv_v2':
+        from .pilot_skip import SkipImageOnly
+        return SkipImageOnly(settings)
     return ResizeConvImageOnly(settings)

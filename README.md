@@ -1,5 +1,12 @@
 # MFVLR documented reimplementation
 
+Current internal Diffae pilot: see [training commands](docs/diffae_pilot_run.md).
+The separately configured [resize-convolution variant](docs/resize_conv_variant_vi.md)
+adds language-to-visual stop-gradient and foreground-weighted localization.
+The new `train.py` and `evaluate.py` reuse A0 and the six existing objectives;
+historical numerical acceptance remains unresolved. The sections below describe
+the earlier implementation phases.
+
 Phase 2A implements the Multi-domain Vision Encoder under approved engineering
 assumptions M1–M5. Author architectural fidelity is not established by these
 choices or by the parameter count. See [the implementation contract](docs/implementation_contract.md)

@@ -1,0 +1,29 @@
+{
+  "schema": "diffae-pilot-proposal-v1",
+  "execution_enabled": false,
+  "status": "preparation_pending_gates",
+  "generator": "Diffae",
+  "dataset_root": "D:/BaiduNetdiskDownload",
+  "candidate_directory": "artifacts/diffae_pilot/preparation",
+  "environment": "my_env",
+  "python": "C:/Users/NHA/miniconda3/envs/my_env/python.exe",
+  "pythonpath": [".pilot_deps", "src"],
+  "seed": 0,
+  "train_counts": {"real": 2500, "fake": 2500},
+  "validation_counts": {"real": 200, "fake": 200},
+  "test_counts": {"real": 200, "fake": 200},
+  "variant": "A0",
+  "batch_size": 2,
+  "precision": "float32",
+  "tiny_run": {"images": 32, "max_steps": 100, "learning_rate": 0.000001},
+  "pilot": {"max_epochs": 5, "learning_rate": 0.00001},
+  "loss_weights": {"fd": 1, "lr": 1, "cmc": 1, "fl": 1, "ar": 1, "kl": 1},
+  "optimizer": {"name": "Adam", "betas": [0.9, 0.999], "epsilon": 1e-8, "weight_decay": 0.001},
+  "notes": [
+    "Proposal only, not accepted by the existing disabled trainer.",
+    "User requested pilot execution; prerequisites still determine readiness.",
+    "No verified source/identity metadata supplied; subject-disjoint evaluation cannot be claimed.",
+    "Keep the historical numerical FAIL unchanged. Resolve or explicitly review before optimizer execution.",
+    "Preprocessing and mask provenance remain unresolved. Candidate rows are not training inputs."
+  ]
+}

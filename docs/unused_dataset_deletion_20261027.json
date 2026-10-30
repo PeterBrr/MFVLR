@@ -1,0 +1,27 @@
+﻿[
+    {
+        "path":  "D:\\New folder (2)\\MFVLR\\artifacts\\ffpp_pilot",
+        "files":  41,
+        "bytes":  9132748996
+    },
+    {
+        "path":  "D:\\New folder (2)\\_archive\\MFVLR_cleanup_20261027_01\\FaceForensics++.zip",
+        "files":  1,
+        "bytes":  22605478577
+    },
+    {
+        "path":  "D:\\New folder (2)\\_archive\\MFVLR_cleanup_20261027_01\\artifacts\\ffpp_pilot",
+        "files":  8800,
+        "bytes":  319803689
+    },
+    {
+        "path":  "D:\\New folder (2)\\MFVLR\\tools\\__pycache__\\prepare_ffpp_pilot.cpython-310.pyc",
+        "files":  1,
+        "bytes":  9506
+    },
+    {
+        "path":  "D:\\New folder (2)\\MFVLR\\tests\\pilot\\__pycache__\\test_ffpp_data.cpython-310-pytest-9.1.1.pyc",
+        "files":  1,
+        "bytes":  7536
+    }
+]

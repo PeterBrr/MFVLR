@@ -1,0 +1,30 @@
+{
+  "purpose": "Controlled small GenFace pilot: dedicated mask CNN versus shared CNN; decoder trunk stays shared",
+  "seed": 0,
+  "device": "cuda",
+  "threads": 4,
+  "train_images": 32,
+  "validation_images": 64,
+  "train_pool_limit": 1000,
+  "updates": 200,
+  "microbatch_size": 2,
+  "effective_batch_size": 4,
+  "evaluate_every": 50,
+  "optimizer": {"lr": 0.0001, "weight_decay": 0.0, "betas": [0.9, 0.999], "eps": 1e-8},
+  "model": {
+    "variant": "resize_conv_v1",
+    "resize_mode": "nearest",
+    "language_visual_gradients": "stop_all",
+    "mask_background_weight": 1.0,
+    "mask_foreground_weight": 4.0,
+    "mask_loss_weight": 1.0
+  },
+  "manifests": {
+    "train": "artifacts/diffae_pilot/manifests/train.jsonl",
+    "val": "artifacts/diffae_pilot/manifests/val.jsonl",
+    "test": "artifacts/diffae_pilot/manifests/test.jsonl"
+  },
+  "objectives": ["ar", "fd", "fl"],
+  "initialization": "scratch; the extra mask CNN starts as an independent copy of the newly initialized image CNN",
+  "limitations": "Single seed, 32 train and 64 validation images, no test; no language losses; shared decoder and AR/FD interactions remain"
+}

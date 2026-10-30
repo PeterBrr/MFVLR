@@ -1,0 +1,8 @@
+# Keep torch from the existing CUDA-enabled my_env. Do not reinstall it from this file.
+Pillow==12.3.0
+numpy>=1.23,<3
+ftfy==6.3.1
+regex==2026.6.28
+wcwidth==0.2.13
+PyYAML>=6
+tqdm>=4.66,<5

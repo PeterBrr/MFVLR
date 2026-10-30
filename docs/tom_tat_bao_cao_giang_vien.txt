@@ -1,0 +1,194 @@
+BÁO CÁO GIẢNG VIÊN: BA NHÓM NGUYÊN NHÂN CẦN LÀM RÕ TRONG MFVLR
+Bản trình bày 30 phút — cập nhật 26/10/2026
+
+MỤC TIÊU VÀ PHÂN BỔ THỜI GIAN
+
+Mục tiêu: tập trung vào cơ chế có thể gây mask lặp hoặc học kém ở decoder,
+loss/gradient và nhánh language/VIM; thống nhất cách kiểm chứng từng cơ chế.
+Phân biệt bằng chứng trên checkpoint cũ với giả thuyết còn mở ở biến thể
+hiện tại. Source đang dùng là bản triển khai lại trong dự án.
+
+  3 phút: hiện trạng và kết quả pilot.
+  8 phút: ưu tiên 1 — decoder tạo mẫu lặp và thiếu thông tin không gian.
+  7 phút: ưu tiên 2 — loss/gradient và nghiệm thiên về nền.
+  7 phút: ưu tiên 3 — nhánh ngôn ngữ và VIM.
+  5 phút: xin ý kiến và thống nhất kế hoạch.
+
+HIỆN TRẠNG CẦN TRÌNH BÀY TRƯỚC
+
+- Vấn đề chính: mask có xu hướng học vùng/mẫu chung, chưa chứng minh định vị
+  dấu vết giả theo từng ảnh. Detection và localization có thể tiến bộ khác nhau.
+- FF++ validation, cùng 1 epoch:
+    1.000 ảnh /   500 bước: AUC 54,50%; IoU fake  0,23%; real FP area  0,32%.
+    2.000 ảnh / 1.000 bước: AUC 55,89%; IoU fake 76,28%; real FP area 22,50%.
+  Pilot 2.000 còn tô vùng giữa mặt trên ảnh thật. IoU fake cao chưa đủ chứng
+  minh mask tốt. Hai lượt khác cả lượng dữ liệu và số bước, chưa tách nguyên nhân.
+- IoU trên là trung bình foreground IoU trên ảnh fake; số liệu là validation.
+- Biến thể đã chạy dùng resize-conv, class weight và stop_all để chẩn đoán;
+  có khác baseline A0. stop_all chặn gradient language về nhánh ảnh.
+
+ƯU TIÊN 1. DECODER: VÌ SAO CÓ MẪU LẶP VÀ KHÓ KHÔI PHỤC VỊ TRÍ?
+Liên hệ vấn đề 03 trong tài liệu chi tiết.
+
+Code hiện tại:
+  A0 dùng ConvTranspose2d; biến thể dùng resize + convolution. Cả hai chỉ
+  nhận bottleneck 1024x14x14, chưa dùng skip từ các tầng encoder; AD/MD chung
+  trunk, head tái tạo ảnh và head mask riêng.
+Hai cơ chế cần phân biệt:
+  a) Mẫu lặp do các pha upsampling của decoder cũ.
+     ConvTranspose2d kernel2/stride2 học bốn nhóm trọng số theo vị trí chẵn/lẻ.
+     Khi feature các ô gần giống nhau, cùng mẫu bốn pha được áp lên nhiều ô;
+     bốn tầng x2 có thể tạo chu kỳ 2/4/8/16 pixel. Kernel bằng stride tránh
+     chồng lấp không đều, nhưng không buộc bốn pha có cùng trọng số.
+     Đây là cơ chế tạo lưới; không có nghĩa mọi input bắt buộc ra cùng mask.
+  b) Thiếu đường truyền chi tiết từ encoder.
+     Feature đã giảm từ 224 xuống 14 mỗi chiều; decoder phải suy lại biên
+     và vị trí từ biểu diễn thô. Không có skip thì không nhận trực tiếp
+     feature độ phân giải cao, có thể dễ dựa vào mẫu mặt/vị trí chung.
+     Đây là giả thuyết cần thử; bottleneck không tự chứng minh mất mọi vị trí.
+Bằng chứng và giới hạn:
+  Trên checkpoint A0 pilot_005, thành phần chu kỳ16 giải thích 99,48% biến
+  thiên không gian của bản đồ xác suất trung bình trong phép đo bốn ảnh train.
+  Tạm buộc bốn pha đồng nhất ở cả bốn tầng làm tỷ lệ còn 0,64%, nhưng mask
+  thành gần toàn nền. Điều này xác định nguồn lưới, chưa tạo ra mask tốt.
+  Biến thể resize-conv đã bỏ kiểu upsampling đó nhưng mask vẫn kém: cần
+  kiểm tra tiếp thông tin không gian và tối ưu, chưa thể quy hết cho ConvTranspose.
+Hướng xử lý / trạng thái:
+  Thử overfit ít ảnh bằng FL với decoder hiện tại, sau đó so decoder có skip
+  dưới cùng dữ liệu/ngân sách. Paper gọi U-Net nhưng thiếu chi tiết; thích
+  nghi skip đã triển khai trong skip_resize_conv_v2, chưa xác nhận cấu trúc
+  gốc tác giả. Có detach B trước RE và trọng số loss thủ công; xem tài liệu mới.
+Ưu điểm:
+  Skip có thể cung cấp chi tiết/biên; phép thử tách khả năng học của decoder
+  khỏi ảnh hưởng các loss khác trước khi train lớn.
+Nhược điểm / giới hạn:
+  Tăng bộ nhớ; chưa xác nhận cấu trúc MFVLR gốc hoặc hiệu quả của skip.
+  Overfit được chỉ là kiểm tra khả năng học, chưa chứng minh tổng quát hóa.
+Ý kiến cần xin: chấp nhận thử U-Net có skip với giả định được ghi rõ?
+
+ƯU TIÊN 2. LOSS VÀ GRADIENT CÓ ĐANG LÀM CÁC NHIỆM VỤ CẢN NHAU?
+Liên hệ vấn đề 04–08; stop_all ở vấn đề 09 là lựa chọn thí nghiệm.
+
+Code hiện tại:
+  AR mean toàn bộ B,C,H,W; FL mean pixel hoặc weighted mean; LR sum token
+  rồi mean batch; CMC dùng raw dot product. Biến thể stop_all cho nhánh ảnh
+  nhận FD/FL/AR, chặn gradient nhóm language về ảnh.
+  FL có class weights [1,4]; đã thử foreground weight 12,58317 trên Diffae.
+Cơ chế có thể gây học kém:
+  a) Nhiều mục tiêu cập nhật cùng tham số.
+     Trên tham số dùng chung: g_total = g_FL + g_AR + g_FD + ... theo graph.
+     Nếu hai gradient ngược hướng, bước giảm loss này có thể làm loss kia
+     tăng ở xấp xỉ cục bộ. Hệ số1 không bảo đảm đóng góp bằng nhau vì cách
+     tổng/mean và đường truyền khác nhau. Không phải mọi loss đều tới mọi head.
+     Ở A0, LR còn đi qua residual encoder -> |ảnh tái tạo - ảnh đầu vào|
+     -> appearance head -> trunk chung với mask. Do đó mask head vẫn nhận
+     FL nhưng feature của nó có thể bị mục tiêu khác thay đổi.
+  b) Bất cân bằng pixel cho phép nghiệm thiên nền.
+     Khi foreground ít, dự đoán nền đúng nhiều pixel có thể giảm CE dù bỏ
+     sót vùng giả. Weight foreground tăng giá phải trả khi bỏ sót; nếu quá
+     mạnh cũng có thể khuyến khích tô rộng và tăng báo giả trên real.
+  c) Reduction/miền giá trị chưa chốt theo tác giả.
+     AR sum pixel/kênh rồi mean batch lớn hơn mean toàn tensor 150.528 lần
+     ở RGB224; FL không trọng số sum pixel rồi mean batch lớn hơn mean toàn
+     tensor 50.176 lần ở224. AD tuyến tính, target [0,1]; sigmoid giới hạn
+     miền nhưng có thể bão hòa. Không tự đổi cả reduction lẫn activation.
+Bằng chứng và giới hạn:
+  A0 pilot_005: trên hai minibatch train, norm LR/FL tại U1 khoảng 6.668–9.190
+  lần; cosine gradient tổng với FL khoảng -0,648/-0,564. Đây là xung đột
+  cục bộ đã đo, chưa đại diện mọi batch hoặc độ lớn cập nhật thực tế của Adam.
+  Resize-conv dùng stop_all nên đường language trên đã bị chặn, nhưng mask
+  vẫn kém. Cần đo lại FL/AR/FD, không dùng số A0 kết luận biến thể hiện tại.
+  Diffae weight 4 -> 12,58: IoU fake validation 0,39% -> 1,97%, real FP area
+  0,35% -> 1,86%, cùng 1 epoch. Cân lớp có tác động nhưng chưa học mask tốt.
+Hướng xử lý / trạng thái:
+  FL riêng -> thêm AR -> thêm FD; đo norm/cosine trên cùng tham số qua nhiều
+  batch, giữ dữ liệu/ngân sách. Chưa chốt đổi reduction AR/FL hay activation.
+  Weight lấy từ tỷ lệ pixel TRAIN và thử riêng; đo lại nếu đổi dataset.
+  Chưa cần đưa GradNorm/PCGrad vào trước khi xác định tương tác cụ thể.
+Ưu điểm:
+  Xác định loss nào hỗ trợ/cản FL; cân foreground có căn cứ định lượng,
+  tránh tăng weight chỉ vì mask đang kém.
+Nhược điểm / giới hạn:
+  Đo tốn compute; cosine là dấu hiệu cục bộ, scalar loss lớn chưa chứng minh
+  chi phối Adam. Tăng weight không khôi phục được thông tin không gian thiếu.
+Ý kiến cần xin: ưu tiên FL/AR/FD tối giản trước khi cân gradient phức tạp?
+
+ƯU TIÊN 3. NHÁNH NGÔN NGỮ: SỬA GÌ ĐÃ CHỐT, ĐIỂM NÀO VẪN MỞ?
+Liên hệ vấn đề 10–17.
+
+Code hiện tại, cơ chế nghi ngờ và hướng đã chốt:
+  a) Pooling vị trí 307, thường là PAD.
+     Điểm đọc feature phụ thuộc layout đệm, chưa gắn rõ với kết thúc nội dung.
+     Đã triển khai lấy EOS cuối thực sự trong skipv2; A0 giữ cũ. PAD sau attention vẫn
+     có thể chứa ngữ cảnh; chưa có bằng chứng pooling PAD tất yếu sai.
+  b) LR tính cả target PAD trong 308 vị trí.
+     Nhiều PAD có thể làm LR giảm nhờ học phần đệm, chưa cần dùng thông tin ảnh.
+     Đã triển khai bỏ target PAD, giữ token-sum/batch-mean trong skipv2.
+  c) VIM trả Delta, caller cộng x một lần.
+     Hình5 có residual trong khối, Eq.16 lại cộng ngoài: cách hiểu khác nhau
+     làm thay tỷ lệ tín hiệu ngôn ngữ x so với phần chèn ảnh Delta.
+     Đã chốt lựa chọn dự án y=2*x+Delta, CHƯA triển khai; chưa xác nhận mã gốc.
+  d) Q có nhiều token nhưng K/V chỉ một token ảnh mỗi head.
+     Attention(Q,K,V)=softmax(QK^T/scale)V=V khi chỉ có một key.
+     Mỗi query nhận cùng phần chèn ảnh trong một head; nhánh attention này
+     không chọn ảnh theo từng từ, gradient task qua Q/K bằng0 trong số học
+     lý tưởng. Token đầu ra vẫn khác nhau nhờ residual ngôn ngữ; V/output
+     còn học được và thông tin chèn vẫn thay đổi theo ảnh.
+     Giữ cấu trúc class token paper nêu; vai trò Q/K còn cần làm rõ, chưa
+     tự đổi patch K/V hoặc xem toàn VIM là vô ích.
+  e) CMC dùng raw dot product, chưa L2-normalize.
+     Dot = norm(ảnh)*norm(text)*cos(góc), nên score thay đổi cả do độ lớn
+     feature. Đã triển khai L2 trước dot CMC trong skipv2; không đổi FD/KL.
+     L2 loại ảnh hưởng norm ở phép so này, không tự bảo đảm căn chỉnh tốt.
+Điểm cần kiểm chứng về LD:
+  LD nhận memory toàn bộ LE vốn đã đọc prompt, nên có thể tái tạo qua thông
+  tin văn bản mà ít cần ảnh. Đây là nguy cơ học đường tắt cần đo, không phải
+  kết luận lỗi: giữ prompt cố định, đổi ảnh/feature ảnh qua cả LE và LD, đo
+  thay đổi biểu diễn và LR. Memory có text không tự chứng minh sai paper.
+Hướng kiểm chứng:
+  Thử a/b/c/e riêng; giữ 19 VIM độc lập (LE12/LD7) và thứ tự LD hiện tại.
+  Đo phụ thuộc ảnh, phân rã LR phần nội dung/EOS/PAD; loss giảm cơ học sau
+  khi bỏ PAD không phải bằng chứng nhánh language hiểu ảnh tốt hơn.
+Ưu điểm:
+  EOS cho điểm đọc rõ; bỏ PAD giảm mục tiêu đệm; L2 làm CMC so hướng feature.
+  Các phép thử tách lựa chọn triển khai khỏi mức đóng góp thực tế của ảnh.
+Nhược điểm / giới hạn:
+  Chưa chứng minh tốt hơn hoặc đúng toàn bộ ý tác giả; residual hai lần có
+  thể tăng ưu thế x so với Delta. Với stop_all, các sửa đổi language/CMC
+  không trực tiếp cập nhật nhánh ảnh, nên chưa thể xem là cách chữa mask.
+Ý kiến cần xin: xác nhận giả định EOS/PAD/L2/residual và cách làm rõ vai trò
+  VIM một key; ưu tiên kiểm chứng đóng góp ảnh trước khi đổi cấu trúc lớn.
+
+KẾ HOẠCH XIN THỐNG NHẤT TRONG 5 PHÚT CUỐI
+
+1. Xác nhận giả định decoder có skip và các lựa chọn language/VIM nêu trên.
+2. Ưu tiên kiểm tra overfit ít ảnh bằng FL, sau đó đo/thêm AR và FD; đánh giá
+   đồng thời mask trên fake và báo giả trên real.
+3. EOS/PAD/L2 đã triển khai trong skipv2; residual VIM hai lần chưa triển khai.
+   Kiểm chứng ảnh hưởng bằng validation, giữ ngân sách và tách từng yếu tố.
+
+CẬP NHẬT THỰC NGHIỆM 26/10/2026
+- Trên8 batch real/Diffae thuộc train, sau16 bước: cosine AR/FL trung bình
+  encoder=-0,1854, trunk=-0,1530; cả hai nhóm âm8/8 batch. Không optimizer update.
+- Đây là gradient thô cục bộ, không chứng minh từng bước Adam làm loss tăng.
+- Chi tiết triển khai/đo: docs/eos_pad_l2_va_gradient_ar_fl_vi.md.
+
+TÀI LIỆU ĐỐI CHIẾU (DÙNG KHI GIẢNG VIÊN HỎI THÊM)
+
+- Bản đầy đủ: docs/tom_tat_bao_cao_giang_vien_day_du_29_van_de.txt.
+- Phân tích/công thức/nguồn chi tiết: docs/nhung_diem_can_lam_ro_paper_va_code.txt.
+- MFVLR: 2605.10071v1.pdf; tr.6 decoder/pooling, Hình5 và Eq.16 VIM,
+  Eq.17–27 các loss. https://arxiv.org/abs/2605.10071
+- U-Net, kiến trúc skip: https://arxiv.org/pdf/1505.04597
+- CLIP, EOS pooling/L2: https://github.com/openai/CLIP/blob/main/clip/model.py
+- Gradient đa nhiệm: GradNorm https://arxiv.org/abs/1711.02257;
+  PCGrad https://arxiv.org/abs/2001.06782.
+- Minh chứng pilot GenFace:
+  artifacts/diffae_pilot/runs/pilot_resize_conv_balanced_1ep/comparison.json.
+  Dữ liệu và artifact FF++ đã xóa theo yêu cầu ngày 27/10/2026;
+  các số liệu FF++ còn nhắc trong thảo luận chỉ là ghi nhận lịch sử.
+- Điều tra A0: docs/decoder_root_cause_vi.md, docs/mask_decoder_audit.md;
+  artifacts/decoder_root_cause_pilot005/.
+
+Các phương án ghi CHƯA triển khai không phải tính năng đã có trong code.
+Bản rút gọn này phục vụ trình bày; không thay đổi model hoặc khởi chạy train.
