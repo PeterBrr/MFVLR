@@ -1,0 +1,25 @@
+{
+  "schema": "mfvlr-experiment-v1",
+  "name": "vim_single",
+  "inputs": "artifacts/genface_fd_validation_kaggle_20261026/package_001",
+  "train_limit": null,
+  "val_limit": null,
+  "model": {
+    "variant": "skip_resize_conv_v2",
+    "resize_mode": "nearest",
+    "language_visual_gradients": "coupled",
+    "residual_gradient": "detach_reconstruction",
+    "skip_connections": "concat",
+    "reconstruction_activation": "identity",
+    "mask_background_weight": 1.0,
+    "mask_foreground_weight": 4.0,
+    "mask_loss_weight": 1.0,
+    "vim_residual": "single",
+    "language_normalization": "pre_norm",
+    "mask_residual": "none"
+  },
+  "loss_weights": {"fd": 0.1, "ar": 1.0, "fl": 1.0, "lr": 1e-4, "cmc": 0.01, "kl": 0.01},
+  "optimizer": {"image_lr": 1e-4, "language_lr": 1e-5, "weight_decay": 0.0},
+  "scheduler": null,
+  "training": {"epochs": 10, "effective_batch": 4, "microbatch": 2, "checkpoint_every": 250, "threads": 4, "gradient_checkpointing": true, "gpu_memory_fraction": 0.88}
+}

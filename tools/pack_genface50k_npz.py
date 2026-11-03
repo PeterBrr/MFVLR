@@ -1,0 +1,88 @@
+"""Turn the extracted genface50k zip into the train.npz/val.npz the experiment runner reads.
+
+Same tensors as PilotFaces: RGB bilinear-resized to 224, mask > 0 nearest-resized to 224,
+uint8 storage. Runs on the HPC side after `unzip genface50k.zip`; written through memmaps so
+peak RAM stays near one image. Test is never packed.
+"""
+import argparse
+import csv
+import hashlib
+import json
+from pathlib import Path
+
+import numpy as np
+from PIL import Image
+
+PREFIX = dict(Diffae='Diffae', CelebA_HQ='CelebA_HQ', FFHQ='FFHQ')
+
+
+def load(root, row):
+    with Image.open(root / row['image']) as source:
+        size = source.size
+        rgb = np.array(source.convert('RGB').resize((224, 224), Image.Resampling.BILINEAR), dtype=np.uint8)
+    with Image.open(root / row['mask']) as source:
+        if source.size != size:
+            raise ValueError(f'{row["image"]}: image/mask dimensions differ')
+        mask = np.asarray(source.convert('L'))
+    # PNG masks are 0/1 or 0/255; JPEG masks carry compression noise, so those use the midpoint.
+    binary = mask > (0 if set(np.unique(mask).tolist()) <= {0, 1, 255} else 127)
+    label = int(row['label'])
+    if (label == 0) == bool(binary.any()):
+        raise ValueError(f'{row["image"]}: mask does not match label {label}')
+    resized = np.array(Image.fromarray(binary.astype(np.uint8)).resize((224, 224), Image.Resampling.NEAREST), dtype=np.uint8)
+    return rgb.transpose(2, 0, 1), resized, label
+
+
+def pack(root, split, output, limit=None):
+    with (root / f'{split}.csv').open(encoding='utf-8') as stream:
+        rows = list(csv.DictReader(stream))
+    if limit:
+        # Balanced subset: the first limit/2 rows of each class in csv order.
+        rows = [r for label in ('0', '1') for r in [x for x in rows if x['label'] == label][:limit // 2]]
+    # Alternate real/fake so any prefix stays balanced.
+    real, fake = [r for r in rows if r['label'] == '0'], [r for r in rows if r['label'] == '1']
+    order = [r for pair in zip(real, fake) for r in pair] + real[len(fake):] + fake[len(real):]
+    count = len(order)
+    scratch = output / f'.{split}_tmp'
+    scratch.mkdir(parents=True, exist_ok=True)
+    images = np.lib.format.open_memmap(scratch / 'images.npy', 'w+', np.uint8, (count, 3, 224, 224))
+    masks = np.lib.format.open_memmap(scratch / 'masks.npy', 'w+', np.uint8, (count, 224, 224))
+    labels, ids = [], []
+    for i, row in enumerate(order):
+        images[i], masks[i], label = load(root, row)
+        labels.append(label)
+        ids.append(f'{PREFIX[row["source"]]}/{Path(row["image"]).name}')
+        if (i + 1) % 2000 == 0:
+            print(f'{split}: {i + 1}/{count}', flush=True)
+    if len(set(ids)) != count:
+        raise ValueError(f'{split}: repeated sample IDs')
+    images.flush()
+    masks.flush()
+    target = output / f'{split}.npz'
+    np.savez(target, images=images, masks=masks, labels=np.array(labels), sample_ids=np.array(ids))
+    del images, masks
+    for name in ('images.npy', 'masks.npy'):
+        (scratch / name).unlink()
+    scratch.rmdir()
+    digest = hashlib.sha256()
+    with target.open('rb') as stream:
+        for block in iter(lambda: stream.read(1 << 24), b''):
+            digest.update(block)
+    return dict(count=count, real=labels.count(0), fake=labels.count(1), sha256=digest.hexdigest())
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--extracted', type=Path, required=True, help='Folder holding train.csv, val.csv and the image folders')
+    parser.add_argument('--output', type=Path, required=True, help='Package folder; point a config\'s "inputs" here')
+    parser.add_argument('--train-limit', type=int, default=None, help='Optional balanced subset of train')
+    args = parser.parse_args()
+    args.output.mkdir(parents=True, exist_ok=True)
+    report = {split: pack(args.extracted, split, args.output, args.train_limit if split == 'train' else None)
+              for split in ('train', 'val')}
+    (args.output / 'package_report.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
+    print(json.dumps(report, indent=2))
+
+
+if __name__ == '__main__':
+    main()

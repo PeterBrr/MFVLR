@@ -1,0 +1,43 @@
+{
+  "schema": "mfvlr-experiment-v1",
+  "name": "g5k_flip",
+  "inputs": "artifacts/genface5000_epoch30_kaggle_20261027/package_001",
+  "train_limit": null,
+  "val_limit": null,
+  "model": {
+    "variant": "skip_resize_conv_v2",
+    "resize_mode": "nearest",
+    "language_visual_gradients": "stop_all",
+    "residual_gradient": "detach_reconstruction",
+    "skip_connections": "concat",
+    "reconstruction_activation": "identity",
+    "mask_background_weight": 1.0,
+    "mask_foreground_weight": 4.0,
+    "mask_loss_weight": 1.0,
+    "mask_residual": "none"
+  },
+  "loss_weights": {
+    "fd": 0.1,
+    "ar": 1.0,
+    "fl": 1.0,
+    "lr": 0.0,
+    "cmc": 0.0,
+    "kl": 0.0
+  },
+  "optimizer": {
+    "image_lr": 0.0001,
+    "language_lr": 1e-05,
+    "weight_decay": 0.0
+  },
+  "scheduler": null,
+  "training": {
+    "epochs": 15,
+    "effective_batch": 4,
+    "microbatch": 2,
+    "checkpoint_every": 250,
+    "threads": 4,
+    "gradient_checkpointing": true,
+    "gpu_memory_fraction": 0.88,
+    "augmentation": "flip"
+  }
+}

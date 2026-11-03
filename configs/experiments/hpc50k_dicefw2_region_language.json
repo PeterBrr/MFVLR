@@ -1,0 +1,48 @@
+{
+  "schema": "mfvlr-experiment-v1",
+  "name": "hpc50k_dicefw2_region_language",
+  "inputs": "artifacts/genface50k/package_001",
+  "train_file": "train.npz",
+  "train_limit": null,
+  "val_limit": null,
+  "model": {
+    "variant": "skip_resize_conv_v2",
+    "resize_mode": "nearest",
+    "language_visual_gradients": "coupled",
+    "residual_gradient": "detach_reconstruction",
+    "skip_connections": "concat",
+    "reconstruction_activation": "identity",
+    "mask_background_weight": 1.0,
+    "mask_foreground_weight": 2.0,
+    "mask_loss_weight": 1.0,
+    "mask_residual": "none",
+    "mask_dice_weight": 1.0,
+    "vim_residual": "single",
+    "language_normalization": "pre_norm",
+    "language_prompt": "region",
+    "language_encoder_input": "neutral"
+  },
+  "loss_weights": {
+    "fd": 0.1,
+    "ar": 1.0,
+    "fl": 1.0,
+    "lr": 0.0001,
+    "cmc": 0.01,
+    "kl": 0.01
+  },
+  "optimizer": {
+    "image_lr": 0.0001,
+    "language_lr": 1e-05,
+    "weight_decay": 0.0
+  },
+  "scheduler": null,
+  "training": {
+    "epochs": 4,
+    "effective_batch": 4,
+    "microbatch": 2,
+    "checkpoint_every": 1000,
+    "threads": 8,
+    "gradient_checkpointing": true,
+    "gpu_memory_fraction": null
+  }
+}
