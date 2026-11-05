@@ -58,3 +58,5 @@ Prompt `region` cho ảnh fake:
 - Language chỉ dùng lúc train; lúc chấm, model chỉ chạy với ảnh.
 - Mask GT rất vụn: trung vị 373 mảnh mỗi mask. Mask GT làm mờ Gaussian σ = 3 px chỉ còn IoU 45,6 với chính nó. Language không sửa được giới hạn này.
 - Chưa chạy. Chưa có kết quả.
+
+**Quyết định 04/11/2026: bỏ nhánh language khỏi lượt chạy HPC.** Người dùng quyết định không giữ nhánh language. `tools/slurm_hpc50k.sh` chỉ chạy baseline `hpc50k_dicefw2` với seed 0, 1, 2. Config và code của nhánh language vẫn còn trong repo nhưng không được dùng. Không có so sánh ghép cặp trong lượt này; baseline 50k chỉ được đối chiếu quan sát với kết quả 10k.

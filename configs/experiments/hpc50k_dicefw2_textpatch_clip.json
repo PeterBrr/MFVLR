@@ -1,0 +1,46 @@
+{
+  "schema": "mfvlr-experiment-v1",
+  "name": "hpc50k_dicefw2_textpatch_clip",
+  "inputs": "artifacts/genface50k/package_001",
+  "train_file": "train.npz",
+  "train_limit": null,
+  "val_limit": null,
+  "model": {
+    "variant": "skip_resize_conv_v2",
+    "resize_mode": "nearest",
+    "language_visual_gradients": "stop_all",
+    "residual_gradient": "detach_reconstruction",
+    "skip_connections": "concat",
+    "reconstruction_activation": "identity",
+    "mask_background_weight": 1.0,
+    "mask_foreground_weight": 2.0,
+    "mask_loss_weight": 1.0,
+    "mask_residual": "none",
+    "mask_dice_weight": 1.0,
+    "text_patch": "clip",
+    "text_patch_weight": 1.0
+  },
+  "loss_weights": {
+    "fd": 0.1,
+    "ar": 1.0,
+    "fl": 1.0,
+    "lr": 0.0,
+    "cmc": 0.0,
+    "kl": 0.0
+  },
+  "optimizer": {
+    "image_lr": 0.0001,
+    "language_lr": 1e-05,
+    "weight_decay": 0.0
+  },
+  "scheduler": null,
+  "training": {
+    "epochs": 4,
+    "effective_batch": 4,
+    "microbatch": 2,
+    "checkpoint_every": 1000,
+    "threads": 8,
+    "gradient_checkpointing": true,
+    "gpu_memory_fraction": null
+  }
+}

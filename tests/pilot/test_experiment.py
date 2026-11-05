@@ -13,6 +13,7 @@ from mfvlr_research.experiment import (RegionPrompts, ResidualMaskFusion, build_
                                        soft_dice_loss, source_hashes, validate_config)
 from mfvlr_research.pilot_skip import SkipMFVLR
 from mfvlr_research.pretrained_encoder import ENCODERS, ROOT
+from mfvlr_research.text_patch import CLASS_PROMPTS, CLIP_EMBEDDINGS, class_embeddings, patch_classes, text_patch_loss
 
 
 MODEL = {'variant': 'skip_resize_conv_v2', 'resize_mode': 'nearest', 'language_visual_gradients': 'stop_all',
@@ -580,3 +581,96 @@ def test_primary_endpoint_and_paired_comparison():
     result = compare_reports({0: report(0, .2), 1: report(0, .3)}, {0: report(0, .3), 1: report(0, .25)})
     assert result['mean_difference'] == pytest.approx(.025) and result['candidate_better_in'] == 1
     assert result['paired_seeds'] == 2 and result['sample_sd'] > 0
+
+
+def diffae_project(tmp_path):
+    """Train/val NPZ whose ids carry GenFace names, so attribute-dependent targets can be built."""
+    (tmp_path / 'inputs').mkdir()
+    for name, count, offset in (('train', 8, 0), ('val', 4, 100)):
+        write_npz(tmp_path / f'inputs/{name}.npz', count, offset)
+        with np.load(tmp_path / f'inputs/{name}.npz') as data:
+            arrays = dict(data)
+        arrays['sample_ids'] = np.array([f'CelebA_HQ/{offset + i}.jpg' if label == 0 else
+                                         f'Diffae/Diffae_{"Bangs" if i % 4 == 1 else "smile"}_{offset + i:05d}.png'
+                                         for i, label in enumerate(arrays['labels'])])
+        np.savez(tmp_path / f'inputs/{name}.npz', **arrays)
+    return tmp_path
+
+
+def text_patch_config(mode='clip', weight=1.):
+    return make_config(model={**MODEL, 'text_patch': mode, 'text_patch_weight': weight})
+
+
+@pytest.mark.parametrize('changes', [
+    {'text_patch': 'clip'}, {'text_patch': 'random', 'text_patch_weight': 0.}, {'text_patch_weight': 1.},
+    {'text_patch': 'bert', 'text_patch_weight': 1.}, {'text_patch': 'clip', 'text_patch_weight': -1.},
+])
+def test_invalid_text_patch_configs_are_rejected(changes):
+    with pytest.raises(ValueError):
+        validate_config(make_config(model={**MODEL, **changes}))
+
+
+def test_class_embeddings_match_the_prompts_and_arms_share_their_geometry_only_in_size():
+    stored = json.loads(CLIP_EMBEDDINGS.read_text(encoding='utf-8'))
+    assert tuple(stored['prompts']) == CLASS_PROMPTS
+    clip, random = class_embeddings('clip'), class_embeddings('random')
+    assert clip.shape == random.shape == (3, 768)
+    assert torch.allclose(clip.norm(dim=1), torch.ones(3)) and torch.allclose(random.norm(dim=1), torch.ones(3))
+    assert torch.equal(random, class_embeddings('random'))
+    # CLIP sentences are close to each other; independent random vectors are nearly orthogonal.
+    off_diagonal = ~torch.eye(3, dtype=torch.bool)
+    assert (clip @ clip.T)[off_diagonal].min() > .5 and (random @ random.T)[off_diagonal].abs().max() < .2
+
+
+def test_patch_classes_follow_the_diffae_attribute():
+    names = ('CelebA_HQ/1.jpg', 'Diffae/Diffae_Bangs_00001.png', 'Diffae/Diffae_smile_00002.png', 'FFHQ/3.jpg')
+    assert patch_classes(names, torch.tensor([0, 1, 1, 0])).tolist() == [0, 1, 2, 0]
+    with pytest.raises(ValueError):
+        patch_classes(('Diffae/Diffae_eyes_1.png',), torch.tensor([1]))
+
+
+def test_text_patch_loss_prefers_the_right_class_and_place():
+    masks = torch.zeros((2, 224, 224), dtype=torch.long)
+    masks[1, :112] = 1
+    labels, names = torch.tensor([0, 1]), ('CelebA_HQ/1.jpg', 'Diffae/Diffae_smile_00001.png')
+    right = torch.full((2, 3, 14, 14), -20.)
+    right[0, 0] = right[1, 0, 7:] = 20.
+    right[1, 2, :7] = 20.
+    wrong_class = right.clone()
+    wrong_class[1, 1:] = wrong_class[1, 1:].flip(0)
+    assert text_patch_loss(right, masks, labels, names).item() == pytest.approx(0, abs=1e-4)
+    assert text_patch_loss(wrong_class, masks, labels, names).item() > 5
+    # The edited map alone is right for the wrong class, so its Dice part is still zero.
+    assert text_patch_loss(wrong_class, masks, labels, names).item() < text_patch_loss(-right, masks, labels, names).item()
+
+
+@pytest.mark.parametrize('mode', ['clip', 'random'])
+def test_text_patch_starts_at_baseline_and_learns(mode):
+    baseline = build_model(make_config(), 0).eval()
+    patched = build_model(text_patch_config(mode), 0).eval()
+    assert all(torch.equal(p, patched.state_dict()[n]) for n, p in baseline.state_dict().items())
+    image = image_batch()
+    with torch.no_grad():
+        assert torch.equal(baseline.visual_only(image).decoded.mask_logits, patched.visual_only(image).decoded.mask_logits)
+    optimizer, _ = build_optimizer(patched, text_patch_config(mode))
+    image_group = {id(p) for p in optimizer.param_groups[0]['params']}
+    assert all(id(p) in image_group for p in patched.text_patch.parameters())
+    patched.train()
+    output = patched.visual_only(image)
+    output.decoded.mask_logits[:, 1].sum().backward()
+    assert patched.text_patch.gain.grad.abs() > 0
+
+
+def test_text_patch_arms_differ_only_in_the_class_vectors():
+    clip, random = (build_model(text_patch_config(mode), 3) for mode in ('clip', 'random'))
+    differing = [n for n, p in clip.state_dict().items() if not torch.equal(p, random.state_dict()[n])]
+    assert differing == ['text_patch.text']
+
+
+def test_text_patch_run_trains_with_a_finite_extra_loss(tmp_path):
+    project = diffae_project(tmp_path)
+    base = run_experiment(make_config(), 0, project / 'base', root=project, device='cpu')
+    patched = run_experiment(text_patch_config('clip'), 0, project / 'clip', root=project, device='cpu')
+    assert base['status'] == patched['status'] == 'COMPLETED'
+    lines = lambda name: [json.loads(line)['losses'] for line in (project / name / 'history.jsonl').read_text().splitlines()]
+    assert all(np.isfinite(p['fl']) and p['fl'] > b['fl'] for b, p in zip(lines('base'), lines('clip')))

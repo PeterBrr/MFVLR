@@ -39,6 +39,7 @@ from .pilot_runtime import atomic_save, check_finite_tensors, metrics
 from .pilot_skip import SkipMFVLR, SkipResizeDecoder
 from .pilot_variant import ResizeConvDecoder, language_visual_feature, variant_settings, weighted_mask_loss
 from .pretrained_encoder import ENCODERS, install_encoder
+from .text_patch import TEXT_PATCH_MODES, TextPatchHead, text_patch_loss
 
 SCHEMA = 'mfvlr-experiment-v1'
 CONFIG_KEYS = {'schema', 'name', 'inputs', 'train_limit', 'val_limit', 'model', 'loss_weights',
@@ -87,6 +88,13 @@ def validate_config(config):
         raise ValueError('model.language_prompt must be label or region; model.language_encoder_input prompt or neutral')
     if (prompt, encoder_input) != ('label', 'prompt') and not language_enabled(config):
         raise ValueError('language_prompt and language_encoder_input need language losses')
+    text_patch = settings.pop('text_patch', 'none')
+    text_patch_weight = settings.pop('text_patch_weight', 0.)
+    if text_patch not in TEXT_PATCH_MODES:
+        raise ValueError(f'model.text_patch must be one of {TEXT_PATCH_MODES}')
+    _rate(text_patch_weight, 'model.text_patch_weight', zero=True)
+    if (text_patch == 'none') != (text_patch_weight == 0):
+        raise ValueError('model.text_patch needs a positive text_patch_weight, and only then')
     if settings.get('variant') != 'skip_resize_conv_v2':
         raise ValueError('Experiments use the explicit skip_resize_conv_v2 variant')
     variant_settings({'model': settings, 'loss_weights': config['loss_weights']})
@@ -233,7 +241,10 @@ class ExperimentMFVLR(SkipMFVLR):
         encoder = settings.pop('encoder', 'scratch')
         settings.pop('language_prompt', None)
         settings.pop('language_encoder_input', None)
+        text_patch = settings.pop('text_patch', 'none')
+        self_text_patch_weight = settings.pop('text_patch_weight', 0.)
         super().__init__(settings, weights)
+        self.text_patch_weight = self_text_patch_weight
         # Set by the runner when the encoder reads a neutral prompt; not a parameter or buffer.
         self.encoder_ids = None
         self.vim_tokens = self_vim_tokens
@@ -251,15 +262,28 @@ class ExperimentMFVLR(SkipMFVLR):
             self.flt = TokenLanguageTransformer(seed=seed, **options)
         self.mask_fusion = ResidualMaskFusion(seed) if mask_residual == 'concat' else None
         install_encoder(self, encoder, seed)
+        self.text_patch = None if text_patch == 'none' else TextPatchHead(text_patch, seed)
 
     def compute_objectives(self, output, targets):
         losses = super().compute_objectives(output, targets)
-        if not self.mask_dice_weight:
+        # Both extras are logged inside fl and total; evaluation keeps reporting the CE part, so fl stays
+        # comparable between arms.
+        extra = 0.
+        if self.mask_dice_weight:
+            extra = self.mask_dice_weight * self.objectives.weights['fl'] * soft_dice_loss(
+                output.predictions.decoded.mask_logits, targets.masks, targets.labels)
+        if self.text_patch is not None:
+            extra = extra + self.text_patch_weight * self.objectives.weights['fl'] * text_patch_loss(
+                self.text_patch(self.patch_tokens(output.predictions.visual)), targets.masks, targets.labels,
+                targets.sample_ids)
+        if not torch.is_tensor(extra):
             return losses
-        # Logged inside fl and total; evaluation keeps reporting the CE part, so fl stays comparable between arms.
-        dice = self.mask_dice_weight * self.objectives.weights['fl'] * soft_dice_loss(
-            output.predictions.decoded.mask_logits, targets.masks, targets.labels)
-        return LossValues(losses.fd, losses.lr, losses.cmc, losses.fl + dice, losses.ar, losses.kl, losses.total + dice)
+        return LossValues(losses.fd, losses.lr, losses.cmc, losses.fl + extra, losses.ar, losses.kl, losses.total + extra)
+
+    @staticmethod
+    def patch_tokens(visual):
+        """Image plus residual tokens, the per-patch counterpart of the fused global token."""
+        return visual.appearance.tokens + visual.residual_tokens
 
     def language_condition(self, predictions):
         """What the language branch sees of the image: the class-token sum, or every token."""
@@ -290,10 +314,15 @@ class ExperimentMFVLR(SkipMFVLR):
 
     def visual_only(self, image):
         predictions = super().visual_only(image)
-        if self.mask_fusion is None:
+        if self.mask_fusion is None and self.text_patch is None:
             return predictions
         decoded = predictions.decoded
-        logits = decoded.mask_logits + self.mask_fusion(decoded.features, predictions.visual.residual_image)
+        logits = decoded.mask_logits
+        if self.mask_fusion is not None:
+            logits = logits + self.mask_fusion(decoded.features, predictions.visual.residual_image)
+        if self.text_patch is not None:
+            patch_logits = self.text_patch(self.patch_tokens(predictions.visual))
+            logits = logits + self.text_patch.mask_bias(patch_logits, logits.shape[-2:])
         return VisualPredictions(predictions.visual,
             VisionDecoderOutput(decoded.features, decoded.reconstruction, logits), predictions.detection_logits)
 
@@ -424,6 +453,8 @@ def build_optimizer(model, config):
     image = [*model.mve.parameters(), *model.decoder.parameters(), *model.heads.detector.parameters()]
     if model.mask_fusion is not None:
         image += list(model.mask_fusion.parameters())
+    if model.text_patch is not None:
+        image += list(model.text_patch.parameters())
     known = {id(p) for p in image}
     language = [p for p in model.parameters() if id(p) not in known]
     groups = [dict(params=image, lr=settings['image_lr']), dict(params=language, lr=settings['language_lr'])]
