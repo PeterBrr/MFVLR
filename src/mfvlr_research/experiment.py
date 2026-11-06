@@ -360,8 +360,11 @@ def load_samples(path, limit=None):
         selected = np.arange(len(labels)) if limit is None else np.sort(np.concatenate([
             np.array([i for i, label in enumerate(labels) if label == cls])[
                 np.linspace(0, labels.count(cls) - 1, limit // 2, dtype=int)] for cls in (0, 1)]))
-        images = torch.from_numpy(data['images'][selected].copy())
-        masks = torch.from_numpy(data['masks'][selected].copy())
+        # Without a limit the freshly read array is used as is: fancy indexing plus copy would hold
+        # three copies of an 80k-image train split at once.
+        pick = (lambda array: array) if limit is None else (lambda array: array[selected])
+        images = torch.from_numpy(pick(data['images']))
+        masks = torch.from_numpy(pick(data['masks']))
     return Samples(images, masks, [labels[i] for i in selected.tolist()], [ids[i] for i in selected.tolist()])
 
 
