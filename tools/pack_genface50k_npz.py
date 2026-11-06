@@ -13,28 +13,14 @@ import csv
 import hashlib
 import json
 from pathlib import Path
+import sys
 
 import numpy as np
-from PIL import Image
 
-PREFIX = dict(Diffae='Diffae', CelebA_HQ='CelebA_HQ', FFHQ='FFHQ')
-
-
-def load(root, row):
-    with Image.open(root / row['image']) as source:
-        size = source.size
-        rgb = np.array(source.convert('RGB').resize((224, 224), Image.Resampling.BILINEAR), dtype=np.uint8)
-    with Image.open(root / row['mask']) as source:
-        if source.size != size:
-            raise ValueError(f'{row["image"]}: image/mask dimensions differ')
-        mask = np.asarray(source.convert('L'))
-    # PNG masks are 0/1 or 0/255; JPEG masks carry compression noise, so those use the midpoint.
-    binary = mask > (0 if set(np.unique(mask).tolist()) <= {0, 1, 255} else 127)
-    label = int(row['label'])
-    if (label == 0) == bool(binary.any()):
-        raise ValueError(f'{row["image"]}: mask does not match label {label}')
-    resized = np.array(Image.fromarray(binary.astype(np.uint8)).resize((224, 224), Image.Resampling.NEAREST), dtype=np.uint8)
-    return rgb.transpose(2, 0, 1), resized, label
+ROOT = Path(__file__).resolve().parents[1]
+sys.path[:0] = [str(ROOT / 'src')]
+# One preprocessing for both routes: the runner's CSV reader uses the same function and order.
+from mfvlr_research.csv_data import load_row as load, ordered_rows, sample_id  # noqa: E402
 
 
 def pack(root, split, output, limit=None, multiple=1):
@@ -43,9 +29,7 @@ def pack(root, split, output, limit=None, multiple=1):
     if limit:
         # Balanced subset: the first limit/2 rows of each class in csv order.
         rows = [r for label in ('0', '1') for r in [x for x in rows if x['label'] == label][:limit // 2]]
-    # Alternate real/fake so any prefix stays balanced.
-    real, fake = [r for r in rows if r['label'] == '0'], [r for r in rows if r['label'] == '1']
-    order = [r for pair in zip(real, fake) for r in pair] + real[len(fake):] + fake[len(real):]
+    order = ordered_rows(rows)
     count = len(order)
     scratch = output / f'.{split}_tmp'
     scratch.mkdir(parents=True, exist_ok=True)
@@ -61,7 +45,7 @@ def pack(root, split, output, limit=None, multiple=1):
             continue
         images[len(labels)], masks[len(labels)] = image, mask
         labels.append(label)
-        ids.append(f'{PREFIX[row["source"]]}/{Path(row["image"]).name}')
+        ids.append(sample_id(row))
         if (i + 1) % 2000 == 0:
             print(f'{split}: {i + 1}/{count}', flush=True)
     kept = len(labels) - len(labels) % multiple

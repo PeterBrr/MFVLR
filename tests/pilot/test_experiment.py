@@ -674,3 +674,85 @@ def test_text_patch_run_trains_with_a_finite_extra_loss(tmp_path):
     assert base['status'] == patched['status'] == 'COMPLETED'
     lines = lambda name: [json.loads(line)['losses'] for line in (project / name / 'history.jsonl').read_text().splitlines()]
     assert all(np.isfinite(p['fl']) and p['fl'] > b['fl'] for b, p in zip(lines('base'), lines('clip')))
+
+
+def write_extracted(root, count=10, truncated=()):
+    """A tiny extracted genface50k folder: real JPEGs with empty masks, Diffae PNGs with square masks."""
+    import csv, io, subprocess
+    from PIL import Image
+    rng = np.random.default_rng(7)
+    (root / 'img').mkdir(parents=True)
+    rows = []
+    for i in range(count):
+        label = i % 2
+        image = Image.fromarray(rng.integers(0, 256, (48 + i, 40, 3), dtype=np.uint8))
+        mask = np.zeros((48 + i, 40), np.uint8)
+        if label:
+            mask[8:30, 6:20] = 255
+        name = f'img/Diffae_smile_{i:05d}.png' if label else f'img/{i:05d}.jpg'
+        if label:
+            image.save(root / name)
+        else:
+            buffer = io.BytesIO()
+            image.save(buffer, 'JPEG')
+            data = buffer.getvalue()
+            (root / name).write_bytes(data[:-200] if i in truncated else data)
+        Image.fromarray(mask).save(root / f'{name}.mask.png')
+        rows.append(dict(image=name, mask=f'{name}.mask.png', label=label, source='Diffae' if label else 'FFHQ', annotation=''))
+    for split, part in (('train', rows[:count - 4]), ('val', rows[count - 4:])):
+        with (root / f'{split}.csv').open('w', newline='', encoding='utf-8') as stream:
+            writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
+            writer.writeheader()
+            writer.writerows(part)
+    return root
+
+
+def test_csv_samples_equal_the_packed_npz_and_skip_broken_images(tmp_path):
+    import subprocess, sys
+    from mfvlr_research.csv_data import CsvSamples
+    root = write_extracted(tmp_path / 'ex', count=14, truncated=(2,))
+    subprocess.run([sys.executable, str(ROOT / 'tools/pack_genface50k_npz.py'), '--extracted', str(root),
+                    '--output', str(tmp_path / 'pkg')], check=True, capture_output=True)
+    for split, multiple in (('train', 4), ('val', 1)):
+        packed = load_samples(tmp_path / f'pkg/{split}.npz')
+        direct = CsvSamples(root, split, multiple=multiple, workers=1)
+        assert direct.ids == packed.ids and direct.labels == packed.labels
+        for a, b in zip(direct, packed):
+            assert torch.equal(a['image'], b['image']) and torch.equal(a['mask'], b['mask'])
+    report = CsvSamples(root, 'train', multiple=4, workers=1).report
+    # 10 train rows, one truncated JPEG skipped, then cut from 9 to a multiple of 4.
+    assert report['count'] == 8 and [s['image'] for s in report['skipped']] == ['img/00002.jpg']
+    assert len(report['trimmed']) == 1 and report['count'] % 4 == 0
+
+
+def test_csv_check_is_cached_and_slices_follow_list_semantics(tmp_path, monkeypatch):
+    from mfvlr_research import csv_data
+    root = write_extracted(tmp_path / 'ex', count=12)
+    first = csv_data.CsvSamples(root, 'train', multiple=4, workers=1)
+    monkeypatch.setattr(csv_data, '_check', lambda job: pytest.fail('cached rows were rechecked'))
+    again = csv_data.CsvSamples(root, 'train', multiple=4, workers=1)
+    assert again.ids == first.ids and again.digest == first.digest
+    picked = again[-3:]
+    assert [s['sample_id'] for s in picked] == again.ids[-3:]
+    assert again[-1]['sample_id'] == again.ids[-1]
+    again.prefetch([0, 1])
+    assert torch.equal(again[0]['image'], first[0]['image'])
+
+
+def test_csv_and_npz_routes_train_identically(tmp_path):
+    import shutil, subprocess, sys
+    root = write_extracted(tmp_path / 'inputs', count=14)
+    subprocess.run([sys.executable, str(ROOT / 'tools/pack_genface50k_npz.py'), '--extracted', str(root),
+                    '--output', str(tmp_path / 'packed')], check=True, capture_output=True)
+    npz = run_experiment(make_config(inputs='packed'), 0, tmp_path / 'npz', root=tmp_path, device='cpu')
+    csv_run = run_experiment(make_config(inputs='inputs', train_file='train.csv'), 0, tmp_path / 'csv',
+                             root=tmp_path, device='cpu')
+    assert npz['status'] == csv_run['status'] == 'COMPLETED' and csv_run['data_checks']['train']['count'] == 8
+    weights = [torch.load(tmp_path / name / 'final.pt', weights_only=True)['model'] for name in ('npz', 'csv')]
+    assert all(torch.equal(weights[0][key], weights[1][key]) for key in weights[0])
+    assert [e['val'] for e in npz['evaluations']] == [e['val'] for e in csv_run['evaluations']]
+
+
+@pytest.mark.parametrize('name', ['train.csv', 'train_small.csv'])
+def test_csv_train_files_are_accepted(name):
+    validate_config(make_config(train_file=name))

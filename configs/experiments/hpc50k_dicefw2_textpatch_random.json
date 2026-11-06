@@ -1,8 +1,8 @@
 {
   "schema": "mfvlr-experiment-v1",
   "name": "hpc50k_dicefw2_textpatch_random",
-  "inputs": "artifacts/genface50k/package_001",
-  "train_file": "train.npz",
+  "inputs": "data/genface50k",
+  "train_file": "train.csv",
   "train_limit": null,
   "val_limit": null,
   "model": {

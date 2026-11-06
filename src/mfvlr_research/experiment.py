@@ -65,8 +65,8 @@ def validate_config(config):
     if not isinstance(config, dict) or set(config) - {'train_file'} != CONFIG_KEYS:
         raise ValueError(f'Experiment config must specify exactly {sorted(CONFIG_KEYS)}')
     train_file = config.get('train_file', 'train.npz')
-    if type(train_file) is not str or not re.fullmatch(r'train\w*\.npz', train_file):
-        raise ValueError('train_file must name a train*.npz file in inputs')
+    if type(train_file) is not str or not re.fullmatch(r'train\w*\.(npz|csv)', train_file):
+        raise ValueError('train_file must name a train*.npz or train*.csv file in inputs')
     if config['schema'] != SCHEMA or type(config['name']) is not str or not config['name']:
         raise ValueError('Unsupported experiment schema or empty name')
     settings = dict(config['model'])
@@ -668,8 +668,18 @@ def run_experiment(config, seed, output, *, root, device='cuda', budget_seconds=
             torch.cuda.set_per_process_memory_fraction(training['gpu_memory_fraction'])
         inputs = Path(root) / config['inputs']
         train_file = inputs / config.get('train_file', 'train.npz')
-        train = load_samples(train_file, config['train_limit'])
-        val = load_samples(inputs / 'val.npz', config['val_limit'])
+        if train_file.suffix == '.csv':
+            # Extracted images read on demand; val.csv sits beside the train CSV.
+            from .csv_data import CsvSamples
+            update(phase='check_images')
+            train = CsvSamples(inputs, train_file.stem, multiple=training['effective_batch'], limit=config['train_limit'])
+            val = CsvSamples(inputs, 'val', limit=config['val_limit'])
+            data_hash = dict(train=train.digest, val=val.digest)
+            log('data_checked', train=train.report, val=val.report)
+        else:
+            train = load_samples(train_file, config['train_limit'])
+            val = load_samples(inputs / 'val.npz', config['val_limit'])
+            data_hash = {s: hashlib.sha256(path.read_bytes()).hexdigest() for s, path in (('train', train_file), ('val', inputs / 'val.npz'))}
         if set(train.ids) & set(val.ids):
             raise ValueError('Train and validation sample IDs overlap')
         needs_language = language_enabled(config)
@@ -698,7 +708,6 @@ def run_experiment(config, seed, output, *, root, device='cuda', budget_seconds=
         if training['gradient_checkpointing']:
             enable_gradient_checkpointing(model)
         optimizer, scheduler = build_optimizer(model, config)
-        data_hash = {s: hashlib.sha256(path.read_bytes()).hexdigest() for s, path in (('train', train_file), ('val', inputs / 'val.npz'))}
         sources = source_hashes(root)
         contract = dict(config=config, seed=seed, data=data_hash, source=sources)
         step, evaluations = 0, []
@@ -725,6 +734,8 @@ def run_experiment(config, seed, output, *, root, device='cuda', budget_seconds=
                       environment=dict(torch=torch.__version__, python=sys.version, device=device,
                                        gpu=torch.cuda.get_device_name() if device == 'cuda' else None),
                       evaluations=evaluations)
+        if hasattr(train, 'report'):
+            report['data_checks'] = dict(train=train.report, val=val.report)
         write_json(output / 'report.json', report)
 
         def save_state():
@@ -752,6 +763,8 @@ def run_experiment(config, seed, output, *, root, device='cuda', budget_seconds=
             optimizer.zero_grad(set_to_none=True)
             means = {}
             update_started = time.monotonic()
+            if hasattr(train, 'prefetch') and index + 1 < len(schedule):
+                train.prefetch(schedule[index + 1])
             for offset in range(0, effective, micro):
                 image, ids, names, targets = _batch([pick(index, i) for i in schedule[index][offset:offset + micro]], tokens, device)
                 result = model.with_language(image, ids, sample_ids=names)

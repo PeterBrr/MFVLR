@@ -16,10 +16,9 @@ export PYTHONUNBUFFERED=1
 cd /datastore/khanhnd/deepfake/MFVLR/
 mkdir -p logs
 
-# Pack train/val npz once (needs /datastore/$USER/deepfake/genface50k unzipped).
-[ -f artifacts/genface50k/package_001/package_report.json ] || \
-    python3 tools/pack_genface50k_npz.py --extracted /datastore/$USER/deepfake/genface50k \
-        --output artifacts/genface50k/package_001 >> logs/pack.log 2>&1
+# The runner reads the extracted images straight from train.csv/val.csv; nothing is packed.
+mkdir -p data
+ln -sfn /datastore/$USER/deepfake/genface50k data/genface50k
 
 B=configs/experiments/hpc50k_dicefw2.json
 C=configs/experiments/hpc50k_dicefw2_textpatch_clip.json
